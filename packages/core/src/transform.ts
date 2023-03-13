@@ -1,21 +1,40 @@
-import { BaseNode, walk } from "estree-walker"
 import type {
+  BaseNode,
   LabeledStatement,
-  Statement,
-} from "estree"
+  MacroPlugin,
+  ParserOptions,
+  Statement
+} from "./types"
 
-import type { ParserOptions } from "@babel/parser"
-import generate from "@babel/generator"
-import { parse } from "@babel/parser"
+import { generate } from "./generate"
+import { parse } from "./parse"
+import { walk } from "./walk"
 
-export function transform(code: string, plugins: Record<string, (ast: Statement) => Statement> = {}, parserOptions: ParserOptions = {
+/**
+ * Transform code with your labeled macro plugins.
+ * @param code - input source code.
+ * @param plugins - an object containing your macro plugins.
+ * @param parserOptions - babel parser options.
+ * @returns - an object containing the output code and source map.
+ */
+export function transform(code: string, plugins: Record<string, MacroPlugin> = {}, parserOptions: ParserOptions = {
   sourceType: "module",
 }) {
   const ast = parse(code, parserOptions)
 
   function walkLabel(ast: LabeledStatement): BaseNode | undefined {
+    const { start, end } = ast.body.loc as unknown as {
+      start: { index: number }
+      end: { index: number }
+    }
+
     if (ast.label.name in plugins) {
-      return plugins[ast.label.name](ast.body)
+      const r = plugins[ast.label.name](ast.body, code.slice(start.index, end.index))
+      if (typeof r == 'string') {
+        const p = parse(r, parserOptions);
+        return p.program as unknown as Statement;
+      }
+      return r;
     }
   }
 
