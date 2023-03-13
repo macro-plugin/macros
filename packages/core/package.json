@@ -1,0 +1,27 @@
+{
+  "name": "@macro-plugin/core",
+  "version": "1.0.0",
+  "description": "@macro-plugin/core",
+  "main": "dist/core.js",
+  "module": "dist/core.mjs",
+  "types": "./dist/core.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "label",
+    "macro",
+    "macros"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/core.mjs",
+      "require": "./dist/core.js",
+      "types": "./dist/core.d.ts"
+    }
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}
