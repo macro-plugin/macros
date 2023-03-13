@@ -3,7 +3,12 @@
   "description": "Labeled macros support for JavaScript.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:update": "jest --updateSnapshot",
+    "coverage": "jest --coverage"
   },
   "keywords": [
     "label",
