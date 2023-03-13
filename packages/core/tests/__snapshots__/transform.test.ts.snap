@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`transform codeblock to call 1`] = `
+"(() => {
+  let a = 3;
+  a += 2;
+  console.log(a);
+})();"
+`;
+
+exports[`transform complex 1`] = `
+"let a = 3;
+a += 2;
+console.log(a);"
+`;
+
 exports[`transform debug 1`] = `
 "//console.log("Hello World");
 ;"

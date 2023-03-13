@@ -1,4 +1,4 @@
-import type { Statement } from "estree"
+import type { Statement } from "../src"
 import { transform } from "../src"
 
 var DEBUG = false;
@@ -6,19 +6,25 @@ var DEBUG = false;
 function debug(ast: Statement, code: string): Statement {
   if (DEBUG) return ast
 
-  const { start, end } = ast.loc as unknown as {
-    start: { index: number }
-    end: { index: number }
-  }
-  const lines = code.slice(start.index, end.index).split("\n")
-
   return {
     type: "EmptyStatement",
-    leadingComments: lines.map(value => ({
+    leadingComments: code.split("\n").map(value => ({
       type: "Line",
       value,
     })),
   }
+}
+
+function hello(ast: Statement): string {
+  return 'world'
+}
+
+function codeblock(ast: Statement, code: string): string {
+  return code.trim().replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '').trim();
+}
+
+function codecall(ast: Statement, code: string): string {
+  return `(() => ${code})()`;
 }
 
 test("transform debug", () => {
@@ -29,3 +35,32 @@ test("transform debug", () => {
   DEBUG = true;
   expect(transform(code, { debug }).code).toMatchSnapshot();
 })
+
+test("transform simple plugin string", () => {
+  const code = `
+    hello: 'kity'
+  `
+  expect(transform(code, { hello }).code).toEqual('world;');
+});
+
+test("transform complex", () => {
+  const code = `
+    codeblock: {
+      let a = 3;
+      a += 2;
+      console.log(a);
+    }
+  `
+  expect(transform(code, { codeblock }).code).toMatchSnapshot();
+});
+
+test("transform codeblock to call", () => {
+  const code = `
+    codecall: {
+      let a = 3;
+      a += 2;
+      console.log(a);
+    }
+  `
+  expect(transform(code, { codecall }).code).toMatchSnapshot();
+});
