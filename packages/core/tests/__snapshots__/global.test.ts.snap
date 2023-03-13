@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`inject imports 1`] = `
+"import test from "test";
+import { ref } from "vue";
+import type { VariableDeclaration } from "estree";
+function myComponent() {
+  const count = ref(0);
+}"
+`;
+
 exports[`transform function block 1`] = `
 "const add = () => {
   return a + b;

@@ -45,6 +45,16 @@ function arrow(ast: BaseNode, handler: Handler, parent: BaseNode, prop: string, 
   }
 }
 
+let injected = false;
+function inject(ast: BaseNode, handler: Handler) {
+  if (!injected) {
+    handler.import([ { name: 'test', kind: 'default' } ], 'test')
+    handler.import([ { name: 'ref' } ], 'vue')
+    handler.import([ { name: 'VariableDeclaration' } ], 'estree', 'type')
+    injected = true;
+  }
+}
+
 test("transform function block", () => {
   const code = `
     function add(a, b) {
@@ -62,3 +72,13 @@ test("transform function block", () => {
   expect(transform(code, { global: { arrow } }).code).toMatchSnapshot();
   expect(transform(code2, { global: { arrow } }).code).toMatchSnapshot();
 })
+
+test("inject imports", () => {
+  const code = `
+  function myComponent() {
+    const count = ref(0);
+  }
+  `
+
+  expect(transform(code, { global: { inject } }).code).toMatchSnapshot();
+});
