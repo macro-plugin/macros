@@ -1,5 +1,6 @@
 import type {
   BaseNode,
+  Config,
   LabeledStatement,
   MacroPlugin,
   ParserOptions,
@@ -17,9 +18,11 @@ import { walk } from "./walk"
  * @param parserOptions - babel parser options.
  * @returns - an object containing the output code and source map.
  */
-export function transform(code: string, plugins: Record<string, MacroPlugin> = {}, parserOptions: ParserOptions = {
-  sourceType: "module",
-}) {
+export function transform(code: string, config: Config) {
+  const parserOptions = config.parserOptions || {
+    sourceType: "module",
+  }
+  const labeledMacros = config.labeled || {};
   const ast = parse(code, parserOptions)
 
   function walkLabel(ast: LabeledStatement): BaseNode | undefined {
@@ -28,8 +31,8 @@ export function transform(code: string, plugins: Record<string, MacroPlugin> = {
       end: { index: number }
     }
 
-    if (ast.label.name in plugins) {
-      const r = plugins[ast.label.name](ast.body, code.slice(start.index, end.index))
+    if (ast.label.name in labeledMacros) {
+      const r = labeledMacros[ast.label.name](ast.body, code.slice(start.index, end.index))
       if (typeof r == 'string') {
         const p = parse(r, parserOptions);
         return p.program as unknown as Statement;
