@@ -71,3 +71,16 @@ test("return empty", () => {
   `
   expect(transform(code, { empty: () => '' }).code).toEqual('');
 })
+
+test("transform in typescript", () => {
+  const code = (`
+    let a: string = "Hello";
+    debug: console.log(a);
+  `);
+  expect(transform(code, { debug }, {
+    sourceType: "module",
+    plugins: [
+      "typescript"
+    ]
+  }).code).toMatchSnapshot();
+});
