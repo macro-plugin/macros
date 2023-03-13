@@ -8,6 +8,7 @@ import type {
 } from "./types"
 
 import { generate } from "./generate"
+import { hashMap } from "./utils"
 import { parse } from "./parse"
 import { walk } from "./walk"
 
@@ -25,6 +26,7 @@ export function transform(code: string, config: Config) {
   const labeledMacros = config.labeled || {};
   const ast = parse(code, parserOptions)
   const imports: ImportDeclaration[] = [];
+  const importHashes: Record<string, true> = {};
 
   function genSpecifier(specifier: ImportSpecifier) {
     const local = {
@@ -47,16 +49,28 @@ export function transform(code: string, config: Config) {
   }
 
   function loadImport(specifiers: ImportSpecifier[], source: string, kind: 'type' | 'value' | null = 'value') {
-    imports.push({
-      type: 'ImportDeclaration',
-      specifiers: specifiers.map(i => genSpecifier(i)),
-      importKind: kind,
-      source: {
-        type: "StringLiteral",
-        value: source
-      },
-      assertions: []
-    } as unknown as ImportDeclaration);
+    let h;
+    const sl = [];
+    for (const s of specifiers) {
+      h = hashMap({ s, kind, source });
+      if (!(h in importHashes)) {
+        sl.push(genSpecifier(s))
+        importHashes[h] = true;
+      }
+    }
+
+    if (sl.length > 0) {
+      imports.push({
+        type: 'ImportDeclaration',
+        specifiers: sl,
+        importKind: kind,
+        source: {
+          type: "StringLiteral",
+          value: source
+        },
+        assertions: []
+      } as unknown as ImportDeclaration);
+    }
   }
 
   function walkLabel(ast: LabeledStatement): BaseNode | undefined {

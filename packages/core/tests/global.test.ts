@@ -45,14 +45,10 @@ function arrow(ast: BaseNode, handler: Handler, parent: BaseNode, prop: string, 
   }
 }
 
-let injected = false;
 function inject(ast: BaseNode, handler: Handler) {
-  if (!injected) {
-    handler.import([ { name: 'test', kind: 'default' } ], 'test')
-    handler.import([ { name: 'ref' } ], 'vue')
-    handler.import([ { name: 'VariableDeclaration' } ], 'estree', 'type')
-    injected = true;
-  }
+  handler.import([ { name: 'test', kind: 'default' } ], 'test')
+  handler.import([ { name: 'ref' } ], 'vue')
+  handler.import([ { name: 'VariableDeclaration' } ], 'estree', 'type')
 }
 
 test("transform function block", () => {
