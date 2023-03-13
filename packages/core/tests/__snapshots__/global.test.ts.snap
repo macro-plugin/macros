@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`transform function block 1`] = `
+"const add = () => {
+  return a + b;
+};"
+`;
+
+exports[`transform function block 2`] = `
+"function add(a, b) {
+  return a + b;
+}"
+`;
