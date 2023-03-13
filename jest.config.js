@@ -1,6 +1,5 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
+/** @type {import("@jest/types").Config.InitialOptions} */
 module.exports = {
-    transform: { "\\.(js|jsx|ts|tsx)$": "@sucrase/jest-plugin" },
-    collectCoverageFrom: ["tests/{!(tsconfig.json),}.ts", "tests/**/*.ts"],
-  };
-  
+  transform: { "\\.(js|jsx|ts|tsx)$": "@sucrase/jest-plugin" },
+  collectCoverageFrom: ["packages/{!(tsconfig.json),}.test.ts", "packages/**/*.test.ts"],
+};
