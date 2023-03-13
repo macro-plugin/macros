@@ -79,13 +79,16 @@ export function transform(code: string, config: Config) {
 
   walk(ast as BaseNode, {
     enter(node, parent, prop, index) {
+      // @ts-ignore
+      const replace = (node: BaseNode | BaseNode[]) => Array.isArray(node) ? this.replace({ type: 'Program', body: node }) : this.replace(node);
+
       for (const plugin of Object.values(globalMacros)) {
-        newNode = plugin(node, { ...this, import: loadImport }, parent, prop, index)
-        if (newNode) this.replace(newNode)
+        newNode = plugin(node, { ...this, replace, import: loadImport }, parent, prop, index)
+        if (newNode) replace(newNode)
       }
       if (node.type === "LabeledStatement") {
         newNode = walkLabel(node as LabeledStatement)
-        if (newNode) this.replace(newNode)
+        if (newNode) replace(newNode)
       }
     },
     leave(node, parent, key, index) {

@@ -23,7 +23,7 @@ export type Handler = {
   /** Remove this node */
   remove: () => void;
   /** Replace matched node with new node, equals to `return node` */
-  replace: (node: BaseNode) => void;
+  replace: (node: BaseNode | BaseNode[]) => void;
   /** Import some package */
   import: (specifiers: ImportSpecifier[], source: string, kind?: 'type' | 'value' | undefined | null) => void
 };
