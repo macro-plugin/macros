@@ -35,16 +35,16 @@ test("transform debug", () => {
   const code = `
     debug: console.log("Hello World");
   `;
-  expect(transform(code, { debug }).code).toMatchSnapshot();
+  expect(transform(code, { labeled: { debug } }).code).toMatchSnapshot();
   DEBUG = true;
-  expect(transform(code, { debug }).code).toMatchSnapshot();
+  expect(transform(code, { labeled: { debug } }).code).toMatchSnapshot();
 })
 
 test("transform simple plugin string", () => {
   const code = `
     hello: 'kity'
   `
-  expect(transform(code, { hello }).code).toEqual('world;');
+  expect(transform(code, { labeled: { hello } }).code).toEqual('world;');
 });
 
 test("transform complex", () => {
@@ -55,7 +55,7 @@ test("transform complex", () => {
       console.log(a);
     }
   `
-  expect(transform(code, { codeblock }).code).toMatchSnapshot();
+  expect(transform(code, { labeled: { codeblock } }).code).toMatchSnapshot();
 });
 
 test("transform codeblock to call", () => {
@@ -66,14 +66,14 @@ test("transform codeblock to call", () => {
       console.log(a);
     }
   `
-  expect(transform(code, { codecall }).code).toMatchSnapshot();
+  expect(transform(code, { labeled: { codecall } }).code).toMatchSnapshot();
 });
 
 test("return empty", () => {
   const code = `
     empty: console.log(123)
   `
-  expect(transform(code, { empty: () => '' }).code).toEqual('');
+  expect(transform(code, { labeled: { empty: () => '' } }).code).toEqual('');
 })
 
 test("transform in typescript", () => {
@@ -81,11 +81,13 @@ test("transform in typescript", () => {
     let a: string = "Hello";
     debug: console.log(a);
   `;
-  expect(transform(code, { debug }, {
-    sourceType: "module",
-    plugins: [
-      "typescript"
-    ]
+  expect(transform(code, {
+    labeled: { debug }, parserOptions: {
+      sourceType: "module",
+      plugins: [
+        "typescript"
+      ]
+    }
   }).code).toMatchSnapshot();
 });
 
@@ -94,11 +96,13 @@ test("transform in jsx", () => {
     stringify: <h1>hello World</h1>
   `
 
-  expect(transform(code, { stringify }, {
-    sourceType: "module",
-    plugins: [
-      "jsx",
-      "typescript"
-    ]
+  expect(transform(code, {
+    labeled: { stringify }, parserOptions: {
+      sourceType: "module",
+      plugins: [
+        "jsx",
+        "typescript"
+      ]
+    }
   }).code).toMatchSnapshot();
 });
