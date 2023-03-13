@@ -2,8 +2,6 @@ import type {
   BaseNode,
   Config,
   LabeledStatement,
-  MacroPlugin,
-  ParserOptions,
   Statement
 } from "./types"
 
@@ -14,14 +12,14 @@ import { walk } from "./walk"
 /**
  * Transform code with your labeled macro plugins.
  * @param code - input source code.
- * @param plugins - an object containing your macro plugins.
- * @param parserOptions - babel parser options.
+ * @param config - an object containing your macro config.
  * @returns - an object containing the output code and source map.
  */
 export function transform(code: string, config: Config) {
   const parserOptions = config.parserOptions || {
     sourceType: "module",
   }
+  const globalMacros = config.global || {};
   const labeledMacros = config.labeled || {};
   const ast = parse(code, parserOptions)
 
@@ -45,6 +43,10 @@ export function transform(code: string, config: Config) {
 
   walk(ast as BaseNode, {
     enter(node, parent, prop, index) {
+      for (const plugin of Object.values(globalMacros)) {
+        newNode = plugin(node, this, parent, prop, index)
+        if (newNode) this.replace(newNode)
+      }
       if (node.type === "LabeledStatement") {
         newNode = walkLabel(node as LabeledStatement)
         if (newNode) this.replace(newNode)
