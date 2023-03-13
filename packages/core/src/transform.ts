@@ -90,6 +90,7 @@ export function transform(code: string, config: Config) {
   }
 
   let newNode
+  let injected = false
 
   walk(ast as BaseNode, {
     enter(node, parent, prop, index) {
@@ -106,9 +107,10 @@ export function transform(code: string, config: Config) {
       }
     },
     leave(node, parent, key, index) {
-      if (node.type == 'Program' && imports.length > 0) {
+      if (node.type == 'Program' && imports.length > 0 && !injected) {
         // @ts-ignore
-        node.body = [...imports, ...node.body]
+        node.body = [...imports, ...node.body];
+        injected = true;
       }
     },
   })
