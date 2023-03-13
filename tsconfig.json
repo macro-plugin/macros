@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "outDir": "dist",
+    "target": "ES2017",
+    "module": "ESNext",
+    "rootDir": "./",
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "stripInternal": true,
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "allowUnusedLabels": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "checkJs": true,
+    "allowJs": true,
+    "skipLibCheck": true
+  },
+}
