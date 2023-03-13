@@ -64,3 +64,10 @@ test("transform codeblock to call", () => {
   `
   expect(transform(code, { codecall }).code).toMatchSnapshot();
 });
+
+test("return empty", () => {
+  const code = `
+    empty: console.log(123)
+  `
+  expect(transform(code, { empty: () => '' }).code).toEqual('');
+})
