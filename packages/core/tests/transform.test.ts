@@ -27,6 +27,10 @@ function codecall(ast: Statement, code: string): string {
   return `(() => ${code})()`;
 }
 
+function stringify(ast: Statement, code: string): string {
+  return "`" + code + "`";
+}
+
 test("transform debug", () => {
   const code = `
     debug: console.log("Hello World");
@@ -73,13 +77,27 @@ test("return empty", () => {
 })
 
 test("transform in typescript", () => {
-  const code = (`
+  const code = `
     let a: string = "Hello";
     debug: console.log(a);
-  `);
+  `;
   expect(transform(code, { debug }, {
     sourceType: "module",
     plugins: [
+      "typescript"
+    ]
+  }).code).toMatchSnapshot();
+});
+
+test("transform in jsx", () => {
+  const code = `
+    stringify: <h1>hello World</h1>
+  `
+
+  expect(transform(code, { stringify }, {
+    sourceType: "module",
+    plugins: [
+      "jsx",
       "typescript"
     ]
   }).code).toMatchSnapshot();

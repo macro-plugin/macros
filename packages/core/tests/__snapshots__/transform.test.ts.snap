@@ -21,6 +21,8 @@ exports[`transform debug 1`] = `
 
 exports[`transform debug 2`] = `"console.log("Hello World");"`;
 
+exports[`transform in jsx 1`] = `"\`<h1>hello World</h1>\`;"`;
+
 exports[`transform in typescript 1`] = `
 "let a: string = "Hello";
 console.log(a);"
