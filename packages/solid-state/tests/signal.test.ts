@@ -1,9 +1,9 @@
-import state from "@macro-plugin/solid-state"
+import { signal } from "@macro-plugin/solid-state"
 import { transform } from "@macro-plugin/core"
 
-test("solid state macro", () => {
+test("solid signal macro", () => {
   const code = `
-    state: {
+    signal: {
       var count = 0
     }
 
@@ -17,12 +17,12 @@ test("solid state macro", () => {
     --count
   `
 
-  expect(transform(code, { global: { state } }).code).toMatchSnapshot();
+  expect(transform(code, { global: { signal } }).code).toMatchSnapshot();
 })
 
-test("overwrite state inside function", () => {
+test("overwrite signal inside function", () => {
   const code = `
-    state: {
+    signal: {
       var count = 0
       var b = 2
     }
@@ -56,7 +56,7 @@ test("overwrite state inside function", () => {
     b += 3
 
     function component() {
-      state: {
+      signal: {
         var c = 3
       }
 
@@ -64,5 +64,5 @@ test("overwrite state inside function", () => {
     }
   `
 
-  expect(transform(code, { global: { state } }).code).toMatchSnapshot()
+  expect(transform(code, { global: { signal } }).code).toMatchSnapshot()
 });
