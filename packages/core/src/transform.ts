@@ -27,6 +27,7 @@ export function transform(code: string, config: Config) {
   const ast = parse(code, parserOptions)
   const imports: ImportDeclaration[] = [];
   const importHashes: Record<string, true> = {};
+  const data: Record<string, unknown> = {};
 
   function genSpecifier(specifier: ImportSpecifier) {
     const local = {
@@ -89,6 +90,14 @@ export function transform(code: string, config: Config) {
     }
   }
 
+  function set(key: string, value: unknown) {
+    data[key] = value;
+  }
+
+  function get(key: string) {
+    return data[key];
+  }
+
   let newNode
   let injected = false
 
@@ -99,9 +108,9 @@ export function transform(code: string, config: Config) {
 
       for (const plugin of Object.values(globalMacros)) {
         if ('enter' in plugin) {
-          newNode = plugin.enter(node, { ...this, replace, import: loadImport }, parent, prop, index)
+          newNode = plugin.enter(node, { ...this, replace, import: loadImport, set, get }, parent, prop, index)
         } else {
-          newNode = plugin(node, { ...this, replace, import: loadImport }, parent, prop, index)
+          newNode = plugin(node, { ...this, replace, import: loadImport, set, get }, parent, prop, index)
         }
 
         if (newNode) replace(newNode)
@@ -117,7 +126,7 @@ export function transform(code: string, config: Config) {
 
       for (const plugin of Object.values(globalMacros)) {
         if ('leave' in plugin) {
-          newNode = plugin.leave(node, { ...this, replace, import: loadImport }, parent, prop, index)
+          newNode = plugin.leave(node, { ...this, replace, import: loadImport, set, get }, parent, prop, index)
         }
       }
 
