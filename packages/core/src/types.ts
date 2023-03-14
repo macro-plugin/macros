@@ -17,7 +17,13 @@ export type ImportSpecifier = {
   kind?: null | "type" | "default"
 }
 
+export type ScopeVar = { name: string, private?: boolean, value?: Node, marker?: unknown };
+
 export type Handler = {
+  /** Save data to current plugin cache */
+  set: (key: string, data: unknown) => void;
+  /** Get data from current plugin cache */
+  get: (key: string) => unknown;
   /** Skip this node, not handling */
   skip: () => void;
   /** Remove this node */
@@ -29,7 +35,7 @@ export type Handler = {
 };
 
 export type TrackHandler = Handler & {
-  track(name: string): Node | -1 | undefined
+  track(name: string): ScopeVar | undefined
 }
 
 export type LabeledMacro = (ast: Statement, code: string) => Statement | Statement[] | string
