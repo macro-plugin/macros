@@ -1,18 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`overwrite signal inside function 1`] = `
-"signal: {
-  var count = 0;
-  var b = 2;
-}
-count = 3;
+"import { createSignal } from "solid-js";
+var [count, setCount] = createSignal(0);
+var [b, setB] = createSignal(2);
+setCount(3);
 function add(count = 0) {
   count += 1;
 }
-count = 4;
+setCount(4);
 const plus = b => {
   b = 5;
-  count += 3;
+  setCount(count() + 3);
   var count = 4;
   count += 5;
 };
@@ -21,28 +20,25 @@ try {
 } catch (b) {
   b += 2;
 }
-b += 2;
-count += 2;
+setB(b() + 2);
+setCount(count() + 2);
 var b = 4;
 b += 3;
 function component() {
-  signal: {
-    var c = 3;
-  }
-  c += 2;
+  var [c, setC] = createSignal(3);
+  setC(c() + 2);
 }"
 `;
 
 exports[`solid signal macro 1`] = `
-"signal: {
-  var count = 0;
-}
-count += 2;
-count = 5;
-count *= 10;
-count **= 2;
-count++;
-count--;
-++count;
---count;"
+"import { createSignal } from "solid-js";
+var [count, setCount] = createSignal(0);
+setCount(count() + 2);
+setCount(5);
+setCount(count() * 10);
+setCount(count() ** 2);
+setCount(count()++);
+setCount(count()--);
+setCount(++count());
+setCount(--count());"
 `;

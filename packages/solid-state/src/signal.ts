@@ -6,26 +6,26 @@ function getSetter(name: string) {
 }
 
 const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
-  const states: Record<string, { value: BaseNode, setter: string }> = {};
+  const signals: Record<string, { value: BaseNode, setter: string }> = {};
 
   // @ts-ignore
-  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.name == 'state') {
+  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.name == 'signal') {
     let name;
     // @ts-ignore
     for (const i of ast.body.body) {
       if (i.type == 'VariableDeclaration' && i.kind == 'var') {
         for (const d of i.declarations) {
           name = d.id.name;
-          states[name] = { value: d.init, setter: getSetter(name) };
+          signals[name] = { value: d.init, setter: getSetter(name) };
         }
       } else {
-        throw new Error('Expect a `var` kind VariableDeclaration node in state block')
+        throw new Error('Expect a `var` kind VariableDeclaration node in signal block')
       }
     }
 
-    if (Object.keys(states).length > 0) {
+    if (Object.keys(signals).length > 0) {
       handler.import([{ name: 'createSignal' }], 'solid-js');
-      return Object.entries(states).map(([k, v]) => ({
+      return Object.entries(signals).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "var",
         declarations: [
