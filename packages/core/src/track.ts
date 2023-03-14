@@ -1,26 +1,28 @@
 import type { ArrayPattern, ObjectPattern } from "estree";
-import type { BaseNode, GlobalMacro, GlobalTrackMacro } from "./types"
+import type { BaseNode, GlobalMacro, GlobalTrackMacro, ScopeVar } from "./types"
 
 const blocks = ['FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression', 'ClassDeclaration', 'ClassMethod', 'ClassPrivateMethod'];
 
-const scopeVars: { name: string, private?: boolean, value?: Node }[][] = [[]];
+const scopeVars: ScopeVar[][] = [[]];
 
 function track (name: string) {
-  for (const scope of scopeVars.reverse()) {
-    for (const v of scope) {
-      if (v.name == name) return v.value;
+  let v;
+  for (let y = scopeVars.length - 1; y >= 0; y--) {
+    v = scopeVars[y];
+    for (let x = v.length - 1; x >=0; x--) {
+      if (v[x].name == name) return v[x];
     }
   }
-  return -1;
+  return undefined;
 }
 
 function pushIdentifier(node: BaseNode, value = undefined) {
   if (node.type == 'Identifier') {
     // @ts-ignore
-    scopeVars[scopeVars.length - 1].push({ name: node.name, value })
+    scopeVars[scopeVars.length - 1].push({ name: node.name, value, marker: node.marker })
   } else if (node.type == 'PrivateName') {
     // @ts-ignore
-    scopeVars[scopeVars.length - 1].push({ name: node.id.name, private: true, value })
+    scopeVars[scopeVars.length - 1].push({ name: node.id.name, private: true, value, marker: node.marker })
   } else {
     throw new Error(`Unhandled type ${node.type}!`)
   }
@@ -106,7 +108,7 @@ export function createTrackPlugin(p: GlobalTrackMacro | { enter: GlobalTrackMacr
     return {
       enter(ast, handler, parent, prop, index) {
         enter(ast, handler, parent, prop, index);
-        p(ast, { ...handler, track }, parent, prop, index);
+        return p(ast, { ...handler, track }, parent, prop, index);
       },
       leave(ast, handler, parent, prop, index) {
         leave(ast, handler, parent, prop, index);
@@ -117,11 +119,11 @@ export function createTrackPlugin(p: GlobalTrackMacro | { enter: GlobalTrackMacr
   return {
     enter(ast, handler, parent, prop, index) {
       enter(ast, handler, parent, prop, index);
-      p.enter(ast, { ...handler, track }, parent, prop, index);
+      return p.enter(ast, { ...handler, track }, parent, prop, index);
     },
     leave(ast, handler, parent, prop, index) {
       leave(ast, handler, parent, prop, index);
-      p.leave(ast, { ...handler, track }, parent, prop, index);
+      return p.leave(ast, { ...handler, track }, parent, prop, index);
     }
   }
 }
