@@ -1,0 +1,33 @@
+{
+  "name": "@macro-plugin/solid-state",
+  "version": "1.0.0",
+  "description": "@macro-plugin/solid-state",
+  "main": "dist/solid-state.js",
+  "module": "dist/solid-state.mjs",
+  "types": "./dist/solid-state.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "solid",
+    "solidjs",
+    "state",
+    "label",
+    "macro",
+    "macros"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/solid-state.mjs",
+      "require": "./dist/solid-state.js",
+      "types": "./dist/solid-state.d.ts"
+    }
+  },
+  "devDependencies": {
+    "@macro-plugin/core": "1.0.0"
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}
