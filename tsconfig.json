@@ -4,9 +4,9 @@
     "outDir": "dist",
     "target": "ES2017",
     "module": "ESNext",
-    "rootDir": "./",
+    "rootDir": ".",
     "moduleResolution": "node",
-    "baseUrl": "src",
+    "baseUrl": ".",
     "declaration": true,
     "declarationDir": "./dist/types",
     "stripInternal": true,
@@ -17,6 +17,9 @@
     "strict": true,
     "checkJs": true,
     "allowJs": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@macro-plugin/*": ["packages/*/src"]
+    }
   },
 }
