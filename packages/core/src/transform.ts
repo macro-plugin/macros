@@ -73,7 +73,7 @@ export function transform(code: string, config: Config) {
     }
   }
 
-  function walkLabel(ast: LabeledStatement): BaseNode | undefined {
+  function walkLabel(ast: LabeledStatement): BaseNode | BaseNode[] | undefined {
     const { start, end } = ast.body.loc as unknown as {
       start: { index: number }
       end: { index: number }
@@ -98,7 +98,12 @@ export function transform(code: string, config: Config) {
       const replace = (node: BaseNode | BaseNode[]) => Array.isArray(node) ? this.replace({ type: 'Program', body: node }) : this.replace(node);
 
       for (const plugin of Object.values(globalMacros)) {
-        newNode = plugin(node, { ...this, replace, import: loadImport }, parent, prop, index)
+        if ('enter' in plugin) {
+          newNode = plugin.enter(node, { ...this, replace, import: loadImport }, parent, prop, index)
+        } else {
+          newNode = plugin(node, { ...this, replace, import: loadImport }, parent, prop, index)
+        }
+
         if (newNode) replace(newNode)
       }
       if (node.type === "LabeledStatement") {
@@ -106,7 +111,16 @@ export function transform(code: string, config: Config) {
         if (newNode) replace(newNode)
       }
     },
-    leave(node, parent, key, index) {
+    leave(node, parent, prop, index) {
+      // @ts-ignore
+      const replace = (node: BaseNode | BaseNode[]) => Array.isArray(node) ? this.replace({ type: 'Program', body: node }) : this.replace(node);
+
+      for (const plugin of Object.values(globalMacros)) {
+        if ('leave' in plugin) {
+          newNode = plugin.leave(node, { ...this, replace, import: loadImport }, parent, prop, index)
+        }
+      }
+
       if (node.type == 'Program' && imports.length > 0 && !injected) {
         // @ts-ignore
         node.body = [...imports, ...node.body];

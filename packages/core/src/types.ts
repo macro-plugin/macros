@@ -28,11 +28,16 @@ export type Handler = {
   import: (specifiers: ImportSpecifier[], source: string, kind?: 'type' | 'value' | undefined | null) => void
 };
 
-export type LabeledMacro = (ast: Statement, code: string) => Statement | string
-export type GlobalMacro = (ast: BaseNode, handler: Handler, parent: BaseNode, prop: string, index: number) => void | BaseNode
+export type TrackHandler = Handler & {
+  track(name: string): Node | -1 | undefined
+}
+
+export type LabeledMacro = (ast: Statement, code: string) => Statement | Statement[] | string
+export type GlobalMacro = (ast: BaseNode, handler: Handler, parent: BaseNode, prop: string, index: number) => void | BaseNode | BaseNode[]
+export type GlobalTrackMacro = (ast: BaseNode, handler: TrackHandler, parent: BaseNode, prop: string, index: number) => void | BaseNode | BaseNode[]
 
 export type Config = {
-  global?: Record<string, GlobalMacro>,
+  global?: Record<string, GlobalMacro | { enter: GlobalMacro, leave: GlobalMacro }>,
   labeled?: Record<string, LabeledMacro>,
   parserOptions?: ParserOptions
 }
