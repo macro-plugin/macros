@@ -6,6 +6,7 @@ importers:
     specifiers:
       '@babel/generator': ^7.21.1
       '@babel/parser': ^7.21.2
+      '@jest/types': ^29.5.0
       '@sucrase/jest-plugin': ^3.0.0
       '@types/babel__generator': ^7.6.4
       '@types/estree': ^1.0.0
@@ -21,6 +22,7 @@ importers:
     devDependencies:
       '@babel/generator': 7.21.1
       '@babel/parser': 7.21.2
+      '@jest/types': 29.5.0
       '@sucrase/jest-plugin': 3.0.0_jest@29.5.0+sucrase@3.29.0
       '@types/babel__generator': 7.6.4
       '@types/estree': 1.0.0
