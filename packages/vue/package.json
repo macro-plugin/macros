@@ -1,0 +1,30 @@
+{
+  "name": "@macro-plugin/vue",
+  "version": "1.0.0",
+  "description": "@macro-plugin/vue",
+  "main": "dist/vue.js",
+  "module": "dist/vue.mjs",
+  "types": "./dist/vue.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "vue",
+    "vuejs",
+    "state",
+    "label",
+    "macro",
+    "macros"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/vue.mjs",
+      "require": "./dist/vue.js",
+      "types": "./dist/vue.d.ts"
+    }
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}

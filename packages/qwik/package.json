@@ -1,0 +1,30 @@
+{
+  "name": "@macro-plugin/qwik",
+  "version": "1.0.0",
+  "description": "@macro-plugin/qwik",
+  "main": "dist/qwik.js",
+  "module": "dist/qwik.mjs",
+  "types": "./dist/qwik.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "qwik",
+    "qwikjs",
+    "state",
+    "label",
+    "macro",
+    "macros"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/qwik.mjs",
+      "require": "./dist/qwik.js",
+      "types": "./dist/qwik.d.ts"
+    }
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}
