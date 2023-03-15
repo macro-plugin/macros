@@ -1,4 +1,4 @@
-import { store } from "@macro-plugin/solid-state"
+import { store } from "@macro-plugin/solid"
 import { transform } from "@macro-plugin/core"
 
 test("solid store macro", () => {

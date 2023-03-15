@@ -1,4 +1,4 @@
-import { onCleanup, onError, onMount } from "@macro-plugin/solid-state"
+import { onCleanup, onError, onMount } from "@macro-plugin/solid"
 
 import { transform } from "@macro-plugin/core"
 

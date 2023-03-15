@@ -1,4 +1,4 @@
-import { effect } from "@macro-plugin/solid-state"
+import { effect } from "@macro-plugin/solid"
 import { transform } from "@macro-plugin/core"
 
 test("solid effect macro", () => {
