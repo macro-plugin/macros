@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`qwik computed 1`] = `
+"import { useSignal } from "@builder.io/qwik";
+import { useTask$ } from "@builder.io/qwik";
+const a = useSignal(3);
+const b = useSignal(4);
+const count = useSignal(1);
+const doubleCount = useSignal(2 * count.value + count.value - a.value);
+useTask$(({
+  track
+}) => {
+  const __count = track(() => count.value);
+  const __a = track(() => a.value);
+  doubleCount.value = 2 * __count + __count - __a;
+});"
+`;
