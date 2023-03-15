@@ -1,10 +1,10 @@
 {
-  "name": "@macro-plugin/solid-state",
+  "name": "@macro-plugin/solid",
   "version": "1.0.0",
-  "description": "@macro-plugin/solid-state",
-  "main": "dist/solid-state.js",
-  "module": "dist/solid-state.mjs",
-  "types": "./dist/solid-state.d.ts",
+  "description": "@macro-plugin/solid",
+  "main": "dist/solid.js",
+  "module": "dist/solid.mjs",
+  "types": "./dist/solid.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -20,9 +20,9 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/solid-state.mjs",
-      "require": "./dist/solid-state.js",
-      "types": "./dist/solid-state.d.ts"
+      "import": "./dist/solid.mjs",
+      "require": "./dist/solid.js",
+      "types": "./dist/solid.d.ts"
     }
   },
   "devDependencies": {
