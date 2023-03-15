@@ -62,7 +62,7 @@ const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
     }
   } else if (ast.type == 'AssignmentExpression') {
     // @ts-ignore
-    if (handler.track(ast.left.name)?.marker == 'signal') {
+    if (ast.left.type == 'Identifier' && handler.track(ast.left.name)?.marker == 'signal') {
       // @ts-ignore
       const name = ast.left.name;
       return {
@@ -93,7 +93,7 @@ const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
     }
   } else if (ast.type == 'UpdateExpression') {
     // @ts-ignore
-    if (handler.track(ast.argument.name)?.marker == 'signal') {
+    if (ast.argument.type == 'Identifier' && handler.track(ast.argument.name)?.marker == 'signal') {
       // @ts-ignore
       const name = ast.argument.name;
       // @ts-ignore
