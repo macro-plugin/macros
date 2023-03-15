@@ -1,63 +1,70 @@
 import type { ArrayPattern, ObjectPattern } from "estree";
-import type { BaseNode, GlobalMacro, GlobalTrackMacro, ScopeVar } from "./types"
+import type { BaseNode, GlobalMacro, GlobalTrackMacro, Handler, ScopeVar } from "./types"
 
 const blocks = ['FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression', 'ClassDeclaration', 'ClassMethod', 'ClassPrivateMethod'];
 
-const scopeVars: ScopeVar[][] = [[]];
+function createTrackHandler(handler: Handler) {
+  const scopeVars = handler.get('scopeVars', [[]]) as ScopeVar[][];
 
-function track (name: string) {
-  let v;
-  for (let y = scopeVars.length - 1; y >= 0; y--) {
-    v = scopeVars[y];
-    for (let x = v.length - 1; x >=0; x--) {
-      if (v[x].name == name) return v[x];
-    }
-  }
-  return undefined;
-}
-
-function pushIdentifier(node: BaseNode, value = undefined) {
-  if (node.type == 'Identifier') {
-    // @ts-ignore
-    scopeVars[scopeVars.length - 1].push({ name: node.name, value, marker: node.marker })
-  } else if (node.type == 'PrivateName') {
-    // @ts-ignore
-    scopeVars[scopeVars.length - 1].push({ name: node.id.name, private: true, value, marker: node.marker })
-  } else {
-    throw new Error(`Unhandled type ${node.type}!`)
-  }
-}
-
-function pushObjectPattern(obj: ObjectPattern) {
-  for (const el of obj.properties) {
-    // @ts-ignore
-    if (el.type == 'ObjectProperty') {
-      // @ts-ignore
-      pushIdentifier(el.key);
-    } else if (el.type == 'RestElement') {
-      // @ts-ignore
-      pushIdentifier(el.argument);
-    }
-  }
-}
-
-function pushArrayPattern(array: ArrayPattern) {
-  for (const el of array.elements) {
-    if (!el) continue;
-    if (el.type == 'Identifier') {
-      pushIdentifier(el);
-    } else if (el.type == 'RestElement') {
-      // @ts-ignore
-      pushIdentifier(el.argument);
-    } else if (el.type == 'ObjectPattern') {
-      pushObjectPattern(el);
-    } else if (el.type == 'ArrayPattern') {
-      pushArrayPattern(el);
+  return {
+    ...handler,
+    track(name: string) {
+      let v;
+      for (let y = scopeVars.length - 1; y >= 0; y--) {
+        v = scopeVars[y];
+        for (let x = v.length - 1; x >= 0; x--) {
+          if (v[x].name == name) return v[x];
+        }
+      }
+      return undefined;
     }
   }
 }
 
 const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
+  const scopeVars = handler.get('scopeVars', [[]]) as ScopeVar[][];
+
+  function pushIdentifier(node: BaseNode, value = undefined) {
+    if (node.type == 'Identifier') {
+      // @ts-ignore
+      scopeVars[scopeVars.length - 1].push({ name: node.name, value, marker: node.marker });
+    } else if (node.type == 'PrivateName') {
+      // @ts-ignore
+      scopeVars[scopeVars.length - 1].push({ name: node.id.name, value, marker: node.marker, private: true });
+    } else {
+      throw new Error(`Unhandled type ${node.type}!`)
+    }
+  }
+
+  function pushObjectPattern(obj: ObjectPattern) {
+    for (const el of obj.properties) {
+      // @ts-ignore
+      if (el.type == 'ObjectProperty') {
+        // @ts-ignore
+        pushIdentifier(el.key);
+      } else if (el.type == 'RestElement') {
+        // @ts-ignore
+        pushIdentifier(el.argument);
+      }
+    }
+  }
+
+  function pushArrayPattern(array: ArrayPattern) {
+    for (const el of array.elements) {
+      if (!el) continue;
+      if (el.type == 'Identifier') {
+        pushIdentifier(el);
+      } else if (el.type == 'RestElement') {
+        // @ts-ignore
+        pushIdentifier(el.argument);
+      } else if (el.type == 'ObjectPattern') {
+        pushObjectPattern(el);
+      } else if (el.type == 'ArrayPattern') {
+        pushArrayPattern(el);
+      }
+    }
+  }
+
   if (blocks.includes(ast.type)) {
     // @ts-ignore
     if (ast.id) pushIdentifier(ast.id, ast)
@@ -99,31 +106,19 @@ const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
 
 const leave: GlobalMacro = (ast, handler, parent, key, index) => {
   if (blocks.includes(ast.type) || ast.type == 'CatchClause') {
-    scopeVars.pop();
+    (handler.get('scopeVars', [[]]) as ScopeVar[][]).pop();
   }
 }
 
 export function createTrackPlugin(p: GlobalTrackMacro | { enter: GlobalTrackMacro, leave: GlobalTrackMacro }): { enter: GlobalMacro, leave: GlobalMacro } {
-  if (typeof p === 'function') {
-    return {
-      enter(ast, handler, parent, prop, index) {
-        enter(ast, handler, parent, prop, index);
-        return p(ast, { ...handler, track }, parent, prop, index);
-      },
-      leave(ast, handler, parent, prop, index) {
-        leave(ast, handler, parent, prop, index);
-      }
-    }
-  }
-
   return {
     enter(ast, handler, parent, prop, index) {
       enter(ast, handler, parent, prop, index);
-      return p.enter(ast, { ...handler, track }, parent, prop, index);
+      return (typeof p == 'function' ? p : p.enter)(ast, createTrackHandler(handler), parent, prop, index);
     },
     leave(ast, handler, parent, prop, index) {
       leave(ast, handler, parent, prop, index);
-      return p.leave(ast, { ...handler, track }, parent, prop, index);
+      if (typeof p !== 'function') p.leave(ast, createTrackHandler(handler), parent, prop, index);
     }
   }
 }
