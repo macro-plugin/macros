@@ -1,6 +1,7 @@
 import type {
   BaseNode,
   Config,
+  Handler,
   ImportDeclaration,
   ImportSpecifier,
   LabeledStatement,
@@ -74,14 +75,14 @@ export function transform(code: string, config: Config) {
     }
   }
 
-  function walkLabel(ast: LabeledStatement): BaseNode | BaseNode[] | undefined {
+  function walkLabel(ast: LabeledStatement, handler: Handler): BaseNode | BaseNode[] | undefined {
     const { start, end } = ast.body.loc as unknown as {
       start: { index: number }
       end: { index: number }
     }
 
     if (ast.label.name in labeledMacros) {
-      const r = labeledMacros[ast.label.name](ast.body, code.slice(start.index, end.index))
+      const r = labeledMacros[ast.label.name](ast.body, code.slice(start.index, end.index), handler)
       if (typeof r == 'string') {
         const p = parse(r, parserOptions);
         return p.program as unknown as Statement;
@@ -94,8 +95,9 @@ export function transform(code: string, config: Config) {
     data[key] = value;
   }
 
-  function get(key: string) {
-    return data[key];
+  function get(key: string, defaultValue?: unknown) {
+    if (!(key in data)) data[key] = defaultValue;
+    return data[key] || defaultValue;
   }
 
   let newNode
@@ -105,18 +107,19 @@ export function transform(code: string, config: Config) {
     enter(node, parent, prop, index) {
       // @ts-ignore
       const replace = (node: BaseNode | BaseNode[]) => Array.isArray(node) ? this.replace({ type: 'Program', body: node }) : this.replace(node);
+      const handler = { ...this, replace, import: loadImport, set, get };
 
       for (const plugin of Object.values(globalMacros)) {
         if ('enter' in plugin) {
-          newNode = plugin.enter(node, { ...this, replace, import: loadImport, set, get }, parent, prop, index)
+          newNode = plugin.enter(node, handler, parent, prop, index)
         } else {
-          newNode = plugin(node, { ...this, replace, import: loadImport, set, get }, parent, prop, index)
+          newNode = plugin(node, handler, parent, prop, index)
         }
 
         if (newNode) replace(newNode)
       }
       if (node.type === "LabeledStatement") {
-        newNode = walkLabel(node as LabeledStatement)
+        newNode = walkLabel(node as LabeledStatement, handler)
         if (newNode) replace(newNode)
       }
     },

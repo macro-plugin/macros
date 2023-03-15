@@ -23,7 +23,7 @@ export type Handler = {
   /** Save data to current plugin cache */
   set: (key: string, data: unknown) => void;
   /** Get data from current plugin cache */
-  get: (key: string) => unknown;
+  get: (key: string, defaultValue?: unknown) => unknown;
   /** Skip this node, not handling */
   skip: () => void;
   /** Remove this node */
@@ -38,7 +38,7 @@ export type TrackHandler = Handler & {
   track(name: string): ScopeVar | undefined
 }
 
-export type LabeledMacro = (ast: Statement, code: string) => Statement | Statement[] | string
+export type LabeledMacro = (ast: Statement, code: string, handler: Handler) => Statement | Statement[] | string
 export type GlobalMacro = (ast: BaseNode, handler: Handler, parent: BaseNode, prop: string, index: number) => void | BaseNode | BaseNode[]
 export type GlobalTrackMacro = (ast: BaseNode, handler: TrackHandler, parent: BaseNode, prop: string, index: number) => void | BaseNode | BaseNode[]
 
