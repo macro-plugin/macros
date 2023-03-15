@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`qwik task 1`] = `
+"import { useSignal } from "@builder.io/qwik";
+import { useTask$ } from "@builder.io/qwik";
+const count = useSignal(1);
+const doubleCount = useSignal(0);
+useTask$(() => {
+  console.log('component mounted');
+});
+useTask$(({
+  track
+}) => {
+  const newCount = track(() => count.value);
+  doubleCount.value = 2 * newCount;
+});"
+`;
+
+exports[`qwik vtask 1`] = `
+"import { useVisibleTask$ } from "@builder.io/qwik";
+useVisibleTask$(() => {
+  cosole.log('runs in the browser');
+});
+useVisibleTask$(() => cosole.log('runs in the browser'), {
+  strategy: 'document-ready' // 'load' | 'visible' | 'idle'
+});"
+`;
