@@ -72,8 +72,23 @@ const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
     if (ast.key && ['set', 'get'].includes(ast.kind)) pushIdentifier(ast.key, ast)
     // @ts-ignore
     if (ast.params) {
+      scopeVars.push([]);
       // @ts-ignore
-      scopeVars.push(ast.params.map(i => i.type === 'Identifier' ? { name: i.name } : { name: i.left.name, value: i.right }));
+      for (const i of ast.params) {
+        if (i.type === 'Identifier') {
+          pushIdentifier(i)
+        } else if (i.type === 'RestElement') {
+          pushIdentifier(i.argument)
+        } else if (i.type === 'AssignmentPattern') {
+          if (i.left.type == 'Identifier') {
+            pushIdentifier(i.left, i.right);
+          } else if (i.left.type == 'ArrayPattern') {
+            pushArrayPattern(i.left)
+          } else if (i.left.type == 'ObjectPattern') {
+            pushObjectPattern(i.left)
+          }
+        }
+      }
     }
   } else if (ast.type == 'VariableDeclaration') {
     // @ts-ignore
