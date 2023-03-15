@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`solid effect macro 1`] = `
+"import { createEffect } from "solid-js";
+createEffect(() => {
+  console.log("count =", count());
+});
+createEffect(prev => {
+  return prev;
+});
+createEffect(prev => prev, 0);"
+`;

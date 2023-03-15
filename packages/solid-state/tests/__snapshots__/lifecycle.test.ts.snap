@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`solid onCleanup macro 1`] = `
+"import { onCleanup } from "solid-js";
+onCleanup(() => {
+  console.log('on clean');
+});"
+`;
+
+exports[`solid onError macro 1`] = `
+"import { onError } from "solid-js";
+onError(() => {
+  console.log('woops!');
+});
+onError(err => {
+  console.log(err);
+});"
+`;
+
+exports[`solid onMount macro 1`] = `
+"import { onMount } from "solid-js";
+onMount(() => {
+  console.log('mounted');
+});"
+`;
