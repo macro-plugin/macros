@@ -1,7 +1,8 @@
+import { ScopeVar } from "../src/types";
 import createTrackPlugin from "../src/track";
 import { transform } from "../src/transform";
 
-var a: unknown, b: unknown, c: unknown;
+var a: ScopeVar | undefined, b: ScopeVar | undefined, c: ScopeVar | undefined;
 
 const trackValue = createTrackPlugin((ast, handler) => {
   if (ast.type == 'FunctionDeclaration') {
@@ -28,9 +29,9 @@ test("track variables", () => {
   });
 
   // `a` been overwrited
-  expect(a).toBeUndefined();
+  expect(a?.value).toBeUndefined();
   // `b` is shadowed
-  expect(b).toBeDefined();
+  expect(b?.value).toBeDefined();
   // `c` is undefined
-  expect(c).toEqual(-1);
+  expect(c).toBeUndefined();
 });
