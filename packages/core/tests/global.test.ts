@@ -1,17 +1,18 @@
-import { BaseNode, Handler, transform } from "../src"
-import type { FunctionDeclaration, VariableDeclaration } from "estree";
+import type { FunctionDeclaration, VariableDeclaration } from "@swc/core";
+import { GlobalMacro, Handler, transform } from "../src"
 
-function arrow(ast: BaseNode, handler: Handler, parent: BaseNode, prop: string, index: number) {
+const arrow: GlobalMacro = (ast, handler) => {
   if (ast.type == 'FunctionDeclaration') {
     const f = ast as FunctionDeclaration;
     const children = [];
     let isArrow = false;
 
-    for (const s of f.body.body) {
+    if (!f.body) return
+
+    for (const s of f.body.stmts || []) {
       if (s.type == 'LabeledStatement' && s.body.type == 'ExpressionStatement') {
         const expr = s.body.expression;
-        if (s.label.name == 'arrow') {
-          // @ts-ignore
+        if (s.label.value == 'arrow') {
           if (expr.type == 'BooleanLiteral' && expr.value) {
             isArrow = true;
           }
@@ -21,23 +22,38 @@ function arrow(ast: BaseNode, handler: Handler, parent: BaseNode, prop: string, 
       children.push(s);
     }
 
-    f.body.body = children;
+    f.body.stmts = children;
 
     if (isArrow) return {
       type: 'VariableDeclaration',
       kind: 'const',
+      declare: false,
+      span: {
+        start: 0,
+        end: 0,
+        ctxt: 0
+      },
       declarations: [
         {
           type: 'VariableDeclarator',
-          id: f.id,
+          id: f.identifier,
           init: {
             type: 'ArrowFunctionExpression',
-            // @ts-ignore
-            id: undefined,
             generator: false,
             async: false,
             params: [],
             body: f.body,
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
+            }
+          },
+          definite: false,
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
           }
         }
       ]
@@ -45,10 +61,9 @@ function arrow(ast: BaseNode, handler: Handler, parent: BaseNode, prop: string, 
   }
 }
 
-function inject(ast: BaseNode, handler: Handler) {
+const inject: GlobalMacro = (ast, handler) => {
   handler.import([ { name: 'test', kind: 'default' } ], 'test')
   handler.import([ { name: 'ref' } ], 'vue')
-  handler.import([ { name: 'VariableDeclaration' } ], 'estree', 'type')
 }
 
 test("transform function block", () => {
@@ -76,5 +91,12 @@ test("inject imports", () => {
   }
   `
 
-  expect(transform(code, { global: { inject } }).code).toMatchSnapshot();
+  expect(transform(code, {
+    global: { inject },
+    jsc: {
+      parser: {
+        syntax: "typescript",
+      },
+    },
+  }).code).toMatchSnapshot();
 });
