@@ -3,11 +3,12 @@
 exports[`qwik resource 1`] = `
 "import { useSignal } from "@builder.io/qwik";
 import { useResource$ } from "@builder.io/qwik";
-const bar = useSignal('foo');
-const someResource = useResource$(async ctx => {
-  ctx.track(() => bar.value);
-  ctx.track(() => props.url);
-  ctx.cleanup(() => console.log('cleanup'));
-  return await expensiveCompute(bar.value, props.url);
-});"
+const bar = useSignal("foo");
+const someResource = useResource$(async (ctx)=>{
+    ctx.track(()=>bar.value);
+    ctx.track(()=>props.url);
+    ctx.cleanup(()=>console.log("cleanup"));
+    return await expensiveCompute(bar.value, props.url);
+});
+"
 `;
