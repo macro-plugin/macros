@@ -1,22 +1,26 @@
-import type { BaseNode } from "@macro-plugin/core"
+import { BaseNode, markedNode } from "@macro-plugin/core"
+import { BinaryExpression, CallExpression, Expression, VariableDeclaration } from "@swc/core";
+
 import { createTrackPlugin } from "@macro-plugin/core";
 
 function getSetter(name: string) {
   return 'set' + name[0].toUpperCase() + name.slice(1)
 }
 
-const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
-  const signals: Record<string, { value: BaseNode, setter: string }> = {};
+const plugin = createTrackPlugin((ast, handler) => {
+  const signals: Record<string, { value?: BaseNode | Expression, setter: string }> = {};
 
-  // @ts-ignore
-  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.name == 'signal') {
+  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.value == 'signal') {
     let name;
-    // @ts-ignore
-    for (const i of ast.body.body) {
+    for (const i of ast.body.stmts) {
       if (i.type == 'VariableDeclaration' && i.kind == 'var') {
         for (const d of i.declarations) {
-          name = d.id.name;
-          signals[name] = { value: d.init, setter: getSetter(name) };
+          if (d.id.type == 'Identifier') {
+            name = d.id.value;
+            signals[name] = { value: d.init, setter: getSetter(name) };
+          } else {
+            throw new Error('Expect pure identifier');
+          }
         }
       } else {
         throw new Error('Expect a `var` kind VariableDeclaration node in signal block')
@@ -28,91 +32,170 @@ const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
       return Object.entries(signals).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "var",
+        declare: false,
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        },
         declarations: [
           {
             type: 'VariableDeclarator',
+            definite: false,
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
+            },
             id: {
               type: 'ArrayPattern',
+              optional: false,
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
+              },
               elements: [
-                {
+                markedNode('signal', {
                   type: 'Identifier',
-                  name: k,
-                  marker: 'signal',
-                },
-                {
+                  value: k,
+                  optional: false,
+                  span: {
+                    start: 0,
+                    end: 0,
+                    ctxt: 0
+                  }
+                }),
+                markedNode('signalSetter', {
                   type: 'Identifier',
-                  name: v.setter,
-                  marker: 'signalSetter',
-                }
+                  value: v.setter,
+                  optional: false,
+                  span: {
+                    start: 0,
+                    end: 0,
+                    ctxt: 0
+                  }
+                }),
               ]
             },
             init: {
               type: 'CallExpression',
               callee: {
                 type: 'Identifier',
-                name: 'createSignal'
+                value: 'createSignal',
+                optional: false,
+                span: {
+                  start: 0,
+                  end: 0,
+                  ctxt: 1
+                }
+              },
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
               },
               arguments: [
-                v.value
+                {
+                  expression: v.value
+                }
               ]
             }
           }
         ]
-      }))
+      } as VariableDeclaration))
     }
   } else if (ast.type == 'AssignmentExpression') {
-    // @ts-ignore
-    if (ast.left.type == 'Identifier' && handler.track(ast.left.name)?.marker == 'signal') {
-      // @ts-ignore
-      const name = ast.left.name;
+    if (ast.left.type == 'Identifier' && handler.track(ast.left.value)?.marker == 'signal') {
+      const name = ast.left.value;
       return {
         type: 'CallExpression',
         callee: {
           type: 'Identifier',
-          name: getSetter(name)
+          value: getSetter(name),
+          optional: false,
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
+          }
         },
         arguments: [
-          // @ts-ignore
-          ast.operator == '=' ? ast.right : {
-            type: 'BinaryExpression',
-            left: {
-              type: 'CallExpression',
-              callee: {
-                type: 'Identifier',
-                name,
+          {
+            expression: ast.operator == '=' ? ast.right : {
+              type: 'BinaryExpression',
+              left: {
+                type: 'CallExpression',
+                callee: {
+                  type: 'Identifier',
+                  value: name,
+                  optional: false,
+                  span: {
+                    start: 0,
+                    end: 0,
+                    ctxt: 0
+                  }
+                },
+                arguments: [],
+                span: {
+                  start: 0,
+                  end: 0,
+                  ctxt: 0
+                }
+              } as CallExpression,
+              operator: ast.operator.replace('=', ''),
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
               },
-              arguments: []
-            },
-            // @ts-ignore
-            operator: ast.operator.replace('=', ''),
-            // @ts-ignore
-            right: ast.right
+              right: ast.right,
+            } as BinaryExpression
           }
-        ]
-      }
+        ],
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        }
+      } as CallExpression
     }
   } else if (ast.type == 'UpdateExpression') {
-    // @ts-ignore
-    if (ast.argument.type == 'Identifier' && handler.track(ast.argument.name)?.marker == 'signal') {
-      // @ts-ignore
-      const name = ast.argument.name;
-      // @ts-ignore
+    if (ast.argument.type == 'Identifier' && handler.track(ast.argument.value)?.marker == 'signal') {
+      const name = ast.argument.value;
       ast.argument = {
         type: 'CallExpression',
-        // @ts-ignore
         callee: ast.argument,
-        arguments: []
-      }
+        arguments: [],
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        }
+      } as CallExpression
       return {
         type: 'CallExpression',
         callee: {
           type: 'Identifier',
-          name: getSetter(name),
+          value: getSetter(name),
+          optional: false,
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
+          }
         },
         arguments: [
-          ast
-        ]
-      }
+          {
+            expression: ast,
+          }
+        ],
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        }
+      } as CallExpression
     }
   }
 })
