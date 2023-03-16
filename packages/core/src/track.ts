@@ -1,23 +1,5 @@
 import type { ArrayPattern, AssignmentPattern, Declaration, Expression, Identifier, ObjectPattern, Pattern } from "@swc/core";
-import type { GlobalMacro, GlobalTrackMacro, Handler, ScopeVar } from "./types"
-
-function createTrackHandler(handler: Handler) {
-  const scopeVars = handler.get('scopeVars', [[]]) as ScopeVar[][];
-
-  return {
-    ...handler,
-    track(name: string) {
-      let v;
-      for (let y = scopeVars.length - 1; y >= 0; y--) {
-        v = scopeVars[y];
-        for (let x = v.length - 1; x >= 0; x--) {
-          if (v[x].name == name) return v[x];
-        }
-      }
-      return undefined;
-    }
-  }
-}
+import type { GlobalMacro, ScopeVar } from "./types"
 
 const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
   const scopeVars = handler.get('scopeVars', [[]]) as ScopeVar[][];
@@ -139,17 +121,4 @@ const leave: GlobalMacro = (ast, handler, parent, key, index) => {
   }
 }
 
-export function createTrackPlugin(p: GlobalTrackMacro | { enter: GlobalTrackMacro, leave: GlobalTrackMacro }): { enter: GlobalMacro, leave: GlobalMacro } {
-  return {
-    enter(ast, handler, parent, prop, index) {
-      enter(ast, handler, parent, prop, index);
-      return (typeof p == 'function' ? p : p.enter)(ast, createTrackHandler(handler), parent, prop, index);
-    },
-    leave(ast, handler, parent, prop, index) {
-      leave(ast, handler, parent, prop, index);
-      if (typeof p !== 'function') p.leave(ast, createTrackHandler(handler), parent, prop, index);
-    }
-  }
-}
-
-export default createTrackPlugin;
+export { enter, leave }
