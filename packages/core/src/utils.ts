@@ -29,6 +29,12 @@ export function markedNode<T extends object>(marker: string, node: T): T {
   return node;
 }
 
+export function unMarkNode<T extends object>(node: T): T {
+  // @ts-ignore
+  delete node.marker;
+  return node;
+}
+
 export function genSpecifier(specifier: PluginImportSpecifier): ImportSpecifier | ImportDefaultSpecifier {
   const local = {
     type: 'Identifier',
