@@ -28,9 +28,9 @@ test("qwik vtask", () => {
   }
 
   vtask: [
-    () => cosole.log('runs in the browser'),
+    () => console.log('runs in the browser'),
     {
-      strategy: 'document-ready', // 'load' | 'visible' | 'idle'
+      strategy: 'document-ready',
     }
   ]
   `
