@@ -1,4 +1,5 @@
-import { Handler, LabeledMacro, Statement } from "./types";
+import { ArrowFunctionExpression, ExpressionStatement } from "@swc/core";
+import { Handler, LabeledMacro } from "./types";
 
 /**
  * Create a macro plugin that converts `labeled: {}` or `labeled: (...args) => {}` to `$specifier((...args) => {})`,
@@ -9,7 +10,7 @@ import { Handler, LabeledMacro, Statement } from "./types";
  * @returns - A labeled macro plugin
  */
 export const createLabeledBlock: ((specifier: string, source: string, allowParams?: boolean) => LabeledMacro) = (specifier, source, allowParams = false) => {
-  return (ast: Statement, code: string, handler: Handler) => {
+  return (ast, code: string, handler: Handler) => {
     handler.import([{ name: specifier }], source);
     if (ast.type == "BlockStatement") {
       return {
@@ -18,20 +19,41 @@ export const createLabeledBlock: ((specifier: string, source: string, allowParam
           type: 'CallExpression',
           callee: {
             type: 'Identifier',
-            name: specifier
+            value: specifier,
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
+            }
           },
           arguments: [
-            // @ts-ignore
             {
-              type: 'ArrowFunctionExpression',
-              generator: false,
-              async: false,
-              params: [],
-              body: ast
+              "expression": {
+                type: 'ArrowFunctionExpression',
+                generator: false,
+                async: false,
+                params: [],
+                body: ast,
+                span: {
+                  start: 0,
+                  end: 0,
+                  ctxt: 0
+                }
+              } as ArrowFunctionExpression
             }
-          ]
+          ],
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
+          }
+        },
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
         }
-      } as unknown as Statement
+      } as ExpressionStatement
     } else if (ast.type == "ExpressionStatement" && ast.expression.type == 'ArrowFunctionExpression') {
       return {
         type: "ExpressionStatement",
@@ -39,13 +61,30 @@ export const createLabeledBlock: ((specifier: string, source: string, allowParam
           type: 'CallExpression',
           callee: {
             type: 'Identifier',
-            name: specifier
+            value: specifier,
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
+            }
           },
           arguments: [
-            ast.expression
-          ]
+            {
+              expression: ast.expression
+            }
+          ],
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
+          }
+        },
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
         }
-      } as Statement
+      } as ExpressionStatement
     } else if (allowParams && ast.type == "ExpressionStatement" && ast.expression.type == 'ArrayExpression') {
       return {
         type: "ExpressionStatement",
@@ -53,12 +92,26 @@ export const createLabeledBlock: ((specifier: string, source: string, allowParam
           type: 'CallExpression',
           callee: {
             type: 'Identifier',
-            name: specifier
+            value: specifier,
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
+            }
           },
-          // @ts-ignore
-          arguments: ast.expression.elements
+          arguments: ast.expression.elements,
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
+          }
+        },
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
         }
-      } as Statement
+      } as ExpressionStatement
     } else {
       throw new Error('this macro only accept a ArrowFunction or BlockStatement' + (allowParams ? ' or an ArrayExpression' : ''))
     }
