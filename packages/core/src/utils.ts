@@ -1,3 +1,7 @@
+import { Identifier, ImportDefaultSpecifier, ImportSpecifier, Node } from "@swc/core";
+
+import { PluginImportSpecifier } from "./types";
+
 export function hash(str: string): string {
   str = str.replace(/\r/g, "");
   let hash = 5381;
@@ -9,4 +13,53 @@ export function hash(str: string): string {
 
 export function hashMap(map: object): string {
   return hash(JSON.stringify(map))
+}
+
+export const span = {
+  start: 0,
+  end: 0,
+  ctxt: 0,
+}
+
+export const noop = () => {};
+
+export function markedNode<T extends object>(marker: string, node: T): T {
+  // @ts-ignore
+  node.marker = marker;
+  return node;
+}
+
+export function genSpecifier(specifier: PluginImportSpecifier): ImportSpecifier | ImportDefaultSpecifier {
+  const local = {
+    type: 'Identifier',
+    value: specifier.name,
+    span: {
+      start: 0,
+      end: 0,
+      ctxt: 1
+    },
+    optional: false
+  } as Identifier;
+
+  if (specifier.kind == 'default') {
+    return {
+      type: 'ImportDefaultSpecifier',
+      local,
+      span: {
+        start: 0,
+        end: 0,
+        ctxt: 0,
+      }
+    }
+  }
+  return {
+    type: 'ImportSpecifier',
+    local,
+    span: {
+      start: 0,
+      end: 0,
+      ctxt: 0,
+    },
+    isTypeOnly: false
+  }
 }
