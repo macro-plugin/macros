@@ -1,1 +1,1 @@
-export { parse } from "@babel/parser"
+export { parse as parseAsync, parseSync as parse } from "@swc/core"
