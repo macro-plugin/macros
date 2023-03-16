@@ -1,33 +1,38 @@
-import { BaseNode, createTrackPlugin, walk } from "@macro-plugin/core";
+import { ArrowFunctionExpression, Expression, ExpressionStatement, Identifier, VariableDeclaration } from "@swc/core";
+import { BaseNode, createTrackPlugin, markedNode, unMarkNode, walk } from "@macro-plugin/core";
 
 const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
-  const computeds: Record<string, { value: BaseNode, computed: BaseNode }> = {};
+  const computeds: Record<string, { value: BaseNode, computed?: BaseNode | Expression }> = {};
   const signals: string[] = [];
 
-  // @ts-ignore
-  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.name == 'computed') {
+  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.value == 'computed') {
     let name;
-    // @ts-ignore
-    for (const i of ast.body.body) {
+    for (const i of ast.body.stmts) {
       if (i.type == 'VariableDeclaration' && i.kind == 'var') {
         for (const d of i.declarations) {
-          name = d.id.name;
+          if (d.id.type == 'Identifier') {
+            name = d.id.value;
 
-          computeds[name] = { value: JSON.parse(JSON.stringify(d.init)), computed: d.init};
+            if (d.init) {
+              computeds[name] = { value: JSON.parse(JSON.stringify(d.init)), computed: d.init};
 
-          walk(d.init, {
-            enter(node) {
-              // @ts-ignore
-              const name = node.name;
-              if (node.type === "Identifier" && handler.track(name)?.marker == 'qwikSignal') {
-                // @ts-ignore
-                node.marker = ''
-                // @ts-ignore
-                node.name = '__' + name
-                if (!signals.includes(name)) signals.push(name);
-              }
-            },
-          })
+              walk(d.init, {
+                enter(node) {
+                  if (node.type == "Identifier") {
+                    const name = (node as Identifier).value;
+                    if (handler.track(name)?.marker == 'qwikSignal') {
+                      unMarkNode(node);
+                      (node as Identifier).value = '__' + name;
+                      if (!signals.includes(name)) signals.push(name);
+                    }
+                  }
+                },
+              })
+            }
+
+          } else {
+            throw new Error("Expect an Identifier")
+          }
         }
       } else {
         throw new Error('Expect a `var` kind VariableDeclaration node in signal block')
@@ -42,106 +47,231 @@ const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
         declarations: [
           {
             type: 'VariableDeclarator',
-            id: {
+            id: markedNode('qwikSignal', {
               type: 'Identifier',
-              name: k,
-              marker: 'qwikSignal',
-            },
+              value: k,
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
+              },
+              optional: false
+            }),
             init: {
               type: 'CallExpression',
               callee: {
                 type: 'Identifier',
-                name: 'useSignal'
+                value: 'useSignal',
+                span: {
+                  start: 0,
+                  end: 0,
+                  ctxt: 0
+                },
+                optional: false
               },
               arguments: [
-                v.value
-              ]
+                {
+                  expression: v.value
+                }
+              ],
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
+              }
+            },
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
             }
           }
-        ]
-      })), {
+        ],
+        declare: false,
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        }
+      } as VariableDeclaration)), {
         type: "ExpressionStatement",
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        },
         expression: {
           type: "CallExpression",
           callee: {
             type: "Identifier",
-            name: "useTask$"
+            value: "useTask$",
+            optional: false,
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
+            }
+          },
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
           },
           arguments: [
             {
-              type: "ArrowFunctionExpression",
-              params: [
-                {
-                  type: "ObjectPattern",
-                  properties: [
-                    {
-                      type: "ObjectProperty",
-                      key: {
-                        type: "Identifier",
-                        name: "track"
-                      },
-                      computed: false,
-                      shorthand: true,
-                      value: {
-                        type: "Identifier",
-                        extra: undefined,
-                        name: "track"
-                      },
-                      extra: {
-                        shorthand: true
-                      }
-                    }
-                  ]
-                }
-              ],
-              body: {
-                type: "BlockStatement",
-                body: [
-                  ...signals.map(name => ({
-                    type: "VariableDeclaration",
-                    kind: "const",
-                    declarations: [
+              expression: {
+                type: "ArrowFunctionExpression",
+                async: false,
+                generator: false,
+                params: [
+                  {
+                    type: "ObjectPattern",
+                    optional: false,
+                    span: {
+                      start: 0,
+                      end: 0,
+                      ctxt: 0
+                    },
+                    properties: [
                       {
-                        type: 'VariableDeclarator',
-                        id: {
-                          type: 'Identifier',
-                          name: '__' + name,
+                        type: "AssignmentPatternProperty",
+                        span: {
+                          start: 0,
+                          end: 0,
+                          ctxt: 0
                         },
-                        init: {
-                          type: 'CallExpression',
-                          callee: {
-                            type: 'Identifier',
-                            name: 'track'
+                        key: {
+                          type: "Identifier",
+                          value: "track",
+                          optional: false,
+                          span: {
+                            start: 0,
+                            end: 0,
+                            ctxt: 1
                           },
-                          arguments: [
-                            {
-                              type: "ArrowFunctionExpression",
-                              params: [],
-                              body: {
-                                type: "Identifier",
-                                name
-                              }
-                            }
-                          ]
-                        }
+                        },
                       }
                     ]
-                  })),
-                  ...Object.entries(computeds).map(([k, v]) => ({
-                    type: "ExpressionStatement",
-                    expression: {
-                      type: "AssignmentExpression",
-                      operator: "=",
-                      left: {
-                        type: 'Identifier',
-                        name: k,
-                        marker: 'qwikSignal',
+                  }
+                ],
+                body: {
+                  type: "BlockStatement",
+                  span: {
+                    start: 0,
+                    end: 0,
+                    ctxt: 0
+                  },
+                  stmts: [
+                    ...signals.map(name => ({
+                      type: "VariableDeclaration",
+                      kind: "const",
+                      declarations: [
+                        {
+                          type: 'VariableDeclarator',
+                          definite: false,
+                          span: {
+                            start: 0,
+                            end: 0,
+                            ctxt: 0
+                          },
+                          id: {
+                            type: 'Identifier',
+                            value: '__' + name,
+                            span: {
+                              start: 0,
+                              end: 0,
+                              ctxt: 0
+                            },
+                            optional: false
+                          },
+                          init: {
+                            type: 'CallExpression',
+                            callee: {
+                              type: 'Identifier',
+                              value: 'track',
+                              span: {
+                                start: 0,
+                                end: 0,
+                                ctxt: 0
+                              },
+                              optional: false
+                            },
+                            span: {
+                              start: 0,
+                              end: 0,
+                              ctxt: 0
+                            },
+                            arguments: [
+                              {
+                                expression: {
+                                  type: "ArrowFunctionExpression",
+                                  async: false,
+                                  generator: false,
+                                  params: [],
+                                  body: {
+                                    type: "Identifier",
+                                    value: name,
+                                    optional: false,
+                                    span: {
+                                      start: 0,
+                                      end: 0,
+                                      ctxt: 0
+                                    }
+                                  },
+                                  span: {
+                                    start: 0,
+                                    end: 0,
+                                    ctxt: 0
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      declare: false,
+                      span: {
+                        start: 0,
+                        end: 0,
+                        ctxt: 0
+                      }
+                    } as VariableDeclaration)),
+                    ...Object.entries(computeds).map(([k, v]) => ({
+                      type: "ExpressionStatement",
+                      expression: {
+                        type: "AssignmentExpression",
+                        operator: "=",
+                        left: markedNode('qwikSignal', {
+                          type: 'Identifier',
+                          value: k,
+                          optional: false,
+                          span: {
+                            start: 0,
+                            end: 0,
+                            ctxt: 0
+                          }
+                        }),
+                        right: v.computed,
+                        span: {
+                          start: 0,
+                          end: 0,
+                          ctxt: 0
+                        }
                       },
-                      right: v.computed
-                    }
-                  }))
-                ]
-              },
+                      span: {
+                        start: 0,
+                        end: 0,
+                        ctxt: 0
+                      }
+                    } as ExpressionStatement))
+                  ]
+                },
+                span: {
+                  start: 0,
+                  end: 0,
+                  ctxt: 0
+                }
+              } as ArrowFunctionExpression
             }
           ]
         }
