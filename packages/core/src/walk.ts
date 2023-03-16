@@ -1,8 +1,8 @@
-import { ImportDeclaration, Module } from "@swc/core";
+import { ImportDeclaration, Program } from "@swc/core";
 import { Node, PluginImportSpecifier, WalkFunc, WalkPlugin } from "./types";
 import { genSpecifier, hashMap, noop } from "./utils";
 
-class WalkBase {
+class Walker {
   data: Record<string, unknown> = {};
   imports: ImportDeclaration[] = [];
   importHashes: Record<string, true> = {};
@@ -11,14 +11,11 @@ class WalkBase {
   skip: () => void = noop;
   remove: () => void = noop;
   replace: (newNode: Node | Node[]) => void = noop;
-  set = <T>(key: string, value: T) => {
-    this.data[key] = value;
-  }
+  set = <T>(key: string, value: T) => { this.data[key] = value; }
   get = <T>(key: string, defaultValue?: T) => {
     if (!(key in this.data)) this.data[key] = defaultValue;
     return this.data[key] as T || defaultValue;
   }
-
   import = (specifiers: PluginImportSpecifier[], source: string) => {
     let h;
     const sl = [];
@@ -123,14 +120,14 @@ class WalkBase {
     } else if (n.type) {
       this.walkSingle(n);
     }
-    if (this.imports.length > 0 && !Array.isArray(n) && n.type === 'Module') {
-      (n as Module).body = [...this.imports, ...(n as Module).body]
+    if (this.imports.length > 0 && !Array.isArray(n) && (n.type === 'Module' || n.type === 'Script')) {
+      (n as Program).body = [...this.imports, ...(n as Program).body]
     }
     return n;
   }
 }
 
 export function walk(n: Node | Node[], plugin: WalkPlugin) {
-  const base = new WalkBase(plugin);
+  const base = new Walker(plugin);
   return base.walk(n);
 }
