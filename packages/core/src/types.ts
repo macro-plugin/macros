@@ -12,11 +12,19 @@ export type ScopeVar = { name: string, private?: boolean, value?: Node, marker?:
 export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration | ImportDeclaration | ClassMethod | PrivateMethod | Statement | VariableDeclarator;
 
 export type WalkContext = {
+  /** Save data to current plugin cache */
   set: <T>(key: string, data: T) => void;
+  /** Get data from current plugin cache */
   get: <T>(key: string, defaultValue?: T) => T | undefined;
+  /** Skip this node, not handling */
   skip: () => void;
+  /** Remove this node */
   remove: () => void;
+  /** Replace matched node with new node, equals to `return node` */
   replace: (newNode: Node | Node[]) => void;
+  /** Track last variable with name */
+  track(name: string): ScopeVar | undefined;
+  /** Import some package */
   import: (specifiers: PluginImportSpecifier[], source: string) => void;
 }
 
@@ -26,28 +34,8 @@ export type WalkPlugin = {
   leave?: WalkFunc;
 }
 
-export type Handler = {
-  /** Save data to current plugin cache */
-  set: (key: string, data: unknown) => void;
-  /** Get data from current plugin cache */
-  get: (key: string, defaultValue?: unknown) => unknown;
-  /** Skip this node, not handling */
-  skip: () => void;
-  /** Remove this node */
-  remove: () => void;
-  /** Replace matched node with new node, equals to `return node` */
-  replace: (node: BaseNode | BaseNode[]) => void;
-  /** Import some package */
-  import: (specifiers: PluginImportSpecifier[], source: string) => void
-};
-
-export type TrackHandler = Handler & {
-  track(name: string): ScopeVar | undefined
-}
-
-export type LabeledMacro = (ast: BaseNode, code: string, handler: Handler) => BaseNode | BaseNode[] | string
-export type GlobalMacro = (ast: BaseNode, handler: Handler, parent?: BaseNode, prop?: string, index?: number) => void | BaseNode | BaseNode[]
-export type GlobalTrackMacro = (ast: BaseNode, handler: TrackHandler, parent?: BaseNode, prop?: string, index?: number) => void | BaseNode | BaseNode[]
+export type LabeledMacro = (ast: BaseNode, code: string, handler: WalkContext) => BaseNode | BaseNode[] | string
+export type GlobalMacro = (ast: BaseNode, handler: WalkContext, parent?: BaseNode, prop?: string, index?: number) => void | BaseNode | BaseNode[]
 
 export type Config = Omit<Options, "plugin"> & {
   global?: Record<string, GlobalMacro | { enter: GlobalMacro, leave: GlobalMacro }>,

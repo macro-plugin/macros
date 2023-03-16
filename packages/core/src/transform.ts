@@ -1,4 +1,4 @@
-import type { BaseNode, Config, Handler } from "./types";
+import type { BaseNode, Config, WalkContext } from "./types";
 import {
   LabeledStatement,
   Program,
@@ -16,7 +16,7 @@ export function createSwcPlugin(code: string, config: Config) {
     const globalMacros = config.global || {};
     const labeledMacros = config.labeled || {};
 
-    function walkLabel(ast: LabeledStatement, handler: Handler): BaseNode | BaseNode[] | undefined {
+    function walkLabel(ast: LabeledStatement, handler: WalkContext): BaseNode | BaseNode[] | undefined {
       const { start, end } = ast.span;
 
       if (ast.label.value in labeledMacros) {
