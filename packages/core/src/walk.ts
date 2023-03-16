@@ -1,6 +1,7 @@
+import { BaseNode, Node, PluginImportSpecifier, ScopeVar, WalkFunc, WalkPlugin } from "./types";
 import { ImportDeclaration, Program } from "@swc/core";
-import { Node, PluginImportSpecifier, WalkFunc, WalkPlugin } from "./types";
 import { genSpecifier, hashMap, noop } from "./utils";
+import { leave as popVars, enter as pushVars } from "./track";
 
 class Walker {
   data: Record<string, unknown> = {};
@@ -10,6 +11,17 @@ class Walker {
   leave?: WalkFunc;
   skip: () => void = noop;
   remove: () => void = noop;
+  track: ((name: string) => ScopeVar | undefined) = (name: string) => {
+    let v;
+    const scopeVars = this.get('scopeVars', [[]] as ScopeVar[][])!
+    for (let y = scopeVars.length - 1; y >= 0; y--) {
+      v = scopeVars[y];
+      for (let x = v.length - 1; x >= 0; x--) {
+        if (v[x].name == name) return v[x];
+      }
+    }
+    return undefined;
+  }
   replace: (newNode: Node | Node[]) => void = noop;
   set = <T>(key: string, value: T) => { this.data[key] = value; }
   get = <T>(key: string, defaultValue?: T) => {
@@ -83,6 +95,7 @@ class Walker {
       _removed = true;
     }
 
+    pushVars(n as BaseNode, this, parent as BaseNode, prop, index)
     if (this.enter) this.enter(n, parent, prop, index);
 
     if (Array.isArray(_replaced)) {
@@ -99,6 +112,7 @@ class Walker {
     }
 
     if (this.leave) this.leave(n, parent, prop, index);
+    popVars(n as BaseNode, this, parent as BaseNode, prop, index)
 
     return _skipCount;
   }
