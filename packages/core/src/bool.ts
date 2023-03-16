@@ -1,4 +1,4 @@
-import { Handler, LabeledMacro, Statement } from "./types";
+import { Handler, LabeledMacro } from "./types";
 
 /**
  * Create a macro plugin that converts `labeled: {}` or `labeled: (...args) => {}` to `$specifier((...args) => {})`,
@@ -9,12 +9,12 @@ import { Handler, LabeledMacro, Statement } from "./types";
  * @returns - A labeled macro plugin
  */
 export const createLabeledBool: ((id: string) => LabeledMacro) = (id) => {
-  return (ast: Statement, code: string, handler: Handler) => {
+  return (ast, code: string, handler: Handler) => {
     // @ts-ignore
     if (ast.type === 'ExpressionStatement' && ast.expression.type == 'BooleanLiteral') {
       // @ts-ignore
       handler.set(id, ast.expression.value);
-      return { type: "EmptyStatement" }
+      return { type: "EmptyStatement", span: { start: 0, end: 0, ctxt: 0 } }
     } else {
       throw new Error('this macro only accept a Boolean Literal')
     }
