@@ -1,4 +1,6 @@
-import type { BaseNode } from "@macro-plugin/core"
+import { BaseNode, markedNode } from "@macro-plugin/core"
+import { BinaryExpression, CallExpression, Expression, VariableDeclaration } from "@swc/core";
+
 import { createTrackPlugin } from "@macro-plugin/core";
 
 function getSetter(name: string) {
@@ -6,16 +8,18 @@ function getSetter(name: string) {
 }
 
 const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
-  const stores: Record<string, { value: BaseNode, setter: string }> = {};
-  // @ts-ignore
-  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.name == 'store') {
+  const stores: Record<string, { value?: BaseNode | Expression, setter: string }> = {};
+  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.value == 'store') {
     let name;
-    // @ts-ignore
-    for (const i of ast.body.body) {
+    for (const i of ast.body.stmts) {
       if (i.type == 'VariableDeclaration' && i.kind == 'var') {
         for (const d of i.declarations) {
-          name = d.id.name;
-          stores[name] = { value: d.init, setter: getSetter(name) };
+          if (d.id.type === 'Identifier') {
+            name = d.id.value;
+            stores[name] = { value: d.init, setter: getSetter(name) };
+          } else {
+            throw new Error("Expect a pure Identifier.")
+          }
         }
       } else {
         throw new Error('Expect a `var` kind VariableDeclaration node in store block')
@@ -27,91 +31,169 @@ const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
       return Object.entries(stores).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "var",
+        declare: false,
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        },
         declarations: [
           {
             type: 'VariableDeclarator',
             id: {
               type: 'ArrayPattern',
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
+              },
+              optional: false,
               elements: [
-                {
+                markedNode('store', {
                   type: 'Identifier',
-                  name: k,
-                  marker: 'store',
-                },
-                {
+                  value: k,
+                  optional: false,
+                  span: {
+                    start: 0,
+                    end: 0,
+                    ctxt: 1
+                  }
+                }),
+                markedNode('storeSetter', {
                   type: 'Identifier',
-                  name: v.setter,
-                  marker: 'storeSetter',
-                }
+                  value: v.setter,
+                  optional: false,
+                  span: {
+                    start: 0,
+                    end: 0,
+                    ctxt: 1
+                  }
+                })
               ]
             },
             init: {
               type: 'CallExpression',
               callee: {
                 type: 'Identifier',
-                name: 'createStore'
+                value: 'createStore',
+                optional: false,
+                span: {
+                  start: 0,
+                  end: 0,
+                  ctxt: 0
+                }
+              },
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
               },
               arguments: [
-                v.value
+                {
+                  expression: v.value
+                }
               ]
+            },
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
             }
           }
         ]
-      }))
+      } as VariableDeclaration))
     }
-  } else if (ast.type == 'AssignmentExpression') {
-    // @ts-ignore
-    if (handler.track(ast.left.name)?.marker == 'store') {
-      // @ts-ignore
-      const name = ast.left.name;
+  } else if (ast.type == 'AssignmentExpression' && ast.left.type == 'Identifier') {
+    if (handler.track(ast.left.value)?.marker == 'store') {
+      const name = ast.left.value;
       return {
         type: 'CallExpression',
         callee: {
           type: 'Identifier',
-          name: getSetter(name)
+          value: getSetter(name),
+          optional: false,
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
+          }
         },
         arguments: [
-          // @ts-ignore
-          ast.operator == '=' ? ast.right : {
-            type: 'BinaryExpression',
-            left: {
-              type: 'CallExpression',
-              callee: {
-                type: 'Identifier',
-                name,
+          {
+            expression: ast.operator == '=' ? ast.right : {
+              type: 'BinaryExpression',
+              left: {
+                type: 'CallExpression',
+                callee: {
+                  type: 'Identifier',
+                  value: name,
+                  span: {
+                    start: 0,
+                    end: 0,
+                    ctxt: 0
+                  },
+                  optional: false
+                },
+                arguments: [],
+                span: {
+                  start: 0,
+                  end: 0,
+                  ctxt: 0
+                }
               },
-              arguments: []
-            },
-            // @ts-ignore
-            operator: ast.operator.replace('=', ''),
-            // @ts-ignore
-            right: ast.right
+              operator: ast.operator.replace('=', ''),
+              right: ast.right,
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
+              }
+            } as BinaryExpression
           }
-        ]
-      }
+        ],
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        }
+      } as CallExpression
     }
-  } else if (ast.type == 'UpdateExpression') {
-    // @ts-ignore
-    if (handler.track(ast.argument.name)?.marker == 'store') {
-      // @ts-ignore
-      const name = ast.argument.name;
-      // @ts-ignore
+  } else if (ast.type == 'UpdateExpression' && ast.argument.type == "Identifier") {
+    if (handler.track(ast.argument.value)?.marker == 'store') {
+      const name = ast.argument.value;
       ast.argument = {
         type: 'CallExpression',
-        // @ts-ignore
         callee: ast.argument,
-        arguments: []
-      }
+        arguments: [],
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        }
+      } as CallExpression
       return {
         type: 'CallExpression',
         callee: {
           type: 'Identifier',
-          name: getSetter(name),
+          value: getSetter(name),
+          optional: false,
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 1
+          }
         },
         arguments: [
-          ast
-        ]
-      }
+          {
+            expression: ast
+          }
+        ],
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        }
+      } as CallExpression
     }
   }
 })
