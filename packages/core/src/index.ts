@@ -8,3 +8,4 @@ export { walk } from "./walk";
 export { createTrackPlugin };
 export { createLabeledBlock };
 export * from "./types";
+export * from "./utils";
