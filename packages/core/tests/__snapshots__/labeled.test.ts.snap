@@ -1,29 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`transform codeblock to call 1`] = `
-"(() => {
-  let a = 3;
-  a += 2;
-  console.log(a);
-})();"
+"(()=>{
+    let a = 3;
+    a += 2;
+    console.log(a);
+})();
+"
 `;
 
 exports[`transform complex 1`] = `
 "let a = 3;
 a += 2;
-console.log(a);"
+console.log(a);
+"
 `;
 
 exports[`transform debug 1`] = `
-"//console.log("Hello World");
-;"
+"console.log("Hello World");
+"
 `;
 
-exports[`transform debug 2`] = `"console.log("Hello World");"`;
+exports[`transform debug 2`] = `"console.log("Hello World");
+"`;
 
-exports[`transform in jsx 1`] = `"\`<h1>hello World</h1>\`;"`;
+exports[`transform in jsx 1`] = `
+"\`<h1>hello World</h1>;\`;
+"
+`;
 
 exports[`transform in typescript 1`] = `
 "let a: string = "Hello";
-console.log(a);"
+;
+"
 `;

@@ -3,14 +3,16 @@
 exports[`qwik signal 1`] = `
 "import { useSignal } from "@builder.io/qwik";
 const count = useSignal(0);
-count.value += 1;"
+count.value += 1;
+"
 `;
 
 exports[`qwik signal in function name 1`] = `
 "import { useSignal } from "@builder.io/qwik";
 const count = useSignal(0);
 function abc(count) {
-  count = 3;
+    count = 3;
 }
-count.value += 2;"
+count.value += 2;
+"
 `;
