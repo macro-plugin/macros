@@ -1,7 +1,5 @@
-import type { ArrayPattern, ObjectPattern } from "estree";
-import type { BaseNode, GlobalMacro, GlobalTrackMacro, Handler, ScopeVar } from "./types"
-
-const blocks = ['FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression', 'ClassDeclaration', 'ClassMethod', 'ClassPrivateMethod'];
+import type { ArrayPattern, AssignmentPattern, Declaration, Expression, Identifier, ObjectPattern, Pattern } from "@swc/core";
+import type { GlobalMacro, GlobalTrackMacro, Handler, ScopeVar } from "./types"
 
 function createTrackHandler(handler: Handler) {
   const scopeVars = handler.get('scopeVars', [[]]) as ScopeVar[][];
@@ -24,13 +22,13 @@ function createTrackHandler(handler: Handler) {
 const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
   const scopeVars = handler.get('scopeVars', [[]]) as ScopeVar[][];
 
-  function pushIdentifier(node: BaseNode, value = undefined) {
+  function pushIdentifier(node: Pattern, value: Expression | Declaration | undefined = undefined) {
     if (node.type == 'Identifier') {
       // @ts-ignore
-      scopeVars[scopeVars.length - 1].push({ name: node.name, value, marker: node.marker });
+      scopeVars[scopeVars.length - 1].push({ name: node.value, value, marker: node.marker });
     } else if (node.type == 'PrivateName') {
       // @ts-ignore
-      scopeVars[scopeVars.length - 1].push({ name: node.id.name, value, marker: node.marker, private: true });
+      scopeVars[scopeVars.length - 1].push({ name: node.id.value, value, marker: node.marker, private: true });
     } else {
       throw new Error(`Unhandled type ${node.type}!`)
     }
@@ -38,12 +36,9 @@ const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
 
   function pushObjectPattern(obj: ObjectPattern) {
     for (const el of obj.properties) {
-      // @ts-ignore
-      if (el.type == 'ObjectProperty') {
-        // @ts-ignore
+      if (el.type == 'AssignmentPatternProperty') {
         pushIdentifier(el.key);
       } else if (el.type == 'RestElement') {
-        // @ts-ignore
         pushIdentifier(el.argument);
       }
     }
@@ -55,7 +50,6 @@ const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
       if (el.type == 'Identifier') {
         pushIdentifier(el);
       } else if (el.type == 'RestElement') {
-        // @ts-ignore
         pushIdentifier(el.argument);
       } else if (el.type == 'ObjectPattern') {
         pushObjectPattern(el);
@@ -65,33 +59,49 @@ const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
     }
   }
 
-  if (blocks.includes(ast.type)) {
-    // @ts-ignore
-    if (ast.id) pushIdentifier(ast.id, ast)
-    // @ts-ignore
-    if (ast.key && ['set', 'get'].includes(ast.kind)) pushIdentifier(ast.key, ast)
-    // @ts-ignore
-    if (ast.params) {
-      scopeVars.push([]);
-      // @ts-ignore
-      for (const i of ast.params) {
-        if (i.type === 'Identifier') {
-          pushIdentifier(i)
-        } else if (i.type === 'RestElement') {
-          pushIdentifier(i.argument)
-        } else if (i.type === 'AssignmentPattern') {
-          if (i.left.type == 'Identifier') {
-            pushIdentifier(i.left, i.right);
-          } else if (i.left.type == 'ArrayPattern') {
-            pushArrayPattern(i.left)
-          } else if (i.left.type == 'ObjectPattern') {
-            pushObjectPattern(i.left)
-          }
-        }
+  function pushAssignPattern(i: AssignmentPattern) {
+    if (i.left.type == 'Identifier') {
+      pushIdentifier(i.left, i.right);
+    } else if (i.left.type == 'ArrayPattern') {
+      pushArrayPattern(i.left)
+    } else if (i.left.type == 'ObjectPattern') {
+      pushObjectPattern(i.left)
+    }
+  }
+
+  function pushParams(params: Pattern[]) {
+    scopeVars.push([]);
+    for (const p of params) {
+      switch (p.type) {
+        case 'Identifier':
+          pushIdentifier(p);
+          break;
+        case 'RestElement':
+          pushIdentifier(p.argument);
+          break;
+        case 'AssignmentPattern':
+          pushAssignPattern(p);
+          break;
       }
     }
+  }
+
+  if (ast.type == 'FunctionDeclaration') {
+    pushIdentifier(ast.identifier, ast)
+    pushParams(ast.params.map(i => i.pat))
+  } else if (ast.type == 'FunctionExpression') {
+    pushParams(ast.params.map(i => i.pat))
+  } else if (ast.type == 'ArrowFunctionExpression') {
+    pushParams(ast.params)
+  } else if (ast.type == 'ClassDeclaration') {
+    pushIdentifier(ast.identifier, ast)
+  } else if (ast.type == 'ClassMethod') {
+    pushIdentifier(ast.key as Identifier)
+    pushParams(ast.function.params.map(i => i.pat))
+  } else if (ast.type == 'PrivateMethod') {
+    pushIdentifier(ast.key.id);
+    pushParams(ast.function.params.map(i => i.pat))
   } else if (ast.type == 'VariableDeclaration') {
-    // @ts-ignore
     for (const d of ast.declarations) {
       if (d.id.type == 'Identifier') {
         // var a = v;
@@ -105,22 +115,26 @@ const enter: GlobalMacro = (ast, handler, parent, prop, index) => {
       }
     }
   } else if (ast.type == 'CatchClause') {
-    // @ts-ignore
-    scopeVars.push([{ name: ast.param.name }]);
-  } else if (ast.type == 'ImportDeclaration') {
-    // @ts-ignore
-    for (const s of ast.specifiers) {
-      if (s.imported) {
-        pushIdentifier(s.imported)
-      } else if (s.local) {
-        pushIdentifier(s.local);
+    scopeVars.push([]);
+    const param = ast.param;
+    if (param) {
+      if (param.type == 'Identifier') {
+        pushIdentifier(param);
+      } else if (param.type == 'ArrayPattern') {
+        pushArrayPattern(param);
+      } else if (param.type == 'ObjectPattern') {
+        pushObjectPattern(param);
       }
+    }
+  } else if (ast.type == 'ImportDeclaration') {
+    for (const s of ast.specifiers) {
+      pushIdentifier(s.local);
     }
   }
 }
 
 const leave: GlobalMacro = (ast, handler, parent, key, index) => {
-  if (blocks.includes(ast.type) || ast.type == 'CatchClause') {
+  if (['FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression', 'ClassDeclaration', 'ClassMethod', 'ClassPrivateMethod'].includes(ast.type) || ast.type == 'CatchClause') {
     (handler.get('scopeVars', [[]]) as ScopeVar[][]).pop();
   }
 }
