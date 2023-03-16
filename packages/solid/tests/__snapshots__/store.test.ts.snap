@@ -2,23 +2,30 @@
 
 exports[`solid store macro 1`] = `
 "import { createStore } from "solid-js/store";
-var [todos, setTodos] = createStore([{
-  id: 1,
-  title: "Thing I have to do",
-  done: false
-}, {
-  id: 2,
-  title: "Learn a New Framework",
-  done: false
-}]);
+var [todos, setTodos] = createStore([
+    {
+        id: 1,
+        title: "Thing I have to do",
+        done: false
+    },
+    {
+        id: 2,
+        title: "Learn a New Framework",
+        done: false
+    }
+]);
 console.log(todos);
-setTodos([{
-  id: 2,
-  title: "Thing I have to do",
-  done: false
-}, {
-  id: 3,
-  title: "Learn a New Framework",
-  done: false
-}]);"
+setTodos([
+    {
+        id: 2,
+        title: "Thing I have to do",
+        done: false
+    },
+    {
+        id: 3,
+        title: "Learn a New Framework",
+        done: false
+    }
+]);
+"
 `;
