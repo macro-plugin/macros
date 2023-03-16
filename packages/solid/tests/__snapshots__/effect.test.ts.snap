@@ -2,11 +2,12 @@
 
 exports[`solid effect macro 1`] = `
 "import { createEffect } from "solid-js";
-createEffect(() => {
-  console.log("count =", count());
+createEffect(()=>{
+    console.log("count =", count());
 });
-createEffect(prev => {
-  return prev;
+createEffect((prev)=>{
+    return prev;
 });
-createEffect(prev => prev, 0);"
+createEffect((prev)=>prev, 0);
+"
 `;
