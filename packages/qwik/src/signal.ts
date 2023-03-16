@@ -1,7 +1,7 @@
-import { Identifier, Node, VariableDeclaration } from "@swc/core";
-import { createTrackPlugin, markedNode } from "@macro-plugin/core";
+import { GlobalMacro, markedNode } from "@macro-plugin/core";
+import { MemberExpression, Node, VariableDeclaration } from "@swc/core";
 
-const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
+const plugin: GlobalMacro = (ast, handler, parent, prop, index) => {
   const signals: Record<string, { value?: Node }> = {};
 
   if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.value == 'signal') {
@@ -97,9 +97,9 @@ const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
         end: 0,
         ctxt: 0
       }
-    });
+    } as MemberExpression);
     handler.skip();
   }
-})
+}
 
 export default plugin;

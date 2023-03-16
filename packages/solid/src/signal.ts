@@ -1,13 +1,11 @@
-import { BaseNode, markedNode } from "@macro-plugin/core"
+import { BaseNode, GlobalMacro, markedNode } from "@macro-plugin/core"
 import { BinaryExpression, CallExpression, Expression, VariableDeclaration } from "@swc/core";
-
-import { createTrackPlugin } from "@macro-plugin/core";
 
 function getSetter(name: string) {
   return 'set' + name[0].toUpperCase() + name.slice(1)
 }
 
-const plugin = createTrackPlugin((ast, handler) => {
+const plugin: GlobalMacro = (ast, handler) => {
   const signals: Record<string, { value?: BaseNode | Expression, setter: string }> = {};
 
   if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.value == 'signal') {
@@ -198,6 +196,6 @@ const plugin = createTrackPlugin((ast, handler) => {
       } as CallExpression
     }
   }
-})
+}
 
 export default plugin;

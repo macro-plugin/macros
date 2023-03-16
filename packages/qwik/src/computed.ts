@@ -1,7 +1,7 @@
 import { ArrowFunctionExpression, Expression, ExpressionStatement, Identifier, VariableDeclaration } from "@swc/core";
-import { BaseNode, createTrackPlugin, markedNode, unMarkNode, walk } from "@macro-plugin/core";
+import { BaseNode, GlobalMacro, markedNode, unMarkNode, walk } from "@macro-plugin/core";
 
-const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
+const plugin: GlobalMacro = (ast, handler, parent, prop, index) => {
   const computeds: Record<string, { value: BaseNode, computed?: BaseNode | Expression }> = {};
   const signals: string[] = [];
 
@@ -278,6 +278,6 @@ const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
       }]
     }
   }
-})
+}
 
 export default plugin;
