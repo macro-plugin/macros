@@ -6,28 +6,29 @@ var [count, setCount] = createSignal(0);
 var [b, setB] = createSignal(2);
 setCount(3);
 function add(count = 0) {
-  count += 1;
+    count += 1;
 }
 setCount(4);
-const plus = b => {
-  b = 5;
-  setCount(count() + 3);
-  var count = 4;
-  count += 5;
+const plus = (b)=>{
+    b = 5;
+    setCount(count() + 3);
+    var count = 4;
+    count += 5;
 };
 try {
-  console.log(123);
+    console.log(123);
 } catch (b) {
-  b += 2;
+    b += 2;
 }
 setB(b() + 2);
 setCount(count() + 2);
 var b = 4;
 b += 3;
 function component() {
-  var [c, setC] = createSignal(3);
-  setC(c() + 2);
-}"
+    var [c, setC] = createSignal(3);
+    setC(c() + 2);
+}
+"
 `;
 
 exports[`solid signal macro 1`] = `
@@ -40,5 +41,6 @@ setCount(count() ** 2);
 setCount(count()++);
 setCount(count()--);
 setCount(++count());
-setCount(--count());"
+setCount(--count());
+"
 `;
