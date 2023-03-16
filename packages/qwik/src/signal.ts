@@ -1,18 +1,20 @@
-import type { BaseNode } from "@macro-plugin/core"
-import { createTrackPlugin } from "@macro-plugin/core";
+import { Identifier, Node, VariableDeclaration } from "@swc/core";
+import { createTrackPlugin, markedNode } from "@macro-plugin/core";
 
 const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
-  const signals: Record<string, { value: BaseNode }> = {};
+  const signals: Record<string, { value?: Node }> = {};
 
-  // @ts-ignore
-  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.name == 'signal') {
+  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.value == 'signal') {
     let name;
-    // @ts-ignore
-    for (const i of ast.body.body) {
+    for (const i of ast.body.stmts) {
       if (i.type == 'VariableDeclaration' && i.kind == 'var') {
         for (const d of i.declarations) {
-          name = d.id.name;
-          signals[name] = { value: d.init };
+          if (d.id.type == 'Identifier') {
+            name = d.id.value;
+            signals[name] = { value: d.init };
+          } else {
+            throw new Error("Expect Identifier in signal")
+          }
         }
       } else {
         throw new Error('Expect a `var` kind VariableDeclaration node in signal block')
@@ -24,40 +26,78 @@ const plugin = createTrackPlugin((ast, handler, parent, prop, index) => {
       return Object.entries(signals).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "const",
+        declare: false,
         declarations: [
           {
             type: 'VariableDeclarator',
-            id: {
+            id: markedNode('qwikSignal', {
               type: 'Identifier',
-              name: k,
-              marker: 'qwikSignal',
-            },
+              value: k,
+              optional: false,
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 1
+              }
+            }),
             init: {
               type: 'CallExpression',
               callee: {
                 type: 'Identifier',
-                name: 'useSignal'
+                value: 'useSignal',
+                optional: false,
+                span: {
+                  start: 0,
+                  end: 0,
+                  ctxt: 0
+                }
               },
               arguments: [
-                v.value
-              ]
+                {
+                  expression: v.value
+                }
+              ],
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
+              }
+            },
+            definite: false,
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0
             }
           }
-        ]
-      }))
+        ],
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        }
+      } as VariableDeclaration))
     }
-    // @ts-ignore
-  } else if (ast.type == 'Identifier' && parent.type != 'VariableDeclarator' && handler.track(ast.name)?.marker == 'qwikSignal') {
+  } else if (ast.type == 'Identifier' && parent?.type != 'VariableDeclarator' && handler.track(ast.value)?.marker == 'qwikSignal') {
     handler.replace({
       type: 'MemberExpression',
-      // @ts-ignore
       object: ast,
-      computed: false,
-        property: {
-          type: "Identifier",
-          name: "value"
+      property: {
+        type: "Identifier",
+        value: "value",
+        optional: false,
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
         }
-    })
+      },
+      span: {
+        start: 0,
+        end: 0,
+        ctxt: 0
+      }
+    });
     handler.skip();
   }
 })
