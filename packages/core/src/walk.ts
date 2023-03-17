@@ -1,7 +1,9 @@
-import { BaseNode, Node, PluginImportSpecifier, ScopeVar, TrackFunc, WalkContext, WalkFunc, WalkPlugin } from "./types";
+import { BaseNode, Node, PluginImportSpecifier, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types";
 import { ImportDeclaration, Program } from "@swc/core";
-import { genSpecifier, hashMap, noop } from "./utils";
+import { genSpecifier, hashMap } from "./utils";
 
+import { generate } from "./generate";
+import { parse } from "./parse";
 import trackPlugin from "./track";
 
 class Walker {
@@ -65,6 +67,8 @@ class Walker {
       skip: () => {
         _skipped = true
       },
+      from: (src, options) => parse(src, options).body,
+      toString: (ast) => generate((ast || n) as BaseNode).code,
       remove: () => {
         if (parent && prop) {
           if (index != null) {

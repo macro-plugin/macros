@@ -1,4 +1,4 @@
-import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, Node, Options, PrivateMethod, Statement, VariableDeclarator } from "@swc/core";
+import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, ParseOptions, PrivateMethod, Statement, VariableDeclarator } from "@swc/core";
 
 import type { Visitor } from "@swc/core/Visitor";
 
@@ -11,7 +11,7 @@ export type { Node } from "@swc/core"
 
 export type ScopeVar = { name: string, private?: boolean, value?: Node, marker?: unknown };
 
-export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration | ImportDeclaration | ClassMethod | PrivateMethod | Statement | VariableDeclarator;
+export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration | ImportDeclaration | ClassMethod | PrivateMethod | Statement | VariableDeclarator | ModuleItem;
 
 export type WalkContext = {
   /** Save data to current plugin cache */
@@ -25,9 +25,13 @@ export type WalkContext = {
   /** Replace matched node with new node, equals to `return node` */
   replace: (newNode: Node | Node[]) => void;
   /** Track last variable with name */
-  track(name: string): ScopeVar | undefined;
+  track: (name: string) => ScopeVar | undefined;
   /** Import some package */
   import: (specifiers: PluginImportSpecifier[], source: string) => void;
+  /** Convert source code to node list */
+  from: (src: string, options?: ParseOptions) => ModuleItem[];
+  /** Convert current ast node to source code */
+  toString: (ast?: Node | Node[]) => string;
 }
 
 export type TrackFunc = (this: WalkContext, name: string) => ScopeVar | undefined;
