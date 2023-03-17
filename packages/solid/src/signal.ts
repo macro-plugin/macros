@@ -1,14 +1,16 @@
-import { BaseNode, GlobalMacro, markedNode } from "@macro-plugin/core"
+import { BaseNode, createPlugin, markedNode } from "@macro-plugin/core"
 import { BinaryExpression, CallExpression, Expression, VariableDeclaration } from "@swc/core";
 
 function getSetter(name: string) {
   return 'set' + name[0].toUpperCase() + name.slice(1)
 }
 
-const plugin: GlobalMacro = (ast, handler) => {
-  const signals: Record<string, { value?: BaseNode | Expression, setter: string }> = {};
+export default createPlugin({
+  LabeledStatement(ast) {
+    if (ast.body.type != 'BlockStatement' || ast.label.value != 'signal') return;
 
-  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.value == 'signal') {
+    const signals: Record<string, { value?: BaseNode | Expression, setter: string }> = {};
+
     let name;
     for (const i of ast.body.stmts) {
       if (i.type == 'VariableDeclaration' && i.kind == 'var') {
@@ -26,7 +28,7 @@ const plugin: GlobalMacro = (ast, handler) => {
     }
 
     if (Object.keys(signals).length > 0) {
-      handler.import([{ name: 'createSignal' }], 'solid-js');
+      this.import([{ name: 'createSignal' }], 'solid-js');
       return Object.entries(signals).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "var",
@@ -103,8 +105,9 @@ const plugin: GlobalMacro = (ast, handler) => {
         ]
       } as VariableDeclaration))
     }
-  } else if (ast.type == 'AssignmentExpression') {
-    if (ast.left.type == 'Identifier' && handler.track(ast.left.value)?.marker == 'signal') {
+  },
+  AssignmentExpression(ast) {
+    if (ast.left.type == 'Identifier' && this.track(ast.left.value)?.marker == 'signal') {
       const name = ast.left.value;
       return {
         type: 'CallExpression',
@@ -158,8 +161,9 @@ const plugin: GlobalMacro = (ast, handler) => {
         }
       } as CallExpression
     }
-  } else if (ast.type == 'UpdateExpression') {
-    if (ast.argument.type == 'Identifier' && handler.track(ast.argument.value)?.marker == 'signal') {
+  },
+  UpdateExpression(ast) {
+    if (ast.argument.type == 'Identifier' && this.track(ast.argument.value)?.marker == 'signal') {
       const name = ast.argument.value;
       ast.argument = {
         type: 'CallExpression',
@@ -195,7 +199,6 @@ const plugin: GlobalMacro = (ast, handler) => {
         }
       } as CallExpression
     }
-  }
-}
 
-export default plugin;
+  }
+});
