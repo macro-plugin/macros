@@ -1,7 +1,7 @@
 import { ArrowFunctionExpression, Expression, ExpressionStatement, Identifier, VariableDeclaration } from "@swc/core";
 import { BaseNode, createPlugin, markedNode, unMarkNode, walk } from "@macro-plugin/core";
 
-export default createPlugin(function (ast) {
+export const computed = createPlugin(function (ast) {
   if (ast.type != 'LabeledStatement' || ast.body.type != 'BlockStatement' || ast.label.value != 'computed') return;
 
   const computeds: Record<string, { value: BaseNode, computed?: BaseNode | Expression }> = {};

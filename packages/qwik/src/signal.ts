@@ -1,7 +1,7 @@
 import { MemberExpression, Node, VariableDeclaration } from "@swc/core";
 import { createPlugin, markedNode } from "@macro-plugin/core";
 
-const plugin = createPlugin({
+export const signal = createPlugin({
   LabeledStatement(ast) {
     if (ast.body.type != 'BlockStatement' || ast.label.value != 'signal') return;
 
@@ -107,5 +107,3 @@ const plugin = createPlugin({
     }
   }
 })
-
-export default plugin;
