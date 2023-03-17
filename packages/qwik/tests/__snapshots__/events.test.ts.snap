@@ -2,7 +2,8 @@
 
 exports[`useOn events 1`] = `
 "import { component$ } from "@builder.io/qwik";
-import { useOn, $ } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
+import { useOn } from "@builder.io/qwik";
 import { useSignal } from "@builder.io/qwik";
 export const ClickableComponent = component$(()=>{
     useOn("click", $(()=>{
@@ -17,5 +18,37 @@ export const HoverComponent = component$(()=>{
     }));
     return <div>{isHover.value ? "Now Hovering" : "Not Hovering"}</div>;
 });
+"
+`;
+
+exports[`useOnDocument event 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import { useSignal } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
+import { useOnDocument } from "@builder.io/qwik";
+const KeyBoard = component$(()=>{
+    const keyPressed = useSignal("");
+    useOnDocument("keydown", $((event)=>{
+        keyPressed.value = keyPressed.value + event.key;
+    }));
+    return <div>{keyPressed.value}</div>;
+});
+"
+`;
+
+exports[`useOnWindow event 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
+import { useOnWindow } from "@builder.io/qwik";
+export const Online = component$(()=>{
+    useOnWindow("online", $(()=>{
+        alert("Your Device is now Online");
+    }));
+    useOnWindow("offline", $(()=>{
+        alert("Your Device is now Offline");
+    }));
+    return <div></div>;
+});
+;
 "
 `;

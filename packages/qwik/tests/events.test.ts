@@ -26,3 +26,41 @@ test("useOn events", () => {
   `
   expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
 })
+
+test("useOnDocument event", () => {
+  const code = `
+  function KeyBoard() {
+    qwik: true
+    signal: {
+      var keyPressed = ''
+    }
+    onkeydown: (event) => {
+      document: true
+      keyPressed = keyPressed + event.key;
+    }
+
+    return <div>{keyPressed}</div>;
+  }
+  `
+
+  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+})
+
+test("useOnWindow event", () => {
+  const code = `
+  export function Online() {
+    qwik: true
+    ononline: {
+      window: true
+      alert('Your Device is now Online');
+    }
+    onoffline: {
+      window: true
+      alert('Your Device is now Offline');
+    }
+
+    return <div></div>;
+  };
+  `
+  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+})
