@@ -1,3 +1,4 @@
+export { qwik } from "./qwik"
 export { task, vtask } from "./task"
 export { resource } from "./resource"
 export { default as signal } from "./signal"
