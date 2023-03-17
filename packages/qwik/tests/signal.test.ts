@@ -9,7 +9,7 @@ test("qwik signal", () => {
 
     count += 1
   `
-  expect(transform(code, { global: { signal } }).code).toMatchSnapshot()
+  expect(transform(code, { plugins: [signal] }).code).toMatchSnapshot()
 })
 
 test("qwik signal in function name", () => {
@@ -23,6 +23,6 @@ test("qwik signal in function name", () => {
   count += 2
   `
 
-  expect(transform(code, { global: { signal } }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [ signal ] }).code).toMatchSnapshot();
 });
 
