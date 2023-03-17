@@ -1,4 +1,4 @@
-import { computed, signal, task, vtask } from "../src";
+import { signal, task, vtask } from "../src";
 
 import { transform } from "@macro-plugin/core";
 
@@ -18,7 +18,7 @@ test("qwik task", () => {
     doubleCount = 2 * newCount;
   }`;
 
-  expect(transform(code, { labeled: { task }, global: { signal } }).code).toMatchSnapshot()
+  expect(transform(code, { plugins: [ signal, task ] }).code).toMatchSnapshot()
 })
 
 test("qwik vtask", () => {
@@ -34,5 +34,5 @@ test("qwik vtask", () => {
     }
   ]
   `
-  expect(transform(code, { labeled: { vtask }, global: { signal } }).code).toMatchSnapshot()
+  expect(transform(code, { plugins: [ signal, vtask ] }).code).toMatchSnapshot()
 })
