@@ -1,4 +1,4 @@
 import { createLabeledBlock } from "@macro-plugin/core"
 
-export const effect = createLabeledBlock('createEffect', 'solid-js', true);
+export const effect = createLabeledBlock('effect', 'createEffect', 'solid-js', true);
 
