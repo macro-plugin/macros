@@ -5,20 +5,54 @@ import { createPlugin } from "@macro-plugin/core";
 export const events = createPlugin({
   LabeledStatement(ast) {
     if (!ast.label.value.startsWith('on') || !['BlockStatement', 'ExpressionStatement'].includes(ast.body.type)) return;
-    this.import([{ name: 'useOn' }, { name: '$' }], '@builder.io/qwik');
 
-    const expression = ast.body.type == 'BlockStatement' ? {
-      "type": "ArrowFunctionExpression",
-      "span": {
-        "start": 26,
-        "end": 87,
-        "ctxt": 0
-      },
-      "params": [],
-      body: ast.body,
-      "async": false,
-      "generator": false,
-    } as ArrowFunctionExpression : ast.body.type == 'ExpressionStatement' ? ast.body.expression : null;
+    let expression, name = 'useOn';
+    this.import([{ name: '$' }], '@builder.io/qwik');
+
+    if (ast.body.type == 'BlockStatement') {
+      const firstLabel = ast.body.stmts[0];
+      if (firstLabel && firstLabel.type == 'LabeledStatement') {
+        if (firstLabel.label.value == 'document') {
+          ast.body.stmts = ast.body.stmts.slice(1);
+          name = 'useOnDocument'
+        } else if (firstLabel.label.value == 'window') {
+          ast.body.stmts = ast.body.stmts.slice(1);
+          name = 'useOnWindow'
+        }
+      }
+
+      expression = {
+        "type": "ArrowFunctionExpression",
+        "span": {
+          "start": 26,
+          "end": 87,
+          "ctxt": 0
+        },
+        "params": [],
+        body: ast.body,
+        "async": false,
+        "generator": false,
+      } as ArrowFunctionExpression
+    } else if (ast.body.type == 'ExpressionStatement') {
+      expression = ast.body.expression
+
+      if (ast.body.expression.type == 'FunctionExpression' || ast.body.expression.type == 'ArrowFunctionExpression') {
+        if (ast.body.expression.body?.type == 'BlockStatement') {
+          const firstLabel = ast.body.expression.body.stmts[0];
+          if (firstLabel && firstLabel.type == 'LabeledStatement') {
+            if (firstLabel.label.value == 'document') {
+              ast.body.expression.body.stmts = ast.body.expression.body.stmts.slice(1);
+              name = 'useOnDocument'
+            } else if (firstLabel.label.value == 'window') {
+              ast.body.expression.body.stmts = ast.body.expression.body.stmts.slice(1);
+              name = 'useOnWindow'
+            }
+          }
+        }
+      }
+    }
+
+    this.import([{ name }], '@builder.io/qwik');
 
     return {
       "type": "ExpressionStatement",
@@ -41,7 +75,7 @@ export const events = createPlugin({
             "end": 5,
             "ctxt": 1
           },
-          "value": "useOn",
+          "value": name,
           "optional": false
         },
         "arguments": [
