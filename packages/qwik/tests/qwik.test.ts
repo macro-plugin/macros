@@ -1,4 +1,5 @@
-import { qwik } from "../src";
+import { computed, qwik, signal } from "../src";
+
 import { transform } from "@macro-plugin/core";
 
 test("qwik labeled macro", () => {
@@ -39,4 +40,24 @@ test("qwik labeled macro in function expression", () => {
   }
   `
   expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot()
+});
+
+test("complex qwik app", () => {
+  const code = `
+  export function Cmp() {
+    qwik: true
+    signal: {
+      var count = 1
+    }
+    computed: {
+      var doubleCount = 2 * count
+    }
+    return (
+      <div>
+        {count} / {doubleCount}
+      </div>
+    )
+  }
+  `
+  expect(transform(code, { plugins: [qwik, signal, computed], jsc: { parser: { syntax: 'typescript', tsx: true } } }).code).toMatchSnapshot()
 });

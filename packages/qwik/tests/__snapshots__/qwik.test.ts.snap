@@ -1,5 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`complex qwik app 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import { useSignal } from "@builder.io/qwik";
+import { useTask$ } from "@builder.io/qwik";
+export const Cmp = component$(()=>{
+    const count = useSignal(1);
+    const doubleCount = useSignal(2 * count.value);
+    useTask$(({ track  })=>{
+        const __count = track(()=>count.value);
+        doubleCount.value = 2 * __count;
+    });
+    return (<div>
+
+        {count.value} / {doubleCount.value}
+
+      </div>);
+});
+"
+`;
+
 exports[`qwik labeled macro 1`] = `
 "import { component$ } from "@builder.io/qwik";
 const Cmp = component$(()=>{});
