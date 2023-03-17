@@ -21,8 +21,6 @@ export const span = {
   ctxt: 0,
 }
 
-export const noop = () => {};
-
 export function markedNode<T extends object>(marker: string, node: T): T {
   // @ts-ignore
   node.marker = marker;
