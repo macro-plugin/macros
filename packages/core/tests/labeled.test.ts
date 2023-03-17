@@ -1,50 +1,73 @@
-import type { Statement } from "../src"
+import { ExpressionStatement, Statement } from "@swc/core";
+import { LabeledMacro, createPlugin, generate } from "../src"
+
 import { transform } from "../src"
 
 var DEBUG = false;
 
-function debug(ast: Statement, code: string): Statement {
-  if (DEBUG) return ast
+const debug = createPlugin({
+  LabeledStatement(ast) {
+    if (ast.label.value === 'debug') {
+      if (DEBUG) return ast.body;
 
-  return {
-    type: "EmptyStatement",
-    leadingComments: code.split("\n").map(value => ({
-      type: "Line",
-      value,
-    })),
+      return {
+        type: "EmptyStatement",
+        span: { start: 0, end: 0, ctxt: 0 },
+      }
+    }
   }
-}
+})
 
-function hello(ast: Statement): string {
-  return 'world'
-}
+const hello = createPlugin({
+  LabeledStatement(ast) {
+    if (ast.label.value != 'hello') return;
+    return this.from('world');
+  }
+})
 
-function codeblock(ast: Statement, code: string): string {
-  return code.trim().replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '').trim();
-}
+const codeblock = createPlugin({
+  LabeledStatement(ast) {
+    if (ast.label.value != 'codeblock' || ast.body.type != 'BlockStatement') return;
+    return this.from(this.toString(ast.body).replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '').trim())
+  }
+})
 
-function codecall(ast: Statement, code: string): string {
-  return `(() => ${code})()`;
-}
+const codecall = createPlugin({
+  LabeledStatement(ast) {
+    if (ast.label.value != 'codecall' || ast.body.type != 'BlockStatement') return;
+    return this.from(`(() => ${this.toString(ast.body)})()`)
+  }
+})
 
-function stringify(ast: Statement, code: string): string {
-  return "`" + code + "`";
-}
+const stringify = createPlugin({
+  LabeledStatement(ast) {
+    if (ast.label.value != 'stringify') return;
+    return this.from("`" + this.toString(ast.body) + "`");
+  }
+})
+
+const empty = createPlugin({
+  LabeledStatement(ast) {
+    if (ast.label.value != 'empty') return;
+    this.remove();
+  }
+})
 
 test("transform debug", () => {
+  DEBUG = false;
   const code = `
     debug: console.log("Hello World");
   `;
-  expect(transform(code, { labeled: { debug } }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [debug] }).code.trim()).toEqual(";");
   DEBUG = true;
-  expect(transform(code, { labeled: { debug } }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [debug] }).code).toMatchSnapshot();
 })
 
 test("transform simple plugin string", () => {
   const code = `
     hello: 'kity'
   `
-  expect(transform(code, { labeled: { hello } }).code).toEqual('world;');
+  expect(transform(code, { plugins: [hello] }).code).toEqual('world;\n');
 });
 
 test("transform complex", () => {
@@ -55,7 +78,7 @@ test("transform complex", () => {
       console.log(a);
     }
   `
-  expect(transform(code, { labeled: { codeblock } }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [codeblock] }).code).toMatchSnapshot();
 });
 
 test("transform codeblock to call", () => {
@@ -66,27 +89,28 @@ test("transform codeblock to call", () => {
       console.log(a);
     }
   `
-  expect(transform(code, { labeled: { codecall } }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [codecall] }).code).toMatchSnapshot();
 });
 
 test("return empty", () => {
   const code = `
     empty: console.log(123)
   `
-  expect(transform(code, { labeled: { empty: () => '' } }).code).toEqual('');
+  expect(transform(code, { plugins: [empty] }).code).toEqual('');
 })
 
 test("transform in typescript", () => {
+  DEBUG = false;
   const code = `
     let a: string = "Hello";
     debug: console.log(a);
   `;
   expect(transform(code, {
-    labeled: { debug }, parserOptions: {
-      sourceType: "module",
-      plugins: [
-        "typescript"
-      ]
+    plugins: [debug],
+    jsc: {
+      parser: {
+        syntax: "typescript"
+      }
     }
   }).code).toMatchSnapshot();
 });
@@ -97,12 +121,12 @@ test("transform in jsx", () => {
   `
 
   expect(transform(code, {
-    labeled: { stringify }, parserOptions: {
-      sourceType: "module",
-      plugins: [
-        "jsx",
-        "typescript"
-      ]
+    plugins: [ stringify ],
+    jsc: {
+      parser: {
+        syntax: 'typescript',
+        tsx: true
+      }
     }
   }).code).toMatchSnapshot();
 });
