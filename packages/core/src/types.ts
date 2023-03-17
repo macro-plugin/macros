@@ -1,5 +1,7 @@
 import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, Node, Options, PrivateMethod, Statement, VariableDeclarator } from "@swc/core";
 
+import type { Visitor } from "@swc/core/Visitor";
+
 export type PluginImportSpecifier = {
   name: string,
   kind?: null | "default"
@@ -28,16 +30,31 @@ export type WalkContext = {
   import: (specifiers: PluginImportSpecifier[], source: string) => void;
 }
 
+export type TrackFunc = (this: WalkContext, name: string) => ScopeVar | undefined;
 export type WalkFunc = (this: WalkContext, node: Node, parent?: Node, prop?: string, index?: number) => Node | Node[] | undefined | void
 export type WalkPlugin = {
   enter?: WalkFunc;
   leave?: WalkFunc;
+  track?: TrackFunc;
 }
 
-export type LabeledMacro = (ast: BaseNode, code: string, handler: WalkContext) => BaseNode | BaseNode[] | string
-export type GlobalMacro = (ast: BaseNode, handler: WalkContext, parent?: BaseNode, prop?: string, index?: number) => void | BaseNode | BaseNode[]
+export type LabeledMacro = (this: WalkContext, ast: BaseNode, code: string) => BaseNode | BaseNode[] | string
+export type GlobalMacro<T = BaseNode> = (this: WalkContext, ast: T, parent?: BaseNode, prop?: string, index?: number) => void | undefined | BaseNode | BaseNode[]
+
+type SliceVisit<T> = T extends `visit${infer R}` ? R : never;
+
+export type GlobalMacroPlugin = {
+  enter?: GlobalMacro,
+  leave?: GlobalMacro,
+}
+
+export type MacroPlugin = GlobalMacro | (GlobalMacroPlugin & {
+  [k in keyof Visitor & string as SliceVisit<k>]?: GlobalMacro<Parameters<Visitor[k]>[0]> | {
+    enter?: GlobalMacro<Parameters<Visitor[k]>[0]>,
+    leave?: GlobalMacro<Parameters<Visitor[k]>[0]>,
+  }
+})
 
 export type Config = Omit<Options, "plugin"> & {
-  global?: Record<string, GlobalMacro | { enter: GlobalMacro, leave: GlobalMacro }>,
-  labeled?: Record<string, LabeledMacro>,
+  plugins?: MacroPlugin[];
 }
