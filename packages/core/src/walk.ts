@@ -1,7 +1,8 @@
-import { BaseNode, Node, PluginImportSpecifier, ScopeVar, WalkFunc, WalkPlugin } from "./types";
+import { BaseNode, Node, PluginImportSpecifier, ScopeVar, TrackFunc, WalkContext, WalkFunc, WalkPlugin } from "./types";
 import { ImportDeclaration, Program } from "@swc/core";
 import { genSpecifier, hashMap, noop } from "./utils";
-import { leave as popVars, enter as pushVars } from "./track";
+
+import trackPlugin from "./track";
 
 class Walker {
   data: Record<string, unknown> = {};
@@ -9,20 +10,6 @@ class Walker {
   importHashes: Record<string, true> = {};
   enter?: WalkFunc;
   leave?: WalkFunc;
-  skip: () => void = noop;
-  remove: () => void = noop;
-  track: ((name: string) => ScopeVar | undefined) = (name: string) => {
-    let v;
-    const scopeVars = this.get('scopeVars', [[]] as ScopeVar[][])!
-    for (let y = scopeVars.length - 1; y >= 0; y--) {
-      v = scopeVars[y];
-      for (let x = v.length - 1; x >= 0; x--) {
-        if (v[x].name == name) return v[x];
-      }
-    }
-    return undefined;
-  }
-  replace: (newNode: Node | Node[]) => void = noop;
   set = <T>(key: string, value: T) => { this.data[key] = value; }
   get = <T>(key: string, defaultValue?: T) => {
     if (!(key in this.data)) this.data[key] = defaultValue;
@@ -70,33 +57,45 @@ class Walker {
   walkSingle(n: Node, parent?: Node, prop?: string, index?: number) {
     let _replaced, _skipped, _removed, _skipCount = 0
 
-    this.replace = (newNode: Node | Node[]) => {
-      if (parent && prop) {
-        if (index != null) {
-          if (Array.isArray(newNode)) {
-            (parent[prop as keyof Node] as unknown as Node[]).splice(index, 1, ...newNode);
-            _skipCount = newNode.length - 1;
+    const ctx: WalkContext = {
+      set: this.set,
+      get: this.get,
+      track: this.track,
+      import: this.import,
+      skip: () => {
+        _skipped = true
+      },
+      remove: () => {
+        if (parent && prop) {
+          if (index != null) {
+            (parent[prop as keyof Node] as unknown as Node[]).splice(index, 1);
           } else {
-            (parent[prop as keyof Node] as unknown as Node[])[index] = newNode;
+            // @ts-ignore
+            delete parent[prop];
           }
-        } else {
-          // @ts-ignore
-          parent[prop] = newNode;
         }
-        _replaced = newNode;
-      }
+        _removed = true
+      },
+      replace: (newNode: Node | Node[]) => {
+        if (parent && prop) {
+          if (index != null) {
+            if (Array.isArray(newNode)) {
+              (parent[prop as keyof Node] as unknown as Node[]).splice(index, 1, ...newNode);
+              _skipCount = newNode.length - 1;
+            } else {
+              (parent[prop as keyof Node] as unknown as Node[])[index] = newNode;
+            }
+          } else {
+            // @ts-ignore
+            parent[prop] = newNode;
+          }
+          _replaced = newNode;
+        }
+      },
     }
 
-    this.skip = () => {
-      _skipped = true;
-    }
-
-    this.remove = () => {
-      _removed = true;
-    }
-
-    pushVars(n as BaseNode, this, parent as BaseNode, prop, index)
-    if (this.enter) this.enter(n, parent, prop, index);
+    trackPlugin.enter.apply(ctx, [n as BaseNode, parent as BaseNode, prop, index]);
+    if (this.enter) this.enter.apply(ctx, [n, parent, prop, index]);
 
     if (Array.isArray(_replaced)) {
       this.walkMany(_replaced, parent)
@@ -111,8 +110,8 @@ class Walker {
       }
     }
 
-    if (this.leave) this.leave(n, parent, prop, index);
-    popVars(n as BaseNode, this, parent as BaseNode, prop, index)
+    if (this.leave) this.leave.apply(ctx, [n, parent, prop, index]);
+    trackPlugin.leave.apply(ctx, [n as BaseNode, parent as BaseNode, prop, index]);
 
     return _skipCount;
   }
@@ -138,6 +137,18 @@ class Walker {
       (n as Program).body = [...this.imports, ...(n as Program).body]
     }
     return n;
+  }
+
+  track(name: string) {
+    let v;
+    const scopeVars = this.get('scopeVars', [[]]) as ScopeVar[][];
+    for (let y = scopeVars.length - 1; y >= 0; y--) {
+      v = scopeVars[y];
+      for (let x = v.length - 1; x >= 0; x--) {
+        if (v[x].name == name) return v[x];
+      }
+    }
+    return undefined;
   }
 }
 
