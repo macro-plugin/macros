@@ -1,8 +1,6 @@
-import type { BaseNode, Config, WalkContext } from "./types";
+import type { Config, MacroPlugin } from "./types";
 import {
-  LabeledStatement,
   Program,
-  parseSync,
   print,
   printSync,
 } from "@swc/core"
@@ -11,59 +9,57 @@ import { parse, parseAsync } from "./parse"
 
 import { walk } from "./walk"
 
-export function createSwcPlugin(code: string, config: Config) {
+export function createPlugin(plugin: MacroPlugin) {
+  return plugin;
+}
+
+export function createSwcPlugin(config: Config) {
   return (module: Program) => {
-    const globalMacros = config.global || {};
-    const labeledMacros = config.labeled || {};
+    const plugins = config.plugins || [];
 
-    function walkLabel(ast: LabeledStatement, handler: WalkContext): BaseNode | BaseNode[] | undefined {
-      const { start, end } = ast.span;
+    return walk(module, {
+      enter(node, parent, prop, index) {
+        let r, e;
 
-      if (ast.label.value in labeledMacros) {
-        const r = labeledMacros[ast.label.value](ast.body, code.slice(start, end), handler)
-        if (typeof r == 'string') {
-          //parserOptions
-          return parse(r).body as BaseNode[];
+        const run = (fn: Function) => {
+          r = fn.apply(this, [node, parent, prop, index]);
+          if (r) this.replace(r);
         }
-        return r;
+
+        for (const p of plugins) {
+          if (typeof p == 'function') {
+            run(p);
+            continue;
+          }
+          if (p.enter) run(p.enter);
+          if (node.type in p) {
+            e = p[node.type as keyof typeof p];
+            if (typeof e == 'function') {
+              run(e)
+            } else if (typeof e == 'object' && e.enter) {
+              run(e.enter)
+            }
+          }
+        }
+      },
+      leave(node, parent, prop, index) {
+        let r, e;
+
+        const run = (fn: Function) => {
+          r = fn.apply(this, [node, parent, prop, index]);
+          if (r) this.replace(r);
+        }
+
+        for (const p of plugins) {
+          if (typeof p != 'object') continue;
+          if (p.leave) run(p.leave);
+          if (node.type in p) {
+            e = p[node.type as keyof typeof p];
+            if (typeof e == 'object' && e.leave) run(e.leave);
+          }
+        }
       }
-    }
-
-    function visit(node: BaseNode | Program) {
-      walk(node, {
-        enter(node, parent, prop, index) {
-          let newNode: BaseNode | BaseNode[] | void | undefined
-          for (const plugin of Object.values(globalMacros)) {
-            if ('enter' in plugin) {
-              newNode = plugin.enter(node as BaseNode, this, parent as BaseNode, prop, index)
-            } else {
-              newNode = plugin(node as BaseNode, this, parent as BaseNode, prop, index)
-            }
-
-            if (newNode) this.replace(newNode)
-          }
-          if (node.type === "LabeledStatement") {
-            newNode = walkLabel(node as LabeledStatement, this)
-            if (newNode) this.replace(newNode as BaseNode)
-          }
-        },
-        leave(node, parent, prop, index) {
-          let newNode: BaseNode | BaseNode[] | void | undefined
-
-          for (const plugin of Object.values(globalMacros)) {
-            if ('leave' in plugin) {
-              newNode = plugin.leave(node as BaseNode, this, parent as BaseNode, prop, index)
-            }
-          }
-
-          if (newNode) this.replace(newNode)
-        },
-      })
-    }
-
-    visit(module);
-
-    return module;
+    }) as Program;
   }
 }
 
@@ -74,8 +70,8 @@ export function createSwcPlugin(code: string, config: Config) {
  * @returns - an object containing the output code and source map.
  */
 export function transform(code: string, config: Config) {
-  const plugin = createSwcPlugin(code, config)
-  return printSync(plugin(parseSync(code, config.jsc?.parser)))
+  const plugin = createSwcPlugin(config)
+  return printSync(plugin(parse(code, config.jsc?.parser)))
 }
 
 /**
@@ -85,7 +81,7 @@ export function transform(code: string, config: Config) {
  * @returns - an object containing the output code and source map.
  */
 export function transformAsync(code: string, config: Config) {
-  const plugin = createSwcPlugin(code, config)
+  const plugin = createSwcPlugin(config)
   return parseAsync(code, config.jsc?.parser).then((m) => print(plugin(m)))
 }
 
