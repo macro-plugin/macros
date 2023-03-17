@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`qwik store 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import { useStore } from "@builder.io/qwik";
+export default component$(()=>{
+    const state = useStore({
+        count: 0
+    });
+    return (<>
+
+        <button onClick$={()=>state.count++}>Increment</button>
+
+        Count: {state.count}
+
+      </>);
+});
+"
+`;
