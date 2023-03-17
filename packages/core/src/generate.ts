@@ -1,20 +1,23 @@
-import { GeneratorOptions, GeneratorResult, default as _generate } from "@babel/generator"
+import { ModuleItem, Options, Program, printSync as print } from "@swc/core";
 
-import { Statement } from "./types";
+import { BaseNode } from "./types";
 
 /**
  * Turns an AST into code, maintaining sourcemaps, user preferences, and valid output.
  * @param ast - the abstract syntax tree from which to generate output code.
- * @param opts - used for specifying options for code generation.
- * @param code - the original source code, used for source maps.
+ * @param options - used for specifying options for code generation.
  * @returns - an object containing the output code and source map.
  */
 export function generate(
-  ast: Statement | Parameters<typeof _generate>[0],
-  opts?: GeneratorOptions,
-  code?: string | { [filename: string]: string },
-): GeneratorResult {
-  // @ts-ignore
-  return _generate(ast, opts, code)
+  ast: BaseNode | BaseNode[],
+  options?: Options
+) {
+  let { code, map } = print({
+    type: "Script",
+    span: { start: 0, end: 0, ctxt: 0 },
+    body: Array.isArray(ast) ? ast as unknown as ModuleItem[] : [ast as unknown as ModuleItem],
+  } as Program, options)
+
+  return { code: code.trim(), map }
 }
 
