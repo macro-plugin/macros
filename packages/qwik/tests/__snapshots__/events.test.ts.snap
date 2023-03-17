@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useOn events 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import { useOn, $ } from "@builder.io/qwik";
+import { useSignal } from "@builder.io/qwik";
+export const ClickableComponent = component$(()=>{
+    useOn("click", $(()=>{
+        alert("Alert from Clickable Component.");
+    }));
+    return <div>click from other component 1</div>;
+});
+export const HoverComponent = component$(()=>{
+    const isHover = useSignal(false);
+    useOn("mouseover", $(()=>{
+        isHover.value = true;
+    }));
+    return <div>{isHover.value ? "Now Hovering" : "Not Hovering"}</div>;
+});
+"
+`;
