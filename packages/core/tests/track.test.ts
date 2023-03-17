@@ -1,16 +1,15 @@
 import { GlobalMacro, ScopeVar } from "../src/types";
-
-import { transform } from "../src/transform";
+import { createPlugin, transform } from "../src/transform";
 
 var a: ScopeVar | undefined, b: ScopeVar | undefined, c: ScopeVar | undefined;
 
-const trackValue: GlobalMacro = (ast, handler) => {
-  if (ast.type == 'FunctionDeclaration') {
-    a = handler.track('a');
-    b = handler.track('b');
-    c = handler.track('c');
+const trackValue = createPlugin({
+  FunctionDeclaration() {
+    a = this.track('a');
+    b = this.track('b');
+    c = this.track('c');
   }
-}
+})
 
 test("track variables", () => {
   const code = `
@@ -25,7 +24,7 @@ test("track variables", () => {
   `;
 
   transform(code, {
-    global: { trackValue }
+    plugins: [ trackValue ]
   });
 
   // `a` been overwrited
