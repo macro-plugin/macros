@@ -1,15 +1,15 @@
-import type { FunctionDeclaration, VariableDeclaration } from "@swc/core";
-import { GlobalMacro, Handler, transform } from "../src"
+import { createPlugin, transform } from "../src"
 
-const arrow: GlobalMacro = (ast, handler) => {
-  if (ast.type == 'FunctionDeclaration') {
-    const f = ast as FunctionDeclaration;
+import type { VariableDeclaration } from "@swc/core";
+
+const arrow = createPlugin({
+  FunctionDeclaration(ast) {
     const children = [];
     let isArrow = false;
 
-    if (!f.body) return
+    if (!ast.body) return
 
-    for (const s of f.body.stmts || []) {
+    for (const s of ast.body.stmts || []) {
       if (s.type == 'LabeledStatement' && s.body.type == 'ExpressionStatement') {
         const expr = s.body.expression;
         if (s.label.value == 'arrow') {
@@ -22,7 +22,7 @@ const arrow: GlobalMacro = (ast, handler) => {
       children.push(s);
     }
 
-    f.body.stmts = children;
+    ast.body.stmts = children;
 
     if (isArrow) return {
       type: 'VariableDeclaration',
@@ -36,13 +36,13 @@ const arrow: GlobalMacro = (ast, handler) => {
       declarations: [
         {
           type: 'VariableDeclarator',
-          id: f.identifier,
+          id: ast.identifier,
           init: {
             type: 'ArrowFunctionExpression',
             generator: false,
             async: false,
             params: [],
-            body: f.body,
+            body: ast.body,
             span: {
               start: 0,
               end: 0,
@@ -59,12 +59,14 @@ const arrow: GlobalMacro = (ast, handler) => {
       ]
     } as VariableDeclaration
   }
-}
+})
 
-const inject: GlobalMacro = (ast, handler) => {
-  handler.import([ { name: 'test', kind: 'default' } ], 'test')
-  handler.import([ { name: 'ref' } ], 'vue')
-}
+const inject = createPlugin({
+  enter() {
+    this.import([ { name: 'test', kind: 'default' } ], 'test')
+    this.import([ { name: 'ref' } ], 'vue')
+  }
+})
 
 test("transform function block", () => {
   const code = `
@@ -80,8 +82,8 @@ test("transform function block", () => {
       return a + b
     }
   `
-  expect(transform(code, { global: { arrow } }).code).toMatchSnapshot();
-  expect(transform(code2, { global: { arrow } }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [arrow] }).code).toMatchSnapshot();
+  expect(transform(code2, { plugins: [arrow] }).code).toMatchSnapshot();
 })
 
 test("inject imports", () => {
@@ -92,7 +94,7 @@ test("inject imports", () => {
   `
 
   expect(transform(code, {
-    global: { inject },
+    plugins: [ inject ],
     jsc: {
       parser: {
         syntax: "typescript",
