@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`qwik labeled macro 1`] = `
+"import { component$ } from "@builder.io/qwik";
+const Cmp = component$(()=>{});
+"
+`;
+
+exports[`qwik labeled macro in function expression 1`] = `
+"import { component$ } from "@builder.io/qwik";
+const ABC = component$(function() {});
+export const Cmp = component$(()=>{});
+"
+`;
+
+exports[`qwik labeled macro with value false 1`] = `
+"function Cmp() {}
+"
+`;
