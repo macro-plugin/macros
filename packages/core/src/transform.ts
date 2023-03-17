@@ -14,10 +14,10 @@ export function createPlugin(plugin: MacroPlugin) {
 }
 
 export function createSwcPlugin(config: Config) {
-  return (module: Program) => {
+  return (program: Program) => {
     const plugins = config.plugins || [];
 
-    return walk(module, {
+    return walk(program, {
       enter(node, parent, prop, index) {
         let r, e;
 
