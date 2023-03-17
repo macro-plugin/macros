@@ -1,5 +1,6 @@
-import { BaseNode, Handler } from "@macro-plugin/core";
 import { Identifier, Statement, VariableDeclaration } from "@swc/core";
+
+import { createPlugin } from "@macro-plugin/core";
 
 const varToReturn = (body: Statement[]) => {
   let ident: Identifier | undefined;
@@ -26,10 +27,12 @@ const varToReturn = (body: Statement[]) => {
   return [ident, body] as [Identifier, Statement[]]
 }
 
-export const resource = (ast: BaseNode, code: string, handler: Handler) => {
-  handler.import([{ name: 'useResource$' }], '@builder.io/qwik');
-  if (ast.type == "BlockStatement") {
-    const [id, stmts] = varToReturn(ast.stmts);
+export const resource = createPlugin(function (ast) {
+  if (ast.type != 'LabeledStatement' || ast.label.value != 'resource') return;
+
+  this.import([{ name: 'useResource$' }], '@builder.io/qwik');
+  if (ast.body.type == "BlockStatement") {
+    const [id, stmts] = varToReturn(ast.body.stmts);
 
     return {
       type: "VariableDeclaration",
@@ -95,12 +98,12 @@ export const resource = (ast: BaseNode, code: string, handler: Handler) => {
       declare: false,
       kind: "const"
     } as VariableDeclaration
-  } else if (ast.type == "ExpressionStatement" && ast.expression.type == 'ArrowFunctionExpression') {
+  } else if (ast.body.type == "ExpressionStatement" && ast.body.expression.type == 'ArrowFunctionExpression') {
     let id, stmts;
 
-    if (ast.expression.body.type == 'BlockStatement') {
-      [id, stmts] = varToReturn(ast.expression.body.stmts);
-      ast.expression.body.stmts = stmts;
+    if (ast.body.expression.body.type == 'BlockStatement') {
+      [id, stmts] = varToReturn(ast.body.expression.body.stmts);
+      ast.body.expression.body.stmts = stmts;
     } else {
       throw new Error('expect an arrow block inside resource.')
     }
@@ -131,7 +134,7 @@ export const resource = (ast: BaseNode, code: string, handler: Handler) => {
             },
             arguments: [
               {
-                expression: ast.expression
+                expression: ast.body.expression
               }
             ],
             span: {
@@ -153,4 +156,4 @@ export const resource = (ast: BaseNode, code: string, handler: Handler) => {
   } else {
     throw new Error('this macro only accept a ArrowFunction or BlockStatement')
   }
-}
+})
