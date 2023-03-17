@@ -29,9 +29,9 @@ export type WalkContext = {
   /** Import some package */
   import: (specifiers: PluginImportSpecifier[], source: string) => void;
   /** Convert source code to node list */
-  from: (src: string, options?: ParseOptions) => ModuleItem[];
+  parse: (src: string, options?: ParseOptions) => ModuleItem[];
   /** Convert current ast node to source code */
-  toString: (ast?: Node | Node[]) => string;
+  print: (ast?: Node | Node[]) => string;
 }
 
 export type TrackFunc = (this: WalkContext, name: string) => ScopeVar | undefined;

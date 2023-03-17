@@ -67,8 +67,8 @@ class Walker {
       skip: () => {
         _skipped = true
       },
-      from: (src, options) => parse(src, options).body,
-      toString: (ast) => generate((ast || n) as BaseNode).code,
+      parse: (src, options) => parse(src, options).body,
+      print: (ast) => generate((ast || n) as BaseNode).code,
       remove: () => {
         if (parent && prop) {
           if (index != null) {

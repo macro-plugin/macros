@@ -21,28 +21,28 @@ const debug = createPlugin({
 const hello = createPlugin({
   LabeledStatement(ast) {
     if (ast.label.value != 'hello') return;
-    return this.from('world');
+    return this.parse('world');
   }
 })
 
 const codeblock = createPlugin({
   LabeledStatement(ast) {
     if (ast.label.value != 'codeblock' || ast.body.type != 'BlockStatement') return;
-    return this.from(this.toString(ast.body).replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '').trim())
+    return this.parse(this.print(ast.body).replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '').trim())
   }
 })
 
 const codecall = createPlugin({
   LabeledStatement(ast) {
     if (ast.label.value != 'codecall' || ast.body.type != 'BlockStatement') return;
-    return this.from(`(() => ${this.toString(ast.body)})()`)
+    return this.parse(`(() => ${this.print(ast.body)})()`)
   }
 })
 
 const stringify = createPlugin({
   LabeledStatement(ast) {
     if (ast.label.value != 'stringify') return;
-    return this.from("`" + this.toString(ast.body) + "`");
+    return this.parse("`" + this.print(ast.body) + "`");
   }
 })
 
