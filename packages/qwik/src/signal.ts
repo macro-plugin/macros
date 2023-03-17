@@ -1,10 +1,12 @@
-import { GlobalMacro, markedNode } from "@macro-plugin/core";
 import { MemberExpression, Node, VariableDeclaration } from "@swc/core";
+import { createPlugin, markedNode } from "@macro-plugin/core";
 
-const plugin: GlobalMacro = (ast, handler, parent, prop, index) => {
-  const signals: Record<string, { value?: Node }> = {};
+const plugin = createPlugin({
+  LabeledStatement(ast) {
+    if (ast.body.type != 'BlockStatement' || ast.label.value != 'signal') return;
 
-  if (ast.type == 'LabeledStatement' && ast.body.type == 'BlockStatement' && ast.label.value == 'signal') {
+    const signals: Record<string, { value?: Node }> = {};
+
     let name;
     for (const i of ast.body.stmts) {
       if (i.type == 'VariableDeclaration' && i.kind == 'var') {
@@ -22,7 +24,7 @@ const plugin: GlobalMacro = (ast, handler, parent, prop, index) => {
     }
 
     if (Object.keys(signals).length > 0) {
-      handler.import([{ name: 'useSignal' }], '@builder.io/qwik');
+      this.import([{ name: 'useSignal' }], '@builder.io/qwik');
       return Object.entries(signals).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "const",
@@ -78,28 +80,32 @@ const plugin: GlobalMacro = (ast, handler, parent, prop, index) => {
         }
       } as VariableDeclaration))
     }
-  } else if (ast.type == 'Identifier' && parent?.type != 'VariableDeclarator' && handler.track(ast.value)?.marker == 'qwikSignal') {
-    handler.replace({
-      type: 'MemberExpression',
-      object: ast,
-      property: {
-        type: "Identifier",
-        value: "value",
-        optional: false,
+
+  },
+  Identifier(ast, parent) {
+    if (parent?.type != 'VariableDeclarator' && this.track(ast.value)?.marker == 'qwikSignal') {
+      this.replace({
+        type: 'MemberExpression',
+        object: ast,
+        property: {
+          type: "Identifier",
+          value: "value",
+          optional: false,
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0
+          }
+        },
         span: {
           start: 0,
           end: 0,
           ctxt: 0
         }
-      },
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      }
-    } as MemberExpression);
-    handler.skip();
+      } as MemberExpression);
+      this.skip();
+    }
   }
-}
+})
 
 export default plugin;
