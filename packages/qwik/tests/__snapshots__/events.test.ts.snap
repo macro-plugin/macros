@@ -36,7 +36,39 @@ const KeyBoard = component$(()=>{
 "
 `;
 
+exports[`useOnDocument event 2`] = `
+"import { component$ } from "@builder.io/qwik";
+import { useSignal } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
+import { useOnDocument } from "@builder.io/qwik";
+const KeyBoard = component$(()=>{
+    const keyPressed = useSignal("");
+    useOnDocument("keydown", $((event)=>{
+        keyPressed.value = keyPressed.value + event.key;
+    }));
+    return <div>{keyPressed.value}</div>;
+});
+"
+`;
+
 exports[`useOnWindow event 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
+import { useOnWindow } from "@builder.io/qwik";
+export const Online = component$(()=>{
+    useOnWindow("online", $(()=>{
+        alert("Your Device is now Online");
+    }));
+    useOnWindow("offline", $(()=>{
+        alert("Your Device is now Offline");
+    }));
+    return <div></div>;
+});
+;
+"
+`;
+
+exports[`useOnWindow event 2`] = `
 "import { component$ } from "@builder.io/qwik";
 import { $ } from "@builder.io/qwik";
 import { useOnWindow } from "@builder.io/qwik";

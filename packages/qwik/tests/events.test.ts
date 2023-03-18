@@ -46,6 +46,26 @@ test("useOnDocument event", () => {
   expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
 })
 
+test("useOnDocument event", () => {
+  const code = `
+  function KeyBoard() {
+    qwik: true
+    signal: {
+      var keyPressed = ''
+    }
+    document: {
+      onkeydown: (event) => {
+        keyPressed = keyPressed + event.key;
+      }
+    }
+
+    return <div>{keyPressed}</div>;
+  }
+  `
+
+  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+})
+
 test("useOnWindow event", () => {
   const code = `
   export function Online() {
@@ -59,6 +79,24 @@ test("useOnWindow event", () => {
       alert('Your Device is now Offline');
     }
 
+    return <div></div>;
+  };
+  `
+  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+})
+
+test("useOnWindow event", () => {
+  const code = `
+  export function Online() {
+    qwik: true
+    window: {
+      ononline: {
+        alert('Your Device is now Online');
+      }
+      onoffline: {
+        alert('Your Device is now Offline');
+      }
+    }
     return <div></div>;
   };
   `
