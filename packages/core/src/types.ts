@@ -17,7 +17,7 @@ export type WalkContext = {
   /** Save data to current plugin cache */
   set: <T>(key: string, data: T) => void;
   /** Get data from current plugin cache */
-  get: <T>(key: string, defaultValue?: T) => T | undefined;
+  get: (<T>(key: string, defaultValue: T) => T) & (<T>(key: string, defaultValue?: T) => T | undefined);
   /** Skip this node, not handling */
   skip: () => void;
   /** Remove this node */
