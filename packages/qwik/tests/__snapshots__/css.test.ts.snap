@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`qwik css link 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import __link0 from "./code-block.css?inline";
+import { useStyles$ } from "@builder.io/qwik";
+export const CmpStyles = component$(()=>{
+    useStyles$(__link0);
+    return <span class="my-text">Some text</span>;
+});
+"
+`;
+
+exports[`qwik css links 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import __link0 from "./code-block.css?inline";
+import __link1 from "./font-style.css?inline";
+import { useStyles$ } from "@builder.io/qwik";
+export const CmpStyles = component$(()=>{
+    useStyles$(__link0);
+    useStyles$(__link1);
+    return <span class="my-text">Some text</span>;
+});
+"
+`;
+
+exports[`qwik css string 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import { useStyle$ } from "@builder.io/qwik";
+export const CmpStyles = component$(()=>{
+    useStyle$(\`
+        .my-text {
+          color: red;
+        }
+      \`);
+    return <span class="my-text">Some text</span>;
+});
+"
+`;
+
+exports[`qwik scoped css 1`] = `
+"import { component$ } from "@builder.io/qwik";
+import __link0 from "./code-block.css?inline";
+import { useStyleScoped$ } from "@builder.io/qwik";
+export const CmpStyles = component$(()=>{
+    useStyleScoped$(__link0);
+    useStyleScoped$(\`
+        .my-text {
+          color: red;
+        }
+      \`);
+    return <span class="my-text">Some text</span>;
+});
+"
+`;
