@@ -1,6 +1,6 @@
 import { Identifier, Statement, VariableDeclaration } from "@swc/core";
 
-import { createMacro } from "@macro-plugin/core";
+import { createLabeledMacro } from "@macro-plugin/core";
 
 const varToReturn = (body: Statement[]) => {
   let ident: Identifier | undefined;
@@ -27,12 +27,10 @@ const varToReturn = (body: Statement[]) => {
   return [ident, body] as [Identifier, Statement[]]
 }
 
-export const resource = createMacro(function (ast) {
-  if (ast.type != 'LabeledStatement' || ast.label.value != 'resource') return;
-
+export const resource = createLabeledMacro('resource', function (stmt) {
   this.import([{ name: 'useResource$' }], '@builder.io/qwik');
-  if (ast.body.type == "BlockStatement") {
-    const [id, stmts] = varToReturn(ast.body.stmts);
+  if (stmt.type == "BlockStatement") {
+    const [id, stmts] = varToReturn(stmt.stmts);
 
     return {
       type: "VariableDeclaration",
@@ -98,12 +96,12 @@ export const resource = createMacro(function (ast) {
       declare: false,
       kind: "const"
     } as VariableDeclaration
-  } else if (ast.body.type == "ExpressionStatement" && ast.body.expression.type == 'ArrowFunctionExpression') {
+  } else if (stmt.type == "ExpressionStatement" && stmt.expression.type == 'ArrowFunctionExpression') {
     let id, stmts;
 
-    if (ast.body.expression.body.type == 'BlockStatement') {
-      [id, stmts] = varToReturn(ast.body.expression.body.stmts);
-      ast.body.expression.body.stmts = stmts;
+    if (stmt.expression.body.type == 'BlockStatement') {
+      [id, stmts] = varToReturn(stmt.expression.body.stmts);
+      stmt.expression.body.stmts = stmts;
     } else {
       throw new Error('expect an arrow block inside resource.')
     }
@@ -134,7 +132,7 @@ export const resource = createMacro(function (ast) {
             },
             arguments: [
               {
-                expression: ast.body.expression
+                expression: stmt.expression
               }
             ],
             span: {

@@ -80,7 +80,6 @@ export const signal = createMacro({
         }
       } as VariableDeclaration))
     }
-
   },
   Identifier(ast, parent) {
     if (parent?.type != 'VariableDeclarator' && this.track(ast.value)?.marker == 'qwikSignal') {
