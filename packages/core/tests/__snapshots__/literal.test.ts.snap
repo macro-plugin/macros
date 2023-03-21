@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`create literal macro 1`] = `
+"if (true) {
+    console.log("development");
+}
+"
+`;
+
+exports[`should allow ast for more complex value 1`] = `
+"const expr = call("hello", "world");
+"
+`;
+
+exports[`should pass overwrited variable 1`] = `
+"const before = true;
+function testDev(__DEV__) {
+    if (__DEV__) {
+        console.log("development");
+    }
+}
+const after = true;
+"
+`;
+
+exports[`should support all jsonable values 1`] = `
+"const a = 123;
+const b = "Hello World";
+const c = false;
+const d = null;
+const e = undefined;
+const f = ()=>true;
+const e = [
+    1,
+    2,
+    3
+];
+const g = {
+    "a": 1,
+    "b": 2
+};
+const h = /.*/g;
+"
+`;
