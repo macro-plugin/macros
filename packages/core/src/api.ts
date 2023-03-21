@@ -1,6 +1,9 @@
+import { Argument, ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, Pattern, TsTypeParameterInstantiation } from "@swc/core";
 import type { BaseNode, LabeledMacro, MacroPlugin, WalkContext } from "./types";
 
 import { isRegExp } from "./utils";
+import { parseExpr } from "./parse";
+import { walk } from "./walk";
 
 export function createMacro(macro: MacroPlugin) {
   return macro;
@@ -39,7 +42,61 @@ export function createLitMacro(arg: string | Record<string, unknown>, value?: un
   })
 }
 
-export function createExprMacro() {
+function flatExpr(f: Function, args: Argument[], typeParams?: TsTypeParameterInstantiation, optional = false): Expression {
+  const ast = parseExpr(f.toString()) as FunctionDeclaration | FunctionExpression | ArrowFunctionExpression
+  let params: Record<string, { value?: Expression }> = {}
+
+  ast.params.forEach((p, i) => {
+    let pat = ast.type == 'ArrowFunctionExpression' ? p : ((p as Param).pat);
+    if (pat.type == 'Identifier') {
+      params[pat.value] = args[i] ? { value: args[i].expression } : {}
+    } else if (pat.type == 'AssignmentPattern') {
+      if (pat.left.type == 'Identifier') {
+        params[pat.left.value] = { value: args[i].expression || pat.right }
+      }
+    }
+  })
+
+  let output: Invalid | Expression = {
+    type: 'Invalid',
+    span: {
+      start: 0,
+      end: 0,
+      ctxt: 0
+    }
+  }
+
+  if (ast.body) {
+    walk(ast.body, {
+      // @ts-ignore
+      enter(ast: BaseNode) {
+        if (ast.type === 'Identifier' && ast.value in params) {
+          const v = params[ast.value].value;
+          if (v) this.replace(v)
+        }
+      },
+      // @ts-ignore
+      leave(ast: BaseNode) {
+        if (ast.type === 'ReturnStatement' && ast.argument) {
+          output = ast.argument
+        }
+      }
+    })
+
+    if (ast.body.type != 'BlockStatement') output = ast.body;
+  }
+
+  return output
+}
+
+export function createExprMacro(name: string, f: Function) {
+  return createMacro({
+    CallExpression(ast) {
+      if (ast.callee.type == 'Identifier' && ast.callee.value == name && !this.track(ast.callee.value)) {
+        return flatExpr(f, ast.arguments, ast.typeArguments, ast.callee.optional)
+      }
+    }
+  })
 }
 
 export function createTypeMacro() {
