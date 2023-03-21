@@ -17,8 +17,8 @@ export function createTypeMacro() {
 
 export function createLabeledMacro(label: string, f: LabeledMacro) {
   return createMacro({
-    LabeledStatement(ast) {
-      if (ast.label.value == label) return f.apply(this, [ast])
+    LabeledStatement(ast, parent, prop, index) {
+      if (ast.label.value == label) return f.apply(this, [ast.body, parent, prop, index])
     }
   })
 }
