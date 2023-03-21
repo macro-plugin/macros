@@ -1,56 +1,35 @@
 import { ExpressionStatement, Statement } from "@swc/core";
-import { LabeledMacro, createMacro, generate } from "../src"
+import { LabeledMacro, createLabeledMacro, createMacro, generate } from "../src"
 
 import { transform } from "../src"
 
 var DEBUG = false;
 
-const debug = createMacro({
-  LabeledStatement(ast) {
-    if (ast.label.value === 'debug') {
-      if (DEBUG) return ast.body;
-
-      return {
-        type: "EmptyStatement",
-        span: { start: 0, end: 0, ctxt: 0 },
-      }
-    }
-  }
+const debug = createLabeledMacro('debug', function (stmt) {
+  if (DEBUG) return stmt;
+  this.remove();
 })
 
-const hello = createMacro({
-  LabeledStatement(ast) {
-    if (ast.label.value != 'hello') return;
-    return this.parse('world');
-  }
+const hello = createLabeledMacro('hello', function (stmt) {
+  return this.parse('world');
 })
 
-const codeblock = createMacro({
-  LabeledStatement(ast) {
-    if (ast.label.value != 'codeblock' || ast.body.type != 'BlockStatement') return;
-    return this.parse(this.print(ast.body).replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '').trim())
-  }
+const codeblock = createLabeledMacro('codeblock', function (stmt) {
+  if (stmt.type != 'BlockStatement') return;
+  return this.parse(this.print(stmt).replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '').trim())
 })
 
-const codecall = createMacro({
-  LabeledStatement(ast) {
-    if (ast.label.value != 'codecall' || ast.body.type != 'BlockStatement') return;
-    return this.parse(`(() => ${this.print(ast.body)})()`)
-  }
+const codecall = createLabeledMacro('codecall', function (stmt) {
+  if (stmt.type != 'BlockStatement') return;
+  return this.parse(`(() => ${this.print(stmt)})()`)
 })
 
-const stringify = createMacro({
-  LabeledStatement(ast) {
-    if (ast.label.value != 'stringify') return;
-    return this.parse("`" + this.print(ast.body) + "`");
-  }
+const stringify = createLabeledMacro('stringify', function (stmt) {
+  return this.parse("`" + this.print(stmt) + "`");
 })
 
-const empty = createMacro({
-  LabeledStatement(ast) {
-    if (ast.label.value != 'empty') return;
-    this.remove();
-  }
+const empty = createLabeledMacro('empty', function (stmt) {
+  this.remove();
 })
 
 test("transform debug", () => {
@@ -58,7 +37,7 @@ test("transform debug", () => {
   const code = `
     debug: console.log("Hello World");
   `;
-  expect(transform(code, { plugins: [debug] }).code.trim()).toEqual(";");
+  expect(transform(code, { plugins: [debug] }).code.trim()).toBe("");
   DEBUG = true;
   expect(transform(code, { plugins: [debug] }).code).toMatchSnapshot();
 })
@@ -121,7 +100,7 @@ test("transform in jsx", () => {
   `
 
   expect(transform(code, {
-    plugins: [ stringify ],
+    plugins: [stringify],
     jsc: {
       parser: {
         syntax: 'typescript',

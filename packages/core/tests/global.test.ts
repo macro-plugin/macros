@@ -61,11 +61,9 @@ const arrow = createMacro({
   }
 })
 
-const inject = createMacro({
-  enter() {
-    this.import([ { name: 'test', kind: 'default' } ], 'test')
-    this.import([ { name: 'ref' } ], 'vue')
-  }
+const inject = createMacro(function () {
+  this.import([ { name: 'test', kind: 'default' } ], 'test')
+  this.import([ { name: 'ref' } ], 'vue')
 })
 
 test("transform function block", () => {
