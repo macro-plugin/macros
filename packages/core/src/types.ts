@@ -42,7 +42,7 @@ export type WalkPlugin = {
   track?: TrackFunc;
 }
 
-export type LabeledMacro = (this: WalkContext, ast: Statement, parent?: BaseNode, prop?: string, index?: number) => BaseNode | BaseNode[] | undefined
+export type LabeledMacro = (this: WalkContext, stmt: Statement, parent?: BaseNode, prop?: string, index?: number) => BaseNode | BaseNode[] | void | undefined
 export type GlobalMacro<T = BaseNode> = (this: WalkContext, ast: T, parent?: BaseNode, prop?: string, index?: number) => void | undefined | BaseNode | BaseNode[]
 
 type SliceVisit<T> = T extends `visit${infer R}` ? R : never;
