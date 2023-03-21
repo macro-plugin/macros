@@ -1,7 +1,7 @@
 import { ArrowFunctionExpression, ExpressionStatement } from "@swc/core";
 
 import { MacroPlugin } from "./types";
-import { createPlugin } from "./transform";
+import { createMacro } from "./api";
 
 /**
  * Create a macro plugin that converts `labeled: {}` or `labeled: (...args) => {}` to `$specifier((...args) => {})`,
@@ -12,7 +12,7 @@ import { createPlugin } from "./transform";
  * @returns - A labeled macro plugin
  */
 export const createLabeledBlock: ((label: string, specifier: string, source: string, allowParams?: boolean) => MacroPlugin) = (label, specifier, source, allowParams = false) => {
-  return createPlugin({
+  return createMacro({
     LabeledStatement(ast) {
       if (ast.label.value != label) return;
       this.import([{ name: specifier }], source);

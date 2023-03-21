@@ -9,10 +9,6 @@ import { parse, parseAsync } from "./parse"
 
 import { walk } from "./walk"
 
-export function createPlugin(plugin: MacroPlugin) {
-  return plugin;
-}
-
 export function createSwcPlugin(config: Config) {
   return (program: Program) => {
     const plugins = config.plugins || [];

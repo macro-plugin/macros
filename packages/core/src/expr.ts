@@ -1,9 +1,9 @@
 import { CallExpression } from "@swc/core";
 import { MacroPlugin } from "./types";
-import { createPlugin } from "./transform";
+import { createMacro } from "./api";
 
 export const createLabeledExpr: ((label: string, specifier: string, source: string) => MacroPlugin) = (label, specifier, source) => {
-  return createPlugin({
+  return createMacro({
     LabeledStatement(ast) {
       if (ast.label.value != label) return;
       if (ast.body.type == "ExpressionStatement") {

@@ -1,9 +1,9 @@
 import type { ArrayPattern, AssignmentPattern, Declaration, Expression, Identifier, ObjectPattern, Pattern } from "@swc/core";
 import type { GlobalMacroPlugin, ScopeVar } from "./types"
 
-import { createPlugin } from "./transform";
+import { createMacro } from "./api";
 
-export default createPlugin({
+export default createMacro({
   enter(ast) {
     const scopeVars = this.get('scopeVars', [[]]) as ScopeVar[][];
 
