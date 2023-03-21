@@ -15,6 +15,10 @@ export function hashMap(map: object): string {
   return hash(JSON.stringify(map))
 }
 
+export function isRegExp<T extends object>(input: T): boolean {
+  return Object.prototype.toString.call(input) === '[object RegExp]'
+}
+
 export const span = {
   start: 0,
   end: 0,

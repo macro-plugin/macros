@@ -1,9 +1,9 @@
 import { BaseNode, Node, PluginImportSpecifier, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types";
 import { ImportDeclaration, Program } from "@swc/core";
 import { genSpecifier, hashMap } from "./utils";
+import { parse, parseExpr } from "./parse";
 
 import { generate } from "./generate";
-import { parse } from "./parse";
 import trackPlugin from "./track";
 
 class Walker {
@@ -15,7 +15,7 @@ class Walker {
   set = <T>(key: string, value: T) => { this.data[key] = value; }
   get = <T>(key: string, defaultValue?: T) => {
     if (!(key in this.data)) this.data[key] = defaultValue;
-    return this.data[key] as T || defaultValue;
+    return this.data[key] as T || defaultValue as T;
   }
   import = (specifiers: PluginImportSpecifier[], source: string) => {
     let h;
@@ -68,6 +68,7 @@ class Walker {
         _skipped = true
       },
       parse: (src, options) => parse(src, options).body,
+      parseExpr: (src, options) => parseExpr(src, options),
       print: (ast) => generate((ast || n) as BaseNode).code,
       remove: () => {
         if (parent && prop) {

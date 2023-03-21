@@ -30,6 +30,8 @@ export type WalkContext = {
   import: (specifiers: PluginImportSpecifier[], source: string) => void;
   /** Convert source code to node list */
   parse: (src: string, options?: ParseOptions) => ModuleItem[];
+  /** Convert expression to ast */
+  parseExpr: (src: string, options?: ParseOptions) => Expression;
   /** Convert current ast node to source code */
   print: (ast?: Node | Node[]) => string;
 }
