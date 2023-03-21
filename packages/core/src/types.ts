@@ -1,4 +1,4 @@
-import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, ParseOptions, PrivateMethod, Statement, VariableDeclarator } from "@swc/core";
+import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, Param, ParseOptions, PrivateMethod, Statement, VariableDeclarator } from "@swc/core";
 
 import type { Visitor } from "@swc/core/Visitor";
 
@@ -11,7 +11,7 @@ export type { Node } from "@swc/core"
 
 export type ScopeVar = { name: string, private?: boolean, value?: Node, marker?: unknown };
 
-export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration | ImportDeclaration | ClassMethod | PrivateMethod | Statement | VariableDeclarator | ModuleItem;
+export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration | ImportDeclaration | Param | ClassMethod | PrivateMethod | Statement | VariableDeclarator | ModuleItem;
 
 export type WalkContext = {
   /** Save data to current plugin cache */
