@@ -1,8 +1,8 @@
 import { ArrowFunctionExpression, ExpressionStatement } from "@swc/core";
 
-import { createPlugin } from "@macro-plugin/core";
+import { createMacro } from "@macro-plugin/core";
 
-export const events = createPlugin({
+export const events = createMacro({
   LabeledStatement: {
     enter(ast) {
       if (ast.label.value == 'document' && ast.body.type == 'BlockStatement') {

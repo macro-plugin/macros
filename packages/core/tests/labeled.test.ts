@@ -1,11 +1,11 @@
 import { ExpressionStatement, Statement } from "@swc/core";
-import { LabeledMacro, createPlugin, generate } from "../src"
+import { LabeledMacro, createMacro, generate } from "../src"
 
 import { transform } from "../src"
 
 var DEBUG = false;
 
-const debug = createPlugin({
+const debug = createMacro({
   LabeledStatement(ast) {
     if (ast.label.value === 'debug') {
       if (DEBUG) return ast.body;
@@ -18,35 +18,35 @@ const debug = createPlugin({
   }
 })
 
-const hello = createPlugin({
+const hello = createMacro({
   LabeledStatement(ast) {
     if (ast.label.value != 'hello') return;
     return this.parse('world');
   }
 })
 
-const codeblock = createPlugin({
+const codeblock = createMacro({
   LabeledStatement(ast) {
     if (ast.label.value != 'codeblock' || ast.body.type != 'BlockStatement') return;
     return this.parse(this.print(ast.body).replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '').trim())
   }
 })
 
-const codecall = createPlugin({
+const codecall = createMacro({
   LabeledStatement(ast) {
     if (ast.label.value != 'codecall' || ast.body.type != 'BlockStatement') return;
     return this.parse(`(() => ${this.print(ast.body)})()`)
   }
 })
 
-const stringify = createPlugin({
+const stringify = createMacro({
   LabeledStatement(ast) {
     if (ast.label.value != 'stringify') return;
     return this.parse("`" + this.print(ast.body) + "`");
   }
 })
 
-const empty = createPlugin({
+const empty = createMacro({
   LabeledStatement(ast) {
     if (ast.label.value != 'empty') return;
     this.remove();

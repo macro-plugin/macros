@@ -1,5 +1,5 @@
 import { ArrowFunctionExpression, CallExpression, FunctionDeclaration, FunctionExpression, LabeledStatement, VariableDeclaration } from "@swc/core";
-import { WalkContext, createPlugin } from "@macro-plugin/core";
+import { WalkContext, createMacro } from "@macro-plugin/core";
 
 function handleFunc(this: WalkContext, ast: FunctionDeclaration | FunctionExpression | ArrowFunctionExpression) {
   let label;
@@ -84,7 +84,7 @@ function handleFunc(this: WalkContext, ast: FunctionDeclaration | FunctionExpres
   }
 }
 
-export const qwik = createPlugin({
+export const qwik = createMacro({
   FunctionDeclaration(ast) {
     return handleFunc.apply(this, [ast])
   },

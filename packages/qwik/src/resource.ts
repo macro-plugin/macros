@@ -1,6 +1,6 @@
 import { Identifier, Statement, VariableDeclaration } from "@swc/core";
 
-import { createPlugin } from "@macro-plugin/core";
+import { createMacro } from "@macro-plugin/core";
 
 const varToReturn = (body: Statement[]) => {
   let ident: Identifier | undefined;
@@ -27,7 +27,7 @@ const varToReturn = (body: Statement[]) => {
   return [ident, body] as [Identifier, Statement[]]
 }
 
-export const resource = createPlugin(function (ast) {
+export const resource = createMacro(function (ast) {
   if (ast.type != 'LabeledStatement' || ast.label.value != 'resource') return;
 
   this.import([{ name: 'useResource$' }], '@builder.io/qwik');

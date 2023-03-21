@@ -1,8 +1,8 @@
 import { CallExpression, ExpressionStatement } from "@swc/core";
 
-import { createPlugin } from "@macro-plugin/core";
+import { createMacro } from "@macro-plugin/core";
 
-export const css = createPlugin({
+export const css = createMacro({
   LabeledStatement(ast) {
     if (ast.label.value != 'css') return;
     if (ast.body.type == "ExpressionStatement") {
@@ -41,7 +41,7 @@ export const css = createPlugin({
   }
 })
 
-export const link = createPlugin({
+export const link = createMacro({
   LabeledStatement(ast) {
     if (ast.label.value != 'link') return;
     if (ast.body.type != 'ExpressionStatement') return;
@@ -114,7 +114,7 @@ export const link = createPlugin({
   }
 })
 
-export const scoped = createPlugin({
+export const scoped = createMacro({
   LabeledStatement: {
     enter(ast) {
       if (ast.label.value != 'scoped') return;

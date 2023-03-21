@@ -1,8 +1,8 @@
-import { createPlugin, transform } from "../src"
+import { createMacro, transform } from "../src"
 
 import type { VariableDeclaration } from "@swc/core";
 
-const arrow = createPlugin({
+const arrow = createMacro({
   FunctionDeclaration(ast) {
     const children = [];
     let isArrow = false;
@@ -61,7 +61,7 @@ const arrow = createPlugin({
   }
 })
 
-const inject = createPlugin({
+const inject = createMacro({
   enter() {
     this.import([ { name: 'test', kind: 'default' } ], 'test')
     this.import([ { name: 'ref' } ], 'vue')

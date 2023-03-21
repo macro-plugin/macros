@@ -1,11 +1,11 @@
-import { BaseNode, createPlugin, markedNode } from "@macro-plugin/core"
+import { BaseNode, createMacro, markedNode } from "@macro-plugin/core"
 import { BinaryExpression, CallExpression, Expression, VariableDeclaration } from "@swc/core";
 
 function getSetter(name: string) {
   return 'set' + name[0].toUpperCase() + name.slice(1)
 }
 
-const plugin = createPlugin({
+const plugin = createMacro({
   LabeledStatement(ast) {
     const stores: Record<string, { value?: BaseNode | Expression, setter: string }> = {};
     if (ast.body.type == 'BlockStatement' && ast.label.value == 'store') {

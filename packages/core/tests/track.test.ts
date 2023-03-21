@@ -1,9 +1,8 @@
-import { GlobalMacro, ScopeVar } from "../src/types";
-import { createPlugin, transform } from "../src/transform";
+import { GlobalMacro, ScopeVar, createMacro, transform } from "../src";
 
 var a: ScopeVar | undefined, b: ScopeVar | undefined, c: ScopeVar | undefined;
 
-const trackValue = createPlugin({
+const trackValue = createMacro({
   FunctionDeclaration() {
     a = this.track('a');
     b = this.track('b');

@@ -1,11 +1,11 @@
-import { BaseNode, createPlugin, markedNode } from "@macro-plugin/core"
+import { BaseNode, createMacro, markedNode } from "@macro-plugin/core"
 import { BinaryExpression, CallExpression, Expression, VariableDeclaration } from "@swc/core";
 
 function getSetter(name: string) {
   return 'set' + name[0].toUpperCase() + name.slice(1)
 }
 
-export default createPlugin({
+export default createMacro({
   LabeledStatement(ast) {
     if (ast.body.type != 'BlockStatement' || ast.label.value != 'signal') return;
 
