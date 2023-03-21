@@ -1,14 +1,14 @@
 import { ArrowFunctionExpression, Expression, ExpressionStatement, Identifier, VariableDeclaration } from "@swc/core";
-import { BaseNode, createMacro, markedNode, unMarkNode, walk } from "@macro-plugin/core";
+import { BaseNode, createLabeledMacro, markedNode, unMarkNode, walk } from "@macro-plugin/core";
 
-export const computed = createMacro(function (ast) {
-  if (ast.type != 'LabeledStatement' || ast.body.type != 'BlockStatement' || ast.label.value != 'computed') return;
+export const computed = createLabeledMacro('computed', function (stmt) {
+  if (stmt.type != 'BlockStatement') return;
 
   const computeds: Record<string, { value: BaseNode, computed?: BaseNode | Expression }> = {};
   const signals: string[] = [];
 
   let name;
-  for (const i of ast.body.stmts) {
+  for (const i of stmt.stmts) {
     if (i.type == 'VariableDeclaration' && i.kind == 'var') {
       for (const d of i.declarations) {
         if (d.id.type == 'Identifier') {
