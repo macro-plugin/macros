@@ -57,3 +57,32 @@ test("should allow ast for more complex value", () => {
     createLitMacro('__expr__', parseExpr('call("hello", "world")'))
   ]}).code).toMatchSnapshot()
 });
+
+test("should support pass an object", () => {
+  const code = `
+    const a = __num__
+    const b = __str__
+    const c = __bool__
+    const d = __null__
+    const e = __undefined__
+    const f = __function__
+    const e = __array__
+    const g = __object__
+    const h = __regex__
+    const i = __expr__
+  `
+  expect(transform(code, { plugins: [
+    createLitMacro({
+      '__num__': 123,
+      '__str__': 'Hello World',
+      '__bool__': false,
+      '__null__': null,
+      '__undefined__': undefined,
+      '__function__': () => true,
+      '__array__': [1, 2, 3],
+      '__object__': { a: 1, b: 2 },
+      '__regex__': /.*/g,
+      '__expr__': parseExpr('call("hello", "world")')
+    })
+  ]}).code).toMatchSnapshot()
+});

@@ -42,3 +42,24 @@ const g = {
 const h = /.*/g;
 "
 `;
+
+exports[`should support pass an object 1`] = `
+"const a = 123;
+const b = "Hello World";
+const c = false;
+const d = null;
+const e = undefined;
+const f = ()=>true;
+const e = [
+    1,
+    2,
+    3
+];
+const g = {
+    "a": 1,
+    "b": 2
+};
+const h = /.*/g;
+const i = call("hello", "world");
+"
+`;
