@@ -28,6 +28,5 @@ exports[`transform in jsx 1`] = `
 
 exports[`transform in typescript 1`] = `
 "let a: string = "Hello";
-;
 "
 `;
