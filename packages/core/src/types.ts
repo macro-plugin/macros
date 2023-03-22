@@ -45,6 +45,8 @@ export type WalkContext = {
   parse(src: string, options?: ParseOptions): ModuleItem[];
   /** Convert expression to ast */
   parseExpr(src: string, options?: ParseOptions): Expression;
+  /** Convert type expression to ast */
+  parseType(ty: string, options?: ParseOptions): TsType;
   /** Convert current ast node to source code */
   print(ast?: Node | Node[]): string;
   /** Convert an expression node to source code */

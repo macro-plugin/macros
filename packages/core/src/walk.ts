@@ -1,7 +1,7 @@
 import { BaseNode, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
 import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration } from "@swc/core"
 import { genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
-import { parse, parseExpr } from "./parse"
+import { parse, parseExpr, parseType } from "./parse"
 import { print, printExpr } from "./print"
 
 import trackPlugin from "./track"
@@ -146,6 +146,7 @@ export class Walker {
     prepend: this.prepend,
     append: this.append,
     parseExpr,
+    parseType,
     parse: (src: string, options: ParseOptions) => parse(src, options).body,
     printExpr: (expr: Node) => printExpr(expr as BaseNode).code,
     declareAppend: this.declareAppend,
@@ -303,7 +304,7 @@ export class Walker {
       ...(globalDts ? [globalDts] : []),
       ...this.moduleDts,
       ...this.appendDts
-    ]).code
+    ]).code.replace(/declare module global/g, "declare global")
   }
 
   track (name: string) {

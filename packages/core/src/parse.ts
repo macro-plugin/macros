@@ -1,5 +1,6 @@
-import type { Expression, ModuleItem, ParseOptions } from "@swc/core"
-import { parse, parseSync } from "@swc/core"
+import type { Expression, ModuleItem, ParseOptions, TsType, TsTypeAliasDeclaration } from "@swc/core"
+
+import { parseSync } from "@swc/core"
 
 export { parse as parseAsync, parseSync as parse } from "@swc/core"
 
@@ -19,7 +20,6 @@ export function parseExpr (expr: string, options?: ParseOptions): Expression {
   return extractExpr(parseSync("(" + expr + ")", options).body[0])
 }
 
-export async function parseExprAsync (expr: string, options: ParseOptions) {
-  const stmt = (await parse("(" + expr + ")", options)).body[0]
-  return extractExpr(stmt)
+export function parseType (ty: string, options?: ParseOptions): TsType {
+  return (parseSync(`type A = ${ty}`, { ...options, syntax: "typescript" }).body[0] as TsTypeAliasDeclaration).typeAnnotation
 }
