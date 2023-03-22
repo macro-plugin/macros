@@ -1,6 +1,5 @@
-import { createExprMacro, createTypeMacro, transform } from "../src"
-
-import { StringLiteral } from "@swc/core"
+import { Expression, StringLiteral } from "@swc/core"
+import { createExprMacro, createTmplMacro, createTypeMacro, transform } from "../src"
 
 test("create expr macro with arrow function", () => {
   const macro = createExprMacro("$add", ($a: number, $b: number) => {
@@ -144,4 +143,40 @@ test("create a type macro with createTypeMacro", () => {
     (e: 'change', id: number): void
     (e: 'update', value: string): void
   }>()`, { plugins: [macro], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
+})
+
+test("create a template macro", () => {
+  const macro = createTmplMacro("real", function (strings, personExpr, ageExpr) {
+    let person: string = "Kali"
+    let age: number = 10
+    if (personExpr.type === "Identifier") {
+      personExpr = this.track(personExpr.value)?.value as Expression
+      if (personExpr.type === "StringLiteral") {
+        person = personExpr.value
+      }
+    }
+
+    if (ageExpr.type === "Identifier") {
+      ageExpr = this.track(ageExpr.value)?.value as Expression
+      if (ageExpr.type === "NumericLiteral") {
+        age = ageExpr.value
+      }
+    }
+
+    return {
+      type: "StringLiteral",
+      value: `${strings[0]}${person}${strings[1]}${age}${strings[2]}`,
+      span: {
+        start: 0,
+        end: 0,
+        ctxt: 0
+      }
+    }
+  })
+
+  expect(transform(`
+  let person = 'Bob'
+  let age = 12
+  const des = real\`That \${person} is \${age}\`
+  `, { plugins: [macro] }).code).toMatchSnapshot()
 })

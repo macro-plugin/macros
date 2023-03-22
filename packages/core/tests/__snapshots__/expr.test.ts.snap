@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`create a template macro 1`] = `
+"let person = "Bob";
+let age = 12;
+const des = "That Bob is 12";
+"
+`;
+
 exports[`create a type macro with createExprMacro 1`] = `
 "const emit = defineEmits([
     "change",
