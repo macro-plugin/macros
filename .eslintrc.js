@@ -22,6 +22,7 @@ module.exports = {
     indent: [2, 2, { SwitchCase: 1 }],
     "no-console": 1,
     "no-labels": 0,
+    "no-redeclare": 0,
     "no-constant-condition": 1,
     "no-trailing-spaces": 2,
     "@typescript-eslint/no-unused-vars": 1,
