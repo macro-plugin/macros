@@ -19,8 +19,8 @@ export class Walker {
   appendDts: ModuleItem[] = []
   importHashes: Record<string, true> = {}
   exportHashes: Record<string, true> = {}
-  enter?: WalkFunc
-  leave?: WalkFunc
+  enters: WalkFunc[] = [trackPlugin.enter as WalkFunc]
+  leaves: WalkFunc[] = [trackPlugin.leave as WalkFunc]
   set = <T>(key: string, value: T) => { this.data[key] = value }
   get = <T>(key: string, defaultValue?: T) => {
     if (!(key in this.data)) this.data[key] = defaultValue
@@ -159,8 +159,8 @@ export class Walker {
   }
 
   constructor ({ enter, leave }: WalkPlugin) {
-    this.enter = enter
-    this.leave = leave
+    enter && this.enters.push(enter)
+    leave && this.leaves.push(leave)
   }
 
   walkSingle (n: Node, parent?: Node, prop?: string, index?: number) {
@@ -201,8 +201,7 @@ export class Walker {
       },
     }
 
-    trackPlugin.enter.apply(ctx, [n as BaseNode, parent as BaseNode, prop, index])
-    if (this.enter) this.enter.apply(ctx, [n, parent, prop, index])
+    this.enters.forEach(f => f.apply(ctx, [n, parent, prop, index]))
 
     if (Array.isArray(_replaced)) {
       this.walkMany(_replaced, parent)
@@ -217,8 +216,7 @@ export class Walker {
       }
     }
 
-    if (this.leave) this.leave.apply(ctx, [n, parent, prop, index])
-    trackPlugin.leave.apply(ctx, [n as BaseNode, parent as BaseNode, prop, index])
+    this.leaves.forEach(f => f.apply(ctx, [n, parent, prop, index]))
 
     return _skipCount
   }
