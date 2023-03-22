@@ -66,6 +66,8 @@ const arrow = createMacro({
 const inject = createMacro(function () {
   this.import("test", "test", true)
   this.import("ref", "vue")
+  this.export("ref", "vue")
+  this.export("all", undefined, true)
 })
 
 test("transform function block", () => {
@@ -86,7 +88,7 @@ test("transform function block", () => {
   expect(transform(code2, { plugins: [arrow] }).code).toMatchSnapshot()
 })
 
-test("inject imports", () => {
+test("inject imports and exports", () => {
   const code = `
   function myComponent() {
     const count = ref(0);

@@ -9,6 +9,17 @@ function myComponent() {
 "
 `;
 
+exports[`inject imports and exports 1`] = `
+"import test from "test";
+import { ref } from "vue";
+function myComponent() {
+    const count = ref(0);
+}
+export { ref } from "vue";
+export * as all;
+"
+`;
+
 exports[`transform function block 1`] = `
 "const add = ()=>{
     return a + b;
