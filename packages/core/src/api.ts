@@ -1,7 +1,7 @@
 import { ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, TsFunctionType, TsType } from "@swc/core"
 import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro, WalkContext } from "./types"
 import { defaultGlobalExpr, defaultGlobalTmpl, defaultGlobalType } from "./defaults"
-import { genConstType, guessType, isRegExp } from "./utils"
+import { guessType, isRegExp } from "./utils"
 
 import { parseExpr } from "./parse"
 import { walk } from "./walk"
@@ -37,7 +37,7 @@ export function createLitMacro (arg: string | Record<string, unknown>, value?: u
   return createMacro(typeof arg === "string"
     ? {
       Module () {
-        this.declareGlobal(genConstType(arg, typeof typeAnnotation === "string" ? this.parseType(typeAnnotation) : (typeAnnotation || guessType(value))))
+        this.declareGlobalConst(arg, typeAnnotation || guessType(value))
       },
       Identifier (ast) {
         if (ast.value === arg && !this.track(arg)) return createLit.apply(this, [value])
@@ -49,9 +49,9 @@ export function createLitMacro (arg: string | Record<string, unknown>, value?: u
         for (const [k, v] of Object.entries(arg)) {
           if (value && Object.keys(value).includes(k)) {
             t = (value as Record<string, string | TsType>)[k]
-            this.declareGlobal(genConstType(k, typeof t === "string" ? this.parseType(t) : t))
+            this.declareGlobalConst(k, t)
           } else {
-            this.declareGlobal(genConstType(k, guessType(v)))
+            this.declareGlobalConst(k, guessType(v))
           }
         }
       },
@@ -113,7 +113,7 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
   if (typeof f === "object") {
     return createMacro({
       Module () {
-        this.declareGlobal(genConstType(name, typeof fnType === "string" ? this.parseType(fnType) : fnType))
+        this.declareGlobalConst(name, fnType)
       },
       CallExpression: {
         enter (ast) {
@@ -131,7 +131,7 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
   }
   return createMacro({
     Module () {
-      this.declareGlobal(genConstType(name, typeof fnType === "string" ? this.parseType(fnType) : fnType))
+      this.declareGlobalConst(name, fnType)
     },
     CallExpression (ast) {
       if (ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
@@ -147,7 +147,7 @@ export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacr
   if (typeof f === "object") {
     return createMacro({
       Module () {
-        this.declareGlobal(genConstType(name, typeof fnType === "string" ? this.parseType(fnType) : fnType))
+        this.declareGlobalConst(name, fnType)
       },
       CallExpression: {
         enter (ast) {
@@ -168,7 +168,7 @@ export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacr
 
   return createMacro({
     Module () {
-      this.declareGlobal(genConstType(name, typeof fnType === "string" ? this.parseType(fnType) : fnType))
+      this.declareGlobalConst(name, fnType)
     },
     CallExpression (ast) {
       if (ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
@@ -186,7 +186,7 @@ export function createTmplMacro (tag: string, f: TmplMacro | {
 }, returnType: string | TsType = defaultGlobalTmpl) {
   return createMacro({
     Module () {
-      this.declareGlobal(genConstType(tag, {
+      this.declareGlobalConst(tag, {
         type: "TsFunctionType",
         span: {
           start: 174,
@@ -288,7 +288,7 @@ export function createTmplMacro (tag: string, f: TmplMacro | {
           },
           typeAnnotation: typeof returnType === "string" ? this.parseType(returnType) : returnType
         }
-      }))
+      })
     },
     TaggedTemplateExpression: {
       enter (ast) {
