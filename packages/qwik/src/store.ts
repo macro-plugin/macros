@@ -23,7 +23,7 @@ export const store = createLabeledMacro("store", function (stmt) {
   }
 
   if (Object.keys(signals).length > 0) {
-    this.import([{ name: "useStore" }], "@builder.io/qwik")
+    this.import("useStore", "@builder.io/qwik")
     return Object.entries(signals).map(([k, v]) => ({
       type: "VariableDeclaration",
       kind: "const",

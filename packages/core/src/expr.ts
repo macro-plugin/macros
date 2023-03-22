@@ -7,7 +7,7 @@ export const createLabeledExpr: ((label: string, specifier: string, source: stri
     LabeledStatement (ast) {
       if (ast.label.value !== label) return
       if (ast.body.type === "ExpressionStatement") {
-        this.import([{ name: specifier }], source)
+        this.import(specifier, source)
 
         ast.body.expression = {
           type: "CallExpression",

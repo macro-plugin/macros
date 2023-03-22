@@ -6,7 +6,7 @@ export const css = createLabeledMacro("css", function (stmt) {
   if (stmt.type === "ExpressionStatement") {
     const specifier = this.get("QwikScoped", false) ? "useStyleScoped$" : "useStyle$"
 
-    this.import([{ name: specifier }], "@builder.io/qwik")
+    this.import(specifier, "@builder.io/qwik")
 
     stmt.expression = {
       type: "CallExpression",
@@ -48,14 +48,14 @@ export const link = createLabeledMacro("link", function (stmt) {
   if (stmt.expression.type === "StringLiteral") {
     name = "__link" + linkCount
     links.push(name)
-    this.import([{ name, kind: "default" }], stmt.expression.value)
+    this.import(name, stmt.expression.value, true)
     linkCount += 1
   } else if (stmt.expression.type === "ArrayExpression") {
     for (const i of stmt.expression.elements) {
       if (i?.expression.type === "StringLiteral") {
         name = "__link" + linkCount
         links.push(name)
-        this.import([{ name, kind: "default" }], i.expression.value)
+        this.import(name, i.expression.value, true)
         linkCount += 1
       } else {
         throw new Error("Expect a StringLiteral")
@@ -65,7 +65,7 @@ export const link = createLabeledMacro("link", function (stmt) {
     throw new Error("Only support StringLiteral or ArrayExpression")
   }
   this.set("QwikLinkCount", linkCount)
-  this.import([{ name: specifier }], "@builder.io/qwik")
+  this.import(specifier, "@builder.io/qwik")
   return links.map(i => ({
     type: "ExpressionStatement",
     span: {

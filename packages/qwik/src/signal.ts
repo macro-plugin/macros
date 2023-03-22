@@ -24,7 +24,7 @@ export const signal = createMacro({
     }
 
     if (Object.keys(signals).length > 0) {
-      this.import([{ name: "useSignal" }], "@builder.io/qwik")
+      this.import("useSignal", "@builder.io/qwik")
       return Object.entries(signals).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "const",

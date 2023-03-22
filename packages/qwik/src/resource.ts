@@ -28,7 +28,7 @@ const varToReturn = (body: Statement[]) => {
 }
 
 export const resource = createLabeledMacro("resource", function (stmt) {
-  this.import([{ name: "useResource$" }], "@builder.io/qwik")
+  this.import("useResource$", "@builder.io/qwik")
   if (stmt.type === "BlockStatement") {
     const [id, stmts] = varToReturn(stmt.stmts)
 

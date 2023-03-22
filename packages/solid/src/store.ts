@@ -26,7 +26,7 @@ const plugin = createMacro({
       }
 
       if (Object.keys(stores).length > 0) {
-        this.import([{ name: "createStore" }], "solid-js/store")
+        this.import("createStore", "solid-js/store")
         return Object.entries(stores).map(([k, v]) => ({
           type: "VariableDeclaration",
           kind: "var",

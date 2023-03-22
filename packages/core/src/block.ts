@@ -12,7 +12,7 @@ import { createLabeledMacro } from "./api"
  * @returns - A labeled macro plugin
  */
 export const createLabeledBlock: ((label: string, specifier: string, source: string, allowParams?: boolean) => MacroPlugin) = (label, specifier, source, allowParams = false) => createLabeledMacro(label, function (ast) {
-  this.import([{ name: specifier }], source)
+  this.import(specifier, source)
   if (ast.type === "BlockStatement") {
     return ({
       type: "ExpressionStatement",

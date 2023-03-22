@@ -13,7 +13,7 @@ function handleFunc (this: WalkContext, ast: FunctionDeclaration | FunctionExpre
           const isDecl = "identifier" in ast && ast.identifier != null
 
           if (label.body.expression.value) {
-            this.import([{ name: "component$" }], "@builder.io/qwik")
+            this.import("component$", "@builder.io/qwik")
 
             const init = {
               type: "CallExpression",

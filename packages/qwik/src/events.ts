@@ -22,7 +22,7 @@ export const events = createMacro({
 
       let expression
       let name = inDoc ? "useOnDocument" : inWin ? "useOnWindow" : "useOn"
-      this.import([{ name: "$" }], "@builder.io/qwik")
+      this.import("$", "@builder.io/qwik")
 
       if (ast.body.type === "BlockStatement") {
         const firstLabel = ast.body.stmts[0]
@@ -67,7 +67,7 @@ export const events = createMacro({
         }
       }
 
-      this.import([{ name }], "@builder.io/qwik")
+      this.import(name, "@builder.io/qwik")
 
       return {
         type: "ExpressionStatement",

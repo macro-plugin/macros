@@ -28,7 +28,7 @@ export default createMacro({
     }
 
     if (Object.keys(signals).length > 0) {
-      this.import([{ name: "createSignal" }], "solid-js")
+      this.import("createSignal", "solid-js")
       return Object.entries(signals).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "var",
