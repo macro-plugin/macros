@@ -2,9 +2,9 @@
   "name": "@macro-plugin/qwik",
   "version": "1.0.0",
   "description": "@macro-plugin/qwik",
-  "main": "dist/qwik.js",
-  "module": "dist/qwik.mjs",
-  "types": "./dist/qwik.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -17,12 +17,18 @@
     "macro",
     "macros"
   ],
+  "scripts": {
+    "build": "rollup -c ../../rollup.config.mjs"
+  },
+  "dependencies": {
+    "@macro-plugin/core": "1.0.0"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/qwik.mjs",
-      "require": "./dist/qwik.js",
-      "types": "./dist/qwik.d.ts"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "author": "Raven Satir",

@@ -2,9 +2,9 @@
   "name": "@macro-plugin/core",
   "version": "1.0.0",
   "description": "@macro-plugin/core",
-  "main": "dist/core.js",
-  "module": "dist/core.mjs",
-  "types": "./dist/core.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -14,12 +14,18 @@
     "macro",
     "macros"
   ],
+  "scripts": {
+    "build": "rollup -c ../../rollup.config.mjs"
+  },
+  "dependencies": {
+    "@swc/core": "^1.3.40"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/core.mjs",
-      "require": "./dist/core.js",
-      "types": "./dist/core.d.ts"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "author": "Raven Satir",

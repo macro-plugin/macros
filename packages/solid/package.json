@@ -2,9 +2,9 @@
   "name": "@macro-plugin/solid",
   "version": "1.0.0",
   "description": "@macro-plugin/solid",
-  "main": "dist/solid.js",
-  "module": "dist/solid.mjs",
-  "types": "./dist/solid.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -17,15 +17,18 @@
     "macro",
     "macros"
   ],
+  "scripts": {
+    "build": "rollup -c ../../rollup.config.mjs"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/solid.mjs",
-      "require": "./dist/solid.js",
-      "types": "./dist/solid.d.ts"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
-  "devDependencies": {
+  "dependencies": {
     "@macro-plugin/core": "1.0.0"
   },
   "author": "Raven Satir",
