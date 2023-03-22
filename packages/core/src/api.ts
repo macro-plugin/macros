@@ -1,7 +1,8 @@
-import { ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, TsType } from "@swc/core"
+import { ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, TsFunctionType, TsType } from "@swc/core"
 import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro, WalkContext } from "./types"
+import { defaultGlobalExpr, defaultGlobalTmpl, defaultGlobalType } from "./defaults"
+import { genConstType, guessType, isRegExp } from "./utils"
 
-import { isRegExp } from "./utils"
 import { parseExpr } from "./parse"
 import { walk } from "./walk"
 
@@ -30,16 +31,30 @@ function createLit (this: WalkContext, value: unknown): BaseNode {
   return this.parseExpr(JSON.stringify(value))
 }
 
-export function createLitMacro(map: Record<string, unknown>): MacroPlugin;
-export function createLitMacro<T>(key: string, value: T): MacroPlugin;
-export function createLitMacro (arg: string | Record<string, unknown>, value?: unknown): MacroPlugin {
+export function createLitMacro(map: Record<string, unknown>, typeAnnotations?: Record<string, string | TsType>): MacroPlugin;
+export function createLitMacro<T>(key: string, value: T, typeAnnotation?: string | TsType): MacroPlugin;
+export function createLitMacro (arg: string | Record<string, unknown>, value?: unknown, typeAnnotation?: string | TsType): MacroPlugin {
   return createMacro(typeof arg === "string"
     ? {
+      Module () {
+        this.declareGlobal(genConstType(arg, typeof typeAnnotation === "string" ? this.parseType(typeAnnotation) : (typeAnnotation || guessType(value))))
+      },
       Identifier (ast) {
         if (ast.value === arg && !this.track(arg)) return createLit.apply(this, [value])
       }
     }
     : {
+      Module () {
+        let t: string | TsType
+        for (const [k, v] of Object.entries(arg)) {
+          if (value && Object.keys(value).includes(k)) {
+            t = (value as Record<string, string | TsType>)[k]
+            this.declareGlobal(genConstType(k, typeof t === "string" ? this.parseType(t) : t))
+          } else {
+            this.declareGlobal(genConstType(k, guessType(v)))
+          }
+        }
+      },
       Identifier (ast) {
         if (ast.value in arg && !this.track(ast.value)) return createLit.apply(this, [arg[ast.value]])
       }
@@ -94,9 +109,12 @@ function flatExpr (f: Function, args: Expression[], typeParams?: TsType[], optio
   return output
 }
 
-export function createExprMacro (name: string, f: Function | ExprMacro | { enter?: ExprMacro, leave?: ExprMacro }): MacroPlugin {
+export function createExprMacro (name: string, f: Function | ExprMacro | { enter?: ExprMacro, leave?: ExprMacro }, fnType: TsFunctionType | string = defaultGlobalExpr): MacroPlugin {
   if (typeof f === "object") {
     return createMacro({
+      Module () {
+        this.declareGlobal(genConstType(name, typeof fnType === "string" ? this.parseType(fnType) : fnType))
+      },
       CallExpression: {
         enter (ast) {
           if (f.enter && ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
@@ -112,6 +130,9 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
     })
   }
   return createMacro({
+    Module () {
+      this.declareGlobal(genConstType(name, typeof fnType === "string" ? this.parseType(fnType) : fnType))
+    },
     CallExpression (ast) {
       if (ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
         const args = ast.arguments.map(i => i.expression)
@@ -122,9 +143,12 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
   })
 }
 
-export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacro, leave?: TypeMacro }) {
+export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacro, leave?: TypeMacro }, fnType: TsFunctionType | string = defaultGlobalType) {
   if (typeof f === "object") {
     return createMacro({
+      Module () {
+        this.declareGlobal(genConstType(name, typeof fnType === "string" ? this.parseType(fnType) : fnType))
+      },
       CallExpression: {
         enter (ast) {
           if (f.enter && ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
@@ -143,6 +167,9 @@ export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacr
   }
 
   return createMacro({
+    Module () {
+      this.declareGlobal(genConstType(name, typeof fnType === "string" ? this.parseType(fnType) : fnType))
+    },
     CallExpression (ast) {
       if (ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
         if (ast.arguments.length > 0) throw new Error("TypeMacro doesn't support call with args.")
@@ -156,159 +183,112 @@ export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacr
 export function createTmplMacro (tag: string, f: TmplMacro | {
   enter?: TmplMacro,
   leave?: TmplMacro
-}, returnType = {
-  type: "TsKeywordType",
-  span: {
-    start: 236,
-    end: 242,
-    ctxt: 0
-  },
-  kind: "string"
-} as TsType) {
+}, returnType: string | TsType = defaultGlobalTmpl) {
   return createMacro({
     Module () {
-      this.declareGlobal({
-        type: "VariableDeclaration",
+      this.declareGlobal(genConstType(tag, {
+        type: "TsFunctionType",
         span: {
-          start: 163,
+          start: 174,
           end: 242,
           ctxt: 0
         },
-        kind: "const",
-        declare: false,
-        declarations: [
+        params: [
           {
-            type: "VariableDeclarator",
+            type: "Identifier",
             span: {
-              start: 169,
-              end: 242,
-              ctxt: 0
+              start: 175,
+              end: 204,
+              ctxt: 2
             },
-            id: {
-              type: "Identifier",
+            value: "strings",
+            optional: false,
+            typeAnnotation: {
+              type: "TsTypeAnnotation",
               span: {
-                start: 169,
-                end: 172,
-                ctxt: 3
+                start: 182,
+                end: 204,
+                ctxt: 0
               },
-              value: tag,
-              optional: false,
               typeAnnotation: {
-                type: "TsTypeAnnotation",
+                type: "TsTypeReference",
                 span: {
-                  start: 172,
-                  end: 242,
+                  start: 184,
+                  end: 204,
                   ctxt: 0
                 },
-                typeAnnotation: {
-                  type: "TsFunctionType",
+                typeName: {
+                  type: "Identifier",
                   span: {
-                    start: 174,
-                    end: 242,
+                    start: 184,
+                    end: 204,
+                    ctxt: 2
+                  },
+                  value: "TemplateStringsArray",
+                  optional: false
+                },
+              }
+            }
+          },
+          {
+            type: "RestElement",
+            span: {
+              start: 206,
+              end: 231,
+              ctxt: 0
+            },
+            rest: {
+              start: 207,
+              end: 210,
+              ctxt: 0
+            },
+            argument: {
+              type: "Identifier",
+              span: {
+                start: 209,
+                end: 220,
+                ctxt: 2
+              },
+              value: "expressions",
+              optional: false,
+            },
+            typeAnnotation: {
+              type: "TsTypeAnnotation",
+              span: {
+                start: 220,
+                end: 231,
+                ctxt: 0
+              },
+              typeAnnotation: {
+                type: "TsArrayType",
+                span: {
+                  start: 222,
+                  end: 231,
+                  ctxt: 0
+                },
+                elemType: {
+                  type: "TsKeywordType",
+                  span: {
+                    start: 222,
+                    end: 229,
                     ctxt: 0
                   },
-                  params: [
-                    {
-                      type: "Identifier",
-                      span: {
-                        start: 175,
-                        end: 204,
-                        ctxt: 2
-                      },
-                      value: "strings",
-                      optional: false,
-                      typeAnnotation: {
-                        type: "TsTypeAnnotation",
-                        span: {
-                          start: 182,
-                          end: 204,
-                          ctxt: 0
-                        },
-                        typeAnnotation: {
-                          type: "TsTypeReference",
-                          span: {
-                            start: 184,
-                            end: 204,
-                            ctxt: 0
-                          },
-                          typeName: {
-                            type: "Identifier",
-                            span: {
-                              start: 184,
-                              end: 204,
-                              ctxt: 2
-                            },
-                            value: "TemplateStringsArray",
-                            optional: false
-                          },
-                        }
-                      }
-                    },
-                    {
-                      type: "RestElement",
-                      span: {
-                        start: 206,
-                        end: 231,
-                        ctxt: 0
-                      },
-                      rest: {
-                        start: 207,
-                        end: 210,
-                        ctxt: 0
-                      },
-                      argument: {
-                        type: "Identifier",
-                        span: {
-                          start: 209,
-                          end: 220,
-                          ctxt: 2
-                        },
-                        value: "expressions",
-                        optional: false,
-                      },
-                      typeAnnotation: {
-                        type: "TsTypeAnnotation",
-                        span: {
-                          start: 220,
-                          end: 231,
-                          ctxt: 0
-                        },
-                        typeAnnotation: {
-                          type: "TsArrayType",
-                          span: {
-                            start: 222,
-                            end: 231,
-                            ctxt: 0
-                          },
-                          elemType: {
-                            type: "TsKeywordType",
-                            span: {
-                              start: 222,
-                              end: 229,
-                              ctxt: 0
-                            },
-                            kind: "unknown"
-                          }
-                        }
-                      }
-                    }
-                  ],
-                  typeAnnotation: {
-                    type: "TsTypeAnnotation",
-                    span: {
-                      start: 233,
-                      end: 242,
-                      ctxt: 0
-                    },
-                    typeAnnotation: returnType
-                  }
+                  kind: "unknown"
                 }
               }
-            },
-            definite: false
+            }
           }
-        ]
-      })
+        ],
+        typeAnnotation: {
+          type: "TsTypeAnnotation",
+          span: {
+            start: 233,
+            end: 242,
+            ctxt: 0
+          },
+          typeAnnotation: typeof returnType === "string" ? this.parseType(returnType) : returnType
+        }
+      }))
     },
     TaggedTemplateExpression: {
       enter (ast) {
