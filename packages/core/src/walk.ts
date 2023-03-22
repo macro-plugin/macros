@@ -1,8 +1,8 @@
 import { BaseNode, Node, PluginImportSpecifier, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
 import { ImportDeclaration, Program } from "@swc/core"
 import { genSpecifier, hashMap } from "./utils"
-import { generate, generateExpr } from "./generate"
 import { parse, parseExpr } from "./parse"
+import { print, printExpr } from "./print"
 
 import trackPlugin from "./track"
 
@@ -70,8 +70,8 @@ class Walker {
       },
       parse: (src, options) => parse(src, options).body,
       parseExpr: (src, options) => parseExpr(src, options),
-      print: (ast) => generate((ast || n) as BaseNode).code,
-      printExpr: (expr) => generateExpr(expr as BaseNode).code,
+      print: (ast) => print((ast || n) as BaseNode).code,
+      printExpr: (expr) => printExpr(expr as BaseNode).code,
       remove: () => {
         if (parent && prop) {
           if (index != null) {
