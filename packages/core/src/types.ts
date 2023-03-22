@@ -35,6 +35,8 @@ export type WalkContext = {
   declareModule(id: string, body: ModuleItem | ModuleItem[]): void;
   /** declare global types in `macros.global.dts` */
   declareGlobal(body: ModuleItem | ModuleItem[]): void;
+  /** decalre global const types in `macros.global.dts`, shorthand for `declareGlobal(genConstType(...))` */
+  declareGlobalConst(name: string, ty: string | TsType): void;
   /** declare <reference /> in `macros.global.dts` */
   declareReference({ types, path }: { types?: string, path?: string }): void;
   /** prepend declarations after references in `macros.global.dts` */

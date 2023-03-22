@@ -1,6 +1,6 @@
 import { BaseNode, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
-import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration } from "@swc/core"
-import { genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
+import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration, TsType } from "@swc/core"
+import { genConstType, genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
 import { parse, parseExpr, parseType } from "./parse"
 import { print, printExpr } from "./print"
 
@@ -133,6 +133,7 @@ export class Walker {
   })
 
   declareGlobal = (body: ModuleItem | ModuleItem[]) => Array.isArray(body) ? this.globalDts.push(...body) : this.globalDts.push(body)
+  declareGlobalConst = (name: string, ty: string | TsType) => this.declareGlobal(genConstType(name, typeof ty === "string" ? parseType(ty) : ty))
   declareReference = ({ types, path }: { types?: string, path?: string }) => this.references.push({ types, path })
   declarePrepend = (stmts: ModuleItem[]) => this.prependDts.push(...stmts)
   declareAppend = (stmts: ModuleItem[]) => this.appendDts.push(...stmts)
@@ -154,6 +155,7 @@ export class Walker {
     declareModule: this.declareModule,
     declarePrepend: this.declarePrepend,
     declareReference: this.declareReference,
+    declareGlobalConst: this.declareGlobalConst
   }
 
   constructor ({ enter, leave }: WalkPlugin) {
