@@ -1,5 +1,5 @@
 import { ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, TsType } from "@swc/core"
-import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, TypeMacro, WalkContext } from "./types"
+import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro, WalkContext } from "./types"
 
 import { isRegExp } from "./utils"
 import { parseExpr } from "./parse"
@@ -47,6 +47,7 @@ export function createLitMacro (arg: string | Record<string, unknown>, value?: u
 }
 
 function flatExpr (f: Function, args: Expression[], typeParams?: TsType[], optional = false): Expression {
+  if (optional) throw new Error("optional is not supported.")
   const ast = parseExpr(f.toString()) as FunctionDeclaration | FunctionExpression | ArrowFunctionExpression
   const params: Record<string, { value?: Expression }> = {}
 
@@ -152,8 +153,20 @@ export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacr
   })
 }
 
-export function createTmplMacro (tag: string,) {
-
+export function createTmplMacro (tag: string, f: TmplMacro | {
+  enter?: TmplMacro,
+  leave?: TmplMacro
+}) {
+  return createMacro({
+    TaggedTemplateExpression: {
+      enter (ast) {
+        if (ast.tag.type === "Identifier" && ast.tag.value === tag) return (typeof f === "object" ? f.enter : f)?.apply(this, [ast.template.quasis.map(i => i.raw), ...ast.template.expressions])
+      },
+      leave (ast) {
+        if (typeof f === "object" && f.leave && ast.tag.type === "Identifier") return f.leave.apply(this, [ast.template.quasis.map(i => i.raw), ...ast.template.expressions])
+      }
+    }
+  })
 }
 
 export function createLabeledMacro (label: string, f: LabeledMacro | {
