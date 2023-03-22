@@ -1,5 +1,4 @@
-import { ExpressionStatement, Statement } from "@swc/core"
-import { LabeledMacro, createLabeledMacro, createMacro, generate, transform } from "../src"
+import { createLabeledMacro, transform } from "../src"
 
 let DEBUG = false
 
@@ -8,17 +7,17 @@ const debug = createLabeledMacro("debug", function (stmt) {
   this.remove()
 })
 
-const hello = createLabeledMacro("hello", function (stmt) {
+const hello = createLabeledMacro("hello", function () {
   return this.parse("world")
 })
 
 const codeblock = createLabeledMacro("codeblock", function (stmt) {
-  if (stmt.type != "BlockStatement") return
+  if (stmt.type !== "BlockStatement") return
   return this.parse(this.print(stmt).replace(/^\s*\{\s*/, "").replace(/\s*\}\s*$/, "").trim())
 })
 
 const codecall = createLabeledMacro("codecall", function (stmt) {
-  if (stmt.type != "BlockStatement") return
+  if (stmt.type !== "BlockStatement") return
   return this.parse(`(() => ${this.print(stmt)})()`)
 })
 
@@ -26,7 +25,7 @@ const stringify = createLabeledMacro("stringify", function (stmt) {
   return this.parse("`" + this.print(stmt) + "`")
 })
 
-const empty = createLabeledMacro("empty", function (stmt) {
+const empty = createLabeledMacro("empty", function () {
   this.remove()
 })
 

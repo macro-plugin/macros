@@ -10,10 +10,10 @@ const arrow = createMacro({
     if (!ast.body) return
 
     for (const s of ast.body.stmts || []) {
-      if (s.type == "LabeledStatement" && s.body.type == "ExpressionStatement") {
+      if (s.type === "LabeledStatement" && s.body.type === "ExpressionStatement") {
         const expr = s.body.expression
-        if (s.label.value == "arrow") {
-          if (expr.type == "BooleanLiteral" && expr.value) {
+        if (s.label.value === "arrow") {
+          if (expr.type === "BooleanLiteral" && expr.value) {
             isArrow = true
           }
           continue

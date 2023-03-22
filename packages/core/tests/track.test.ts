@@ -1,4 +1,4 @@
-import { GlobalMacro, ScopeVar, createMacro, transform } from "../src"
+import { ScopeVar, createMacro, transform } from "../src"
 
 let a: ScopeVar | undefined, b: ScopeVar | undefined, c: ScopeVar | undefined
 

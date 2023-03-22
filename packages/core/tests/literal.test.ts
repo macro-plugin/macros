@@ -1,4 +1,4 @@
-import { createLitMacro, hashMap, parse, parseExpr, transform } from "../src"
+import { createLitMacro, parseExpr, transform } from "../src"
 
 test("create literal macro", () => {
   const code = `
