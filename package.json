@@ -20,6 +20,8 @@
     "@rollup/plugin-terser": "^0.4.0",
     "@swc/jest": "^0.2.24",
     "@types/jest": "^29.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^8.36.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
