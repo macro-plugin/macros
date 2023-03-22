@@ -156,8 +156,160 @@ export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacr
 export function createTmplMacro (tag: string, f: TmplMacro | {
   enter?: TmplMacro,
   leave?: TmplMacro
-}) {
+}, returnType = {
+  type: "TsKeywordType",
+  span: {
+    start: 236,
+    end: 242,
+    ctxt: 0
+  },
+  kind: "string"
+} as TsType) {
   return createMacro({
+    Module () {
+      this.declareGlobal({
+        type: "VariableDeclaration",
+        span: {
+          start: 163,
+          end: 242,
+          ctxt: 0
+        },
+        kind: "const",
+        declare: false,
+        declarations: [
+          {
+            type: "VariableDeclarator",
+            span: {
+              start: 169,
+              end: 242,
+              ctxt: 0
+            },
+            id: {
+              type: "Identifier",
+              span: {
+                start: 169,
+                end: 172,
+                ctxt: 3
+              },
+              value: tag,
+              optional: false,
+              typeAnnotation: {
+                type: "TsTypeAnnotation",
+                span: {
+                  start: 172,
+                  end: 242,
+                  ctxt: 0
+                },
+                typeAnnotation: {
+                  type: "TsFunctionType",
+                  span: {
+                    start: 174,
+                    end: 242,
+                    ctxt: 0
+                  },
+                  params: [
+                    {
+                      type: "Identifier",
+                      span: {
+                        start: 175,
+                        end: 204,
+                        ctxt: 2
+                      },
+                      value: "strings",
+                      optional: false,
+                      typeAnnotation: {
+                        type: "TsTypeAnnotation",
+                        span: {
+                          start: 182,
+                          end: 204,
+                          ctxt: 0
+                        },
+                        typeAnnotation: {
+                          type: "TsTypeReference",
+                          span: {
+                            start: 184,
+                            end: 204,
+                            ctxt: 0
+                          },
+                          typeName: {
+                            type: "Identifier",
+                            span: {
+                              start: 184,
+                              end: 204,
+                              ctxt: 2
+                            },
+                            value: "TemplateStringsArray",
+                            optional: false
+                          },
+                        }
+                      }
+                    },
+                    {
+                      type: "RestElement",
+                      span: {
+                        start: 206,
+                        end: 231,
+                        ctxt: 0
+                      },
+                      rest: {
+                        start: 207,
+                        end: 210,
+                        ctxt: 0
+                      },
+                      argument: {
+                        type: "Identifier",
+                        span: {
+                          start: 209,
+                          end: 220,
+                          ctxt: 2
+                        },
+                        value: "expressions",
+                        optional: false,
+                      },
+                      typeAnnotation: {
+                        type: "TsTypeAnnotation",
+                        span: {
+                          start: 220,
+                          end: 231,
+                          ctxt: 0
+                        },
+                        typeAnnotation: {
+                          type: "TsArrayType",
+                          span: {
+                            start: 222,
+                            end: 231,
+                            ctxt: 0
+                          },
+                          elemType: {
+                            type: "TsKeywordType",
+                            span: {
+                              start: 222,
+                              end: 229,
+                              ctxt: 0
+                            },
+                            kind: "unknown"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  typeAnnotation: {
+                    type: "TsTypeAnnotation",
+                    span: {
+                      start: 233,
+                      end: 242,
+                      ctxt: 0
+                    },
+                    typeAnnotation: returnType
+                  }
+                }
+              }
+            },
+            definite: false
+          }
+        ]
+      })
+    },
     TaggedTemplateExpression: {
       enter (ast) {
         if (ast.tag.type === "Identifier" && ast.tag.value === tag) return (typeof f === "object" ? f.enter : f)?.apply(this, [ast.template.quasis.map(i => i.raw), ...ast.template.expressions])
