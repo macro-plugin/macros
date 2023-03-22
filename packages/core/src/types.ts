@@ -1,4 +1,4 @@
-import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, Param, ParseOptions, PrivateMethod, Statement, VariableDeclarator } from "@swc/core";
+import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, Param, ParseOptions, PrivateMethod, Statement, TsType, VariableDeclarator } from "@swc/core";
 
 import type { Visitor } from "@swc/core/Visitor";
 
@@ -34,6 +34,8 @@ export type WalkContext = {
   parseExpr: (src: string, options?: ParseOptions) => Expression;
   /** Convert current ast node to source code */
   print: (ast?: Node | Node[]) => string;
+  /** Convert an expression node to source code */
+  printExpr: (expr?: Node) => string;
 }
 
 export type TrackFunc = (this: WalkContext, name: string) => ScopeVar | undefined;
@@ -44,6 +46,7 @@ export type WalkPlugin = {
   track?: TrackFunc;
 }
 
+export type ExprMacro = (this: WalkContext, args: Expression[], typeParams?: TsType[], optional?: boolean) => BaseNode | BaseNode[] | void | undefined
 export type LabeledMacro = (this: WalkContext, stmt: Statement, parent?: BaseNode, prop?: string, index?: number) => BaseNode | BaseNode[] | void | undefined
 export type GlobalMacro<T = BaseNode> = (this: WalkContext, ast: T, parent?: BaseNode, prop?: string, index?: number) => void | undefined | BaseNode | BaseNode[]
 
