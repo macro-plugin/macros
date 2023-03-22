@@ -303,7 +303,7 @@ export class Walker {
       ...(globalDts ? [globalDts] : []),
       ...this.moduleDts,
       ...this.appendDts
-    ])
+    ]).code
   }
 
   track (name: string) {
