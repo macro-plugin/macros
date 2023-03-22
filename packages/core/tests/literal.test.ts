@@ -36,19 +36,23 @@ test("should support all jsonable values", () => {
     const g = __object__
     const h = __regex__
   `
-  expect(transform(code, {
+  const r = transform(code, {
     plugins: [
       createLitMacro("__num__", 123),
       createLitMacro("__str__", "Hello World"),
       createLitMacro("__bool__", false),
       createLitMacro("__null__", null),
       createLitMacro("__undefined__", undefined),
-      createLitMacro("__function__", () => true),
-      createLitMacro("__array__", [1, 2, 3]),
-      createLitMacro("__object__", { a: 1, b: 2 }),
+      createLitMacro("__function__", () => true, "() => true"),
+      createLitMacro("__array__", [1, 2, 3], "number[]"),
+      createLitMacro("__object__", { a: 1, b: 2 }, "Record<string, number>"),
       createLitMacro("__regex__", /.*/g),
-    ]
-  }).code).toMatchSnapshot()
+    ],
+    emitDts: true
+  })
+
+  expect(r.code).toMatchSnapshot()
+  expect(r.dts).toMatchSnapshot()
 })
 
 test("should allow ast for more complex value", () => {
@@ -75,7 +79,7 @@ test("should support pass an object", () => {
     const h = __regex__
     const i = __expr__
   `
-  expect(transform(code, {
+  const r = transform(code, {
     plugins: [
       createLitMacro({
         __num__: 123,
@@ -88,7 +92,15 @@ test("should support pass an object", () => {
         __object__: { a: 1, b: 2 },
         __regex__: /.*/g,
         __expr__: parseExpr('call("hello", "world")')
+      }, {
+        __function__: "() => true",
+        __array__: "number[]",
+        __object__: "Record<string, number>",
+        __expr__: "string"
       })
-    ]
-  }).code).toMatchSnapshot()
+    ],
+    emitDts: true
+  })
+  expect(r.code).toMatchSnapshot()
+  expect(r.dts).toMatchSnapshot()
 })

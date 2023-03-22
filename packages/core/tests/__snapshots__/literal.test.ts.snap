@@ -43,6 +43,20 @@ const h = /.*/g;
 "
 `;
 
+exports[`should support all jsonable values 2`] = `
+"declare global {
+    const __num__: number;
+    const __str__: string;
+    const __bool__: boolean;
+    const __null__: null;
+    const __undefined__: undefined;
+    const __function__: () => true;
+    const __array__: number[];
+    const __object__: Record<string, number>;
+    const __regex__: RegExp;
+}"
+`;
+
 exports[`should support pass an object 1`] = `
 "const a = 123;
 const b = "Hello World";
@@ -62,4 +76,19 @@ const g = {
 const h = /.*/g;
 const i = call("hello", "world");
 "
+`;
+
+exports[`should support pass an object 2`] = `
+"declare global {
+    const __num__: number;
+    const __str__: string;
+    const __bool__: boolean;
+    const __null__: null;
+    const __undefined__: undefined;
+    const __function__: () => true;
+    const __array__: number[];
+    const __object__: Record<string, number>;
+    const __regex__: RegExp;
+    const __expr__: string;
+}"
 `;

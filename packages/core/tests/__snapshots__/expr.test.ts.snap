@@ -8,7 +8,7 @@ const des = "That Bob is 12";
 `;
 
 exports[`create a template macro 2`] = `
-"declare module global {
+"declare global {
     const real: (strings: TemplateStringsArray, ...expressions: unknown[]) => string;
 }"
 `;
@@ -21,10 +21,28 @@ exports[`create a type macro with createExprMacro 1`] = `
 "
 `;
 
+exports[`create a type macro with createExprMacro 2`] = `
+"declare global {
+    const defineEmits: <T>(...args: T[]) => T;
+}"
+`;
+
 exports[`create a type macro with createTypeMacro 1`] = `
 "const emit = defineEmits([
     "change",
     "update"
 ]);
 "
+`;
+
+exports[`create a type macro with createTypeMacro 2`] = `
+"declare global {
+    const defineEmits: <T>() => T;
+}"
+`;
+
+exports[`create complex expr macro 1`] = `
+"declare global {
+    const $add: (a: number, b: number) => number;
+}"
 `;
