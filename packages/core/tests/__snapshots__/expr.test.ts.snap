@@ -7,6 +7,12 @@ const des = "That Bob is 12";
 "
 `;
 
+exports[`create a template macro 2`] = `
+"declare module global {
+    const real: (strings: TemplateStringsArray, ...expressions: unknown[]) => string;
+}"
+`;
+
 exports[`create a type macro with createExprMacro 1`] = `
 "const emit = defineEmits([
     "change",

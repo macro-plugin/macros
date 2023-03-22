@@ -174,9 +174,12 @@ test("create a template macro", () => {
     }
   })
 
-  expect(transform(`
+  const r = transform(`
   let person = 'Bob'
   let age = 12
   const des = real\`That \${person} is \${age}\`
-  `, { plugins: [macro] }).code).toMatchSnapshot()
+  `, { plugins: [macro], emitDts: true })
+
+  expect(r.code).toMatchSnapshot()
+  expect(r.dts).toMatchSnapshot()
 })
