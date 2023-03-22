@@ -31,6 +31,16 @@ export type WalkContext = {
   prepend(stmts: ModuleItem[]): void;
   /** Append some statement before exports */
   append(stmts: ModuleItem[]): void;
+  /** decalre module in `macros.global.dts` */
+  declareModule(id: string, body: ModuleItem | ModuleItem[]): void;
+  /** declare global types in `macros.global.dts` */
+  declareGlobal(body: ModuleItem | ModuleItem[]): void;
+  /** declare <reference /> in `macros.global.dts` */
+  declareReference({ types, path }: { types?: string, path?: string }): void;
+  /** prepend declarations after references in `macros.global.dts` */
+  declarePrepend(stmts: ModuleItem[]): void;
+  /** append declarations after all declarations in `macros.global.dts` */
+  declareAppend(stmts: ModuleItem[]): void;
   /** Convert source code to node list */
   parse(src: string, options?: ParseOptions): ModuleItem[];
   /** Convert expression to ast */
@@ -71,4 +81,5 @@ export type MacroPlugin = GlobalMacro | (GlobalMacroPlugin & {
 
 export type Config = Omit<Options, "plugin"> & {
   plugins?: MacroPlugin[];
+  emitDts?: boolean;
 }

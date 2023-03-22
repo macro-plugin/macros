@@ -1,17 +1,22 @@
 import { BaseNode, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
-import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, Program } from "@swc/core"
+import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration } from "@swc/core"
 import { genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
 import { parse, parseExpr } from "./parse"
 import { print, printExpr } from "./print"
 
 import trackPlugin from "./track"
 
-class Walker {
+export class Walker {
   data: Record<string, unknown> = {}
   imports: ImportDeclaration[] = []
   exports: ExportNamedDeclaration[] = []
   prepends: ModuleItem[] = []
   appends: ModuleItem[] = []
+  globalDts: ModuleItem[] = []
+  moduleDts: TsModuleDeclaration[] = []
+  references: { types?: string, path?: string }[] = []
+  prependDts: ModuleItem[] = []
+  appendDts: ModuleItem[] = []
   importHashes: Record<string, true> = {}
   exportHashes: Record<string, true> = {}
   enter?: WalkFunc
@@ -98,6 +103,58 @@ class Walker {
   prepend = (stmts: ModuleItem[]) => this.prepends.push(...stmts)
   append = (stmts: ModuleItem[]) => this.appends.push(...stmts)
 
+  declareModule = (id: string, body: ModuleItem | ModuleItem[]) => this.moduleDts.push({
+    type: "TsModuleDeclaration",
+    span: {
+      start: 312,
+      end: 341,
+      ctxt: 0
+    },
+    declare: true,
+    global: false,
+    id: {
+      type: "StringLiteral",
+      span: {
+        start: 327,
+        end: 334,
+        ctxt: 0
+      },
+      value: id,
+    },
+    body: {
+      type: "TsModuleBlock",
+      span: {
+        start: 335,
+        end: 341,
+        ctxt: 0
+      },
+      body: Array.isArray(body) ? body : [body]
+    }
+  })
+
+  declareGlobal = (body: ModuleItem | ModuleItem[]) => Array.isArray(body) ? this.globalDts.push(...body) : this.globalDts.push(body)
+  declareReference = ({ types, path }: { types?: string, path?: string }) => this.references.push({ types, path })
+  declarePrepend = (stmts: ModuleItem[]) => this.prependDts.push(...stmts)
+  declareAppend = (stmts: ModuleItem[]) => this.appendDts.push(...stmts)
+
+  defaultContext = {
+    set: this.set,
+    get: this.get,
+    track: this.track,
+    import: this.import,
+    export: this.export,
+    prepend: this.prepend,
+    append: this.append,
+    parseExpr,
+    parse: (src: string, options: ParseOptions) => parse(src, options).body,
+    printExpr: (expr: Node) => printExpr(expr as BaseNode).code,
+    declareAppend: this.declareAppend,
+    declareGlobal: this.declareGlobal,
+    declareModule: this.declareModule,
+    declarePrepend: this.declarePrepend,
+    declareReference: this.declareReference,
+  }
+
   constructor ({ enter, leave }: WalkPlugin) {
     this.enter = enter
     this.leave = leave
@@ -107,20 +164,11 @@ class Walker {
     let _replaced; let _skipped; let _removed; let _skipCount = 0
 
     const ctx: WalkContext = {
-      set: this.set,
-      get: this.get,
-      track: this.track,
-      import: this.import,
-      export: this.export,
-      prepend: this.prepend,
-      append: this.append,
+      ...this.defaultContext,
       skip: () => {
         _skipped = true
       },
-      parse: (src, options) => parse(src, options).body,
-      parseExpr: (src, options) => parseExpr(src, options),
       print: (ast) => print((ast || n) as BaseNode).code,
-      printExpr: (expr) => printExpr(expr as BaseNode).code,
       remove: () => {
         if (parent && prop) {
           if (index != null) {
@@ -205,6 +253,57 @@ class Walker {
       (n as Program).body = [..._imports, ...this.imports, ...this.prepends, ..._stmts, ...this.appends, ..._exports, ...this.exports]
     }
     return n
+  }
+
+  emit () {
+    const refs: string[] = []
+    let o: string
+    for (const r of this.references) {
+      o = "/// <reference "
+      if (r.types) o += `types="${r.types}"`
+      if (r.path) o += `path="${r.path}"`
+      o += " />\n"
+      refs.push(o)
+    }
+
+    const globalDts = this.globalDts.length > 0
+      ? {
+        type: "TsModuleDeclaration",
+        span: {
+          start: 144,
+          end: 164,
+          ctxt: 0
+        },
+        declare: true,
+        global: true,
+        id: {
+          type: "Identifier",
+          span: {
+            start: 152,
+            end: 158,
+            ctxt: 1
+          },
+          value: "global",
+          optional: false
+        },
+        body: {
+          type: "TsModuleBlock",
+          span: {
+            start: 159,
+            end: 164,
+            ctxt: 0
+          },
+          body: this.globalDts
+        }
+      } as TsModuleDeclaration
+      : undefined
+
+    return (refs.length > 0 ? refs.join("") : "") + print([
+      ...this.prependDts,
+      ...(globalDts ? [globalDts] : []),
+      ...this.moduleDts,
+      ...this.appendDts
+    ])
   }
 
   track (name: string) {
