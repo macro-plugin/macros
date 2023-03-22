@@ -10,29 +10,31 @@ export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration
 
 export type WalkContext = {
   /** Save data to current plugin cache */
-  set: <T>(key: string, data: T) => void;
+  set<T>(key: string, data: T): void;
   /** Get data from current plugin cache */
-  get: (<T>(key: string, defaultValue: T) => T) & (<T>(key: string, defaultValue?: T) => T | undefined);
+  get<T>(key: string, defaultValue: T): T;
+  get<T>(key: string, defaultValue?: T): T | undefined;
   /** Skip this node, not handling */
-  skip: () => void;
+  skip(): void;
   /** Remove this node */
-  remove: () => void;
+  remove(): void;
   /** Replace matched node with new node, equals to `return node` */
-  replace: (newNode: Node | Node[]) => void;
+  replace(newNode: Node | Node[]): void;
   /** Track last variable with name */
-  track: (name: string) => ScopeVar | undefined;
+  track(name: string): ScopeVar | undefined;
   /** Import some package */
-  import: (pkg: string | string[], source: string, isDefault?: boolean) => void;
+  import(source: string): void;
+  import(pkg: string | string[], source: string, isDefault?: boolean): void;
   /** Export some package */
-  export: (pkg: string | string[], source?: string | null, isNamespace?: boolean) => void;
+  export(pkg: string | string[], source?: string | null, isNamespace?: boolean): void;
   /** Convert source code to node list */
-  parse: (src: string, options?: ParseOptions) => ModuleItem[];
+  parse(src: string, options?: ParseOptions): ModuleItem[];
   /** Convert expression to ast */
-  parseExpr: (src: string, options?: ParseOptions) => Expression;
+  parseExpr(src: string, options?: ParseOptions): Expression;
   /** Convert current ast node to source code */
-  print: (ast?: Node | Node[]) => string;
+  print(ast?: Node | Node[]): string;
   /** Convert an expression node to source code */
-  printExpr: (expr?: Node) => string;
+  printExpr(expr?: Node): string;
 }
 
 export type TrackFunc = (this: WalkContext, name: string) => ScopeVar | undefined;

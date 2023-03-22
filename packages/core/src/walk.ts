@@ -1,5 +1,5 @@
 import { BaseNode, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
-import { ExportNamedDeclaration, ImportDeclaration, Program } from "@swc/core"
+import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, Program } from "@swc/core"
 import { genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
 import { parse, parseExpr } from "./parse"
 import { print, printExpr } from "./print"
@@ -20,35 +20,42 @@ class Walker {
     return this.data[key] as T || defaultValue as T
   }
 
-  import = (pkg: string | string[], source: string, isDefault = false) => {
-    let h
-    for (const s of (typeof pkg === "string" ? [pkg] : pkg)) {
-      h = hashMap({ s, source, isDefault })
-      if (!(h in this.importHashes)) {
-        this.imports.push({
-          type: "ImportDeclaration",
-          specifiers: [
-            genImportSpecifier(s, isDefault)
-          ],
-          source: {
-            type: "StringLiteral",
-            value: source,
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0,
-            }
-          },
-          typeOnly: false,
+  import = (pkg: string | string[], source?: string, isDefault = false) => {
+    let h: string
+
+    const pushImport = (specifiers: (ImportSpecifier | ImportDefaultSpecifier)[], source?: string) => {
+      this.imports.push({
+        type: "ImportDeclaration",
+        specifiers,
+        source: {
+          type: "StringLiteral",
+          value: source,
           span: {
             start: 0,
             end: 0,
             ctxt: 0,
-          },
-        } as ImportDeclaration)
+          }
+        },
+        typeOnly: false,
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0,
+        },
+      } as ImportDeclaration)
 
-        this.importHashes[h] = true
-      }
+      this.importHashes[h] = true
+    }
+
+    if (source == null && typeof pkg === "string") {
+      h = hashMap({ pkg })
+      if (!(h in this.importHashes)) pushImport([], pkg)
+      return
+    }
+
+    for (const s of (typeof pkg === "string" ? [pkg] : pkg)) {
+      h = hashMap({ s, source, isDefault })
+      if (!(h in this.importHashes)) pushImport([genImportSpecifier(s, isDefault)], source)
     }
   }
 
