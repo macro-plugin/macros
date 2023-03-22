@@ -1,4 +1,4 @@
-import { BaseNode, Node, PluginImportSpecifier, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
+import { BaseNode, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
 import { ImportDeclaration, Program } from "@swc/core"
 import { genSpecifier, hashMap } from "./utils"
 import { parse, parseExpr } from "./parse"
@@ -18,37 +18,35 @@ class Walker {
     return this.data[key] as T || defaultValue as T
   }
 
-  import = (specifiers: PluginImportSpecifier[], source: string) => {
+  import = (pkg: string | string[], source: string, isDefault = false) => {
     let h
-    const sl = []
-    for (const s of specifiers) {
-      h = hashMap({ s, source })
+    for (const s of (typeof pkg === "string" ? [pkg] : pkg)) {
+      h = hashMap({ s, source, isDefault })
       if (!(h in this.importHashes)) {
-        sl.push(genSpecifier(s))
-        this.importHashes[h] = true
-      }
-    }
-
-    if (sl.length > 0) {
-      this.imports.push({
-        type: "ImportDeclaration",
-        specifiers: sl,
-        source: {
-          type: "StringLiteral",
-          value: source,
+        this.imports.push({
+          type: "ImportDeclaration",
+          specifiers: [
+            genSpecifier(s, isDefault)
+          ],
+          source: {
+            type: "StringLiteral",
+            value: source,
+            span: {
+              start: 0,
+              end: 0,
+              ctxt: 0,
+            }
+          },
+          typeOnly: false,
           span: {
             start: 0,
             end: 0,
             ctxt: 0,
-          }
-        },
-        typeOnly: false,
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0,
-        },
-      } as ImportDeclaration)
+          },
+        } as ImportDeclaration)
+
+        this.importHashes[h] = true
+      }
     }
   }
 

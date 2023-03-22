@@ -1,7 +1,5 @@
 import { Identifier, ImportDefaultSpecifier, ImportSpecifier } from "@swc/core"
 
-import { PluginImportSpecifier } from "./types"
-
 export function hash (str: string): string {
   str = str.replace(/\r/g, "")
   let hash = 5381
@@ -37,10 +35,10 @@ export function unMarkNode<T extends object> (node: T): T {
   return node
 }
 
-export function genSpecifier (specifier: PluginImportSpecifier): ImportSpecifier | ImportDefaultSpecifier {
+export function genSpecifier (name: string, isDefault = false): ImportSpecifier | ImportDefaultSpecifier {
   const local = {
     type: "Identifier",
-    value: specifier.name,
+    value: name,
     span: {
       start: 0,
       end: 0,
@@ -49,7 +47,7 @@ export function genSpecifier (specifier: PluginImportSpecifier): ImportSpecifier
     optional: false
   } as Identifier
 
-  if (specifier.kind === "default") {
+  if (isDefault) {
     return {
       type: "ImportDefaultSpecifier",
       local,

@@ -2,11 +2,6 @@ import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expressio
 
 import type { Visitor } from "@swc/core/Visitor"
 
-export type PluginImportSpecifier = {
-  name: string,
-  kind?: null | "default"
-}
-
 export type { Node } from "@swc/core"
 
 export type ScopeVar = { name: string, private?: boolean, value?: Node, marker?: unknown };
@@ -27,7 +22,7 @@ export type WalkContext = {
   /** Track last variable with name */
   track: (name: string) => ScopeVar | undefined;
   /** Import some package */
-  import: (specifiers: PluginImportSpecifier[], source: string) => void;
+  import: (pkg: string | string[], source: string, isDefault?: boolean) => void;
   /** Convert source code to node list */
   parse: (src: string, options?: ParseOptions) => ModuleItem[];
   /** Convert expression to ast */
