@@ -24,7 +24,7 @@ test("useOn events", () => {
     return <div>{isHover ? 'Now Hovering' : 'Not Hovering'}</div>;
   }
   `
-  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [qwik, signal, events], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })
 
 test("useOnDocument event", () => {
@@ -43,7 +43,7 @@ test("useOnDocument event", () => {
   }
   `
 
-  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [qwik, signal, events], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })
 
 test("useOnDocument event", () => {
@@ -63,7 +63,7 @@ test("useOnDocument event", () => {
   }
   `
 
-  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [qwik, signal, events], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })
 
 test("useOnWindow event", () => {
@@ -82,7 +82,7 @@ test("useOnWindow event", () => {
     return <div></div>;
   };
   `
-  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [qwik, signal, events], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })
 
 test("useOnWindow event", () => {
@@ -100,5 +100,5 @@ test("useOnWindow event", () => {
     return <div></div>;
   };
   `
-  expect(transform(code, { plugins: [ qwik, signal, events ], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [qwik, signal, events], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })

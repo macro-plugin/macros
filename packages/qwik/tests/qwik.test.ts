@@ -1,6 +1,6 @@
-import { computed, qwik, signal } from "../src";
+import { computed, qwik, signal } from "../src"
 
-import { transform } from "@macro-plugin/core";
+import { transform } from "@macro-plugin/core"
 
 test("qwik labeled macro", () => {
   const code = `
@@ -8,8 +8,8 @@ test("qwik labeled macro", () => {
     qwik: true
   }
   `
-  expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot();
-});
+  expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot()
+})
 
 test("qwik labeled macro with value false", () => {
   const code = `
@@ -17,8 +17,8 @@ test("qwik labeled macro with value false", () => {
     qwik: false
   }
   `
-  expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot();
-});
+  expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot()
+})
 
 test("qwik labeled macro with wrong value", () => {
   const code = `
@@ -27,7 +27,7 @@ test("qwik labeled macro with wrong value", () => {
   }
   `
   expect(() => transform(code, { plugins: [qwik] }).code).toThrow()
-});
+})
 
 test("qwik labeled macro in function expression", () => {
   const code = `
@@ -40,7 +40,7 @@ test("qwik labeled macro in function expression", () => {
   }
   `
   expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot()
-});
+})
 
 test("complex qwik app", () => {
   const code = `
@@ -59,5 +59,5 @@ test("complex qwik app", () => {
     )
   }
   `
-  expect(transform(code, { plugins: [qwik, signal, computed], jsc: { parser: { syntax: 'typescript', tsx: true } } }).code).toMatchSnapshot()
-});
+  expect(transform(code, { plugins: [qwik, signal, computed], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+})

@@ -17,5 +17,5 @@ test("solid effect macro", () => {
     ]
   `
 
-  expect(transform(code, { plugins: [ effect ] }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [effect] }).code).toMatchSnapshot()
 })

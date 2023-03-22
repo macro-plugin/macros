@@ -21,5 +21,5 @@ test("solid store macro", () => {
   // todos[0] = { id: 1, title: "Thing I have to do", done: false }
   // todos[1].id = 3;
 
-  expect(transform(code, { plugins: [store] }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [store] }).code).toMatchSnapshot()
 })

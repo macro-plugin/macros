@@ -9,7 +9,7 @@ test("solid onMount macro", () => {
     }
   `
 
-  expect(transform(code, { plugins: [onMount] }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [onMount] }).code).toMatchSnapshot()
 })
 
 test("solid onCleanup macro", () => {
@@ -19,9 +19,8 @@ test("solid onCleanup macro", () => {
     }
   `
 
-  expect(transform(code, { plugins: [onCleanup] }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [onCleanup] }).code).toMatchSnapshot()
 })
-
 
 test("solid onError macro", () => {
   const code = `
@@ -34,5 +33,5 @@ test("solid onError macro", () => {
     }
   `
 
-  expect(transform(code, { plugins: [onError] }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [onError] }).code).toMatchSnapshot()
 })

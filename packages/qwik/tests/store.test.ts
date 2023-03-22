@@ -20,5 +20,5 @@ test("qwik store", () => {
     );
   };
   `
-  expect(transform(code, {plugins: [qwik, store], jsc: { parser: { syntax: 'typescript', tsx: true } }}).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [qwik, store], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })

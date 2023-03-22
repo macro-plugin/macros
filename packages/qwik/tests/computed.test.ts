@@ -14,5 +14,5 @@ test("qwik computed", () => {
   }
   `
 
-  expect(transform(code, { plugins: [ signal, computed ] }).code).toMatchSnapshot()
+  expect(transform(code, { plugins: [signal, computed] }).code).toMatchSnapshot()
 })

@@ -3,7 +3,7 @@ import { resource, signal } from "../src"
 import { transform } from "@macro-plugin/core"
 
 test("qwik resource", () => {
-  const code =  `
+  const code = `
   signal: {
     var bar = 'foo'
   }

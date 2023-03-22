@@ -23,6 +23,5 @@ test("qwik signal in function name", () => {
   count += 2
   `
 
-  expect(transform(code, { plugins: [ signal ] }).code).toMatchSnapshot();
-});
-
+  expect(transform(code, { plugins: [signal] }).code).toMatchSnapshot()
+})

@@ -1,6 +1,6 @@
 import { css, link, qwik, scoped } from "../src"
 
-import { transform } from "@macro-plugin/core";
+import { transform } from "@macro-plugin/core"
 
 test("qwik css link", () => {
   const code = `
@@ -10,9 +10,9 @@ test("qwik css link", () => {
 
       return <span class="my-text">Some text</span>
     }
-  `;
-  expect(transform(code, { plugins: [ qwik, link ], jsc: { parser: { syntax: 'typescript', tsx: true }} }).code).toMatchSnapshot();
-});
+  `
+  expect(transform(code, { plugins: [qwik, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+})
 
 test("qwik css links", () => {
   const code = `
@@ -25,9 +25,9 @@ test("qwik css links", () => {
 
       return <span class="my-text">Some text</span>
     }
-  `;
-  expect(transform(code, { plugins: [ qwik, link ], jsc: { parser: { syntax: 'typescript', tsx: true }} }).code).toMatchSnapshot();
-});
+  `
+  expect(transform(code, { plugins: [qwik, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+})
 
 test("qwik css string", () => {
   const code = `
@@ -41,9 +41,9 @@ test("qwik css string", () => {
 
       return <span class="my-text">Some text</span>
     }
-  `;
-  expect(transform(code, { plugins: [ qwik, css ], jsc: { parser: { syntax: 'typescript', tsx: true }} }).code).toMatchSnapshot();
-});
+  `
+  expect(transform(code, { plugins: [qwik, css], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+})
 
 test("qwik scoped css", () => {
   const code = `
@@ -61,6 +61,6 @@ test("qwik scoped css", () => {
 
     return <span class="my-text">Some text</span>
   }
-`;
-expect(transform(code, { plugins: [ qwik, scoped, css, link ], jsc: { parser: { syntax: 'typescript', tsx: true }} }).code).toMatchSnapshot();
-});
+`
+  expect(transform(code, { plugins: [qwik, scoped, css, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+})
