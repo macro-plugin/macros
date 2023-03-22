@@ -1,4 +1,4 @@
-import { ModuleItem, Options, Program, printSync as print } from "@swc/core";
+import { Expression, ModuleItem, Options, Program, printSync as print } from "@swc/core";
 
 import { BaseNode } from "./types";
 
@@ -21,3 +21,16 @@ export function generate(
   return { code: code.trim(), map }
 }
 
+export function generateExpr(expr: BaseNode, options?: Options) {
+  let { code, map } = generate({
+    type: "ExpressionStatement",
+    span: {
+      start: 0,
+      end: 0,
+      ctxt: 0
+    },
+    expression: expr as Expression
+  }, options)
+
+  return { code: code.replace(/\s*;\s*$/, ''), map }
+}
