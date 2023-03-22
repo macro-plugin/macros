@@ -1,5 +1,5 @@
 import { ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, TsType } from "@swc/core"
-import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, WalkContext } from "./types"
+import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, TypeMacro, WalkContext } from "./types"
 
 import { isRegExp } from "./utils"
 import { parseExpr } from "./parse"
@@ -121,8 +121,35 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
   })
 }
 
-export function createTypeMacro () {
+export function createTypeMacro (name: string, f: TypeMacro | { enter?: TypeMacro, leave?: TypeMacro }) {
+  if (typeof f === "object") {
+    return createMacro({
+      CallExpression: {
+        enter (ast) {
+          if (f.enter && ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
+            if (ast.arguments.length > 0) throw new Error("TypeMacro doesn't support call with args.")
+            return f.enter.apply(this, [ast.typeArguments?.params, ast.callee.optional])
+          }
+        },
+        leave (ast) {
+          if (f.leave && ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
+            if (ast.arguments.length > 0) throw new Error("TypeMacro doesn't support call with args.")
+            return f.leave.apply(this, [ast.typeArguments?.params, ast.callee.optional])
+          }
+        }
+      }
+    })
+  }
 
+  return createMacro({
+    CallExpression (ast) {
+      if (ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
+        if (ast.arguments.length > 0) throw new Error("TypeMacro doesn't support call with args.")
+        const tys = ast.typeArguments?.params
+        return f.apply(this, [tys, ast.callee.optional])
+      }
+    }
+  })
 }
 
 export function createTmplMacro (tag: string,) {
