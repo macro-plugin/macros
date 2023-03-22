@@ -1,69 +1,71 @@
 import { createMacro, transform } from "../src"
 
-import type { VariableDeclaration } from "@swc/core";
+import type { VariableDeclaration } from "@swc/core"
 
 const arrow = createMacro({
-  FunctionDeclaration(ast) {
-    const children = [];
-    let isArrow = false;
+  FunctionDeclaration (ast) {
+    const children = []
+    let isArrow = false
 
     if (!ast.body) return
 
     for (const s of ast.body.stmts || []) {
-      if (s.type == 'LabeledStatement' && s.body.type == 'ExpressionStatement') {
-        const expr = s.body.expression;
-        if (s.label.value == 'arrow') {
-          if (expr.type == 'BooleanLiteral' && expr.value) {
-            isArrow = true;
+      if (s.type == "LabeledStatement" && s.body.type == "ExpressionStatement") {
+        const expr = s.body.expression
+        if (s.label.value == "arrow") {
+          if (expr.type == "BooleanLiteral" && expr.value) {
+            isArrow = true
           }
-          continue;
+          continue
         }
       }
-      children.push(s);
+      children.push(s)
     }
 
-    ast.body.stmts = children;
+    ast.body.stmts = children
 
-    if (isArrow) return {
-      type: 'VariableDeclaration',
-      kind: 'const',
-      declare: false,
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      },
-      declarations: [
-        {
-          type: 'VariableDeclarator',
-          id: ast.identifier,
-          init: {
-            type: 'ArrowFunctionExpression',
-            generator: false,
-            async: false,
-            params: [],
-            body: ast.body,
+    if (isArrow) {
+      return {
+        type: "VariableDeclaration",
+        kind: "const",
+        declare: false,
+        span: {
+          start: 0,
+          end: 0,
+          ctxt: 0
+        },
+        declarations: [
+          {
+            type: "VariableDeclarator",
+            id: ast.identifier,
+            init: {
+              type: "ArrowFunctionExpression",
+              generator: false,
+              async: false,
+              params: [],
+              body: ast.body,
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0
+              }
+            },
+            definite: false,
             span: {
               start: 0,
               end: 0,
               ctxt: 0
             }
-          },
-          definite: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
           }
-        }
-      ]
-    } as VariableDeclaration
+        ]
+      } as VariableDeclaration
+    }
   }
 })
 
 const inject = createMacro(function () {
-  this.import([ { name: 'test', kind: 'default' } ], 'test')
-  this.import([ { name: 'ref' } ], 'vue')
+  this.import([{ name: "test", kind: "default" }], "test")
+  this.import([{ name: "ref" }], "vue")
 })
 
 test("transform function block", () => {
@@ -72,7 +74,7 @@ test("transform function block", () => {
       arrow: true
       return a + b
     }
-  `;
+  `
 
   const code2 = `
     function add(a, b) {
@@ -80,8 +82,8 @@ test("transform function block", () => {
       return a + b
     }
   `
-  expect(transform(code, { plugins: [arrow] }).code).toMatchSnapshot();
-  expect(transform(code2, { plugins: [arrow] }).code).toMatchSnapshot();
+  expect(transform(code, { plugins: [arrow] }).code).toMatchSnapshot()
+  expect(transform(code2, { plugins: [arrow] }).code).toMatchSnapshot()
 })
 
 test("inject imports", () => {
@@ -92,11 +94,11 @@ test("inject imports", () => {
   `
 
   expect(transform(code, {
-    plugins: [ inject ],
+    plugins: [inject],
     jsc: {
       parser: {
         syntax: "typescript",
       },
     },
-  }).code).toMatchSnapshot();
-});
+  }).code).toMatchSnapshot()
+})

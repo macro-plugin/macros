@@ -1,4 +1,4 @@
-import { createLitMacro, hashMap, parse, parseExpr, transform } from "../src";
+import { createLitMacro, hashMap, parse, parseExpr, transform } from "../src"
 
 test("create literal macro", () => {
   const code = `
@@ -6,7 +6,7 @@ test("create literal macro", () => {
     console.log('development')
   }
   `
-  expect(transform(code, { plugins: [createLitMacro('__DEV__', true)] }).code).toMatchSnapshot()
+  expect(transform(code, { plugins: [createLitMacro("__DEV__", true)] }).code).toMatchSnapshot()
 })
 
 test("should pass overwrited variable", () => {
@@ -21,7 +21,7 @@ test("should pass overwrited variable", () => {
 
   const after = __DEV__
   `
-  expect(transform(code, { plugins: [createLitMacro('__DEV__', true)] }).code).toMatchSnapshot()
+  expect(transform(code, { plugins: [createLitMacro("__DEV__", true)] }).code).toMatchSnapshot()
 })
 
 test("should support all jsonable values", () => {
@@ -36,27 +36,31 @@ test("should support all jsonable values", () => {
     const g = __object__
     const h = __regex__
   `
-  expect(transform(code, { plugins: [
-    createLitMacro('__num__', 123),
-    createLitMacro('__str__', 'Hello World'),
-    createLitMacro('__bool__', false),
-    createLitMacro('__null__', null),
-    createLitMacro('__undefined__', undefined),
-    createLitMacro('__function__', () => true),
-    createLitMacro('__array__', [1, 2, 3]),
-    createLitMacro('__object__', { a: 1, b: 2 }),
-    createLitMacro('__regex__', /.*/g),
-  ]}).code).toMatchSnapshot()
-});
+  expect(transform(code, {
+    plugins: [
+      createLitMacro("__num__", 123),
+      createLitMacro("__str__", "Hello World"),
+      createLitMacro("__bool__", false),
+      createLitMacro("__null__", null),
+      createLitMacro("__undefined__", undefined),
+      createLitMacro("__function__", () => true),
+      createLitMacro("__array__", [1, 2, 3]),
+      createLitMacro("__object__", { a: 1, b: 2 }),
+      createLitMacro("__regex__", /.*/g),
+    ]
+  }).code).toMatchSnapshot()
+})
 
 test("should allow ast for more complex value", () => {
   const code = `
     const expr = __expr__
   `
-  expect(transform(code, { plugins: [
-    createLitMacro('__expr__', parseExpr('call("hello", "world")'))
-  ]}).code).toMatchSnapshot()
-});
+  expect(transform(code, {
+    plugins: [
+      createLitMacro("__expr__", parseExpr('call("hello", "world")'))
+    ]
+  }).code).toMatchSnapshot()
+})
 
 test("should support pass an object", () => {
   const code = `
@@ -71,18 +75,20 @@ test("should support pass an object", () => {
     const h = __regex__
     const i = __expr__
   `
-  expect(transform(code, { plugins: [
-    createLitMacro({
-      '__num__': 123,
-      '__str__': 'Hello World',
-      '__bool__': false,
-      '__null__': null,
-      '__undefined__': undefined,
-      '__function__': () => true,
-      '__array__': [1, 2, 3],
-      '__object__': { a: 1, b: 2 },
-      '__regex__': /.*/g,
-      '__expr__': parseExpr('call("hello", "world")')
-    })
-  ]}).code).toMatchSnapshot()
-});
+  expect(transform(code, {
+    plugins: [
+      createLitMacro({
+        __num__: 123,
+        __str__: "Hello World",
+        __bool__: false,
+        __null__: null,
+        __undefined__: undefined,
+        __function__: () => true,
+        __array__: [1, 2, 3],
+        __object__: { a: 1, b: 2 },
+        __regex__: /.*/g,
+        __expr__: parseExpr('call("hello", "world")')
+      })
+    ]
+  }).code).toMatchSnapshot()
+})
