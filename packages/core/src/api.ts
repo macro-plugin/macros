@@ -1,5 +1,5 @@
-import { Argument, ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, Pattern, TsTypeParameterInstantiation } from "@swc/core";
-import type { BaseNode, LabeledMacro, MacroPlugin, WalkContext } from "./types";
+import { Argument, ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, Pattern, TsType, TsTypeParameterInstantiation } from "@swc/core";
+import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, WalkContext } from "./types";
 
 import { isRegExp } from "./utils";
 import { parseExpr } from "./parse";
@@ -35,24 +35,24 @@ export function createLitMacro(arg: string | Record<string, unknown>, value?: un
     Identifier(ast) {
       if (ast.value == arg && !this.track(arg)) return createLit.apply(this, [value])
     }
-  }: {
+  } : {
     Identifier(ast) {
       if (ast.value in arg && !this.track(ast.value)) return createLit.apply(this, [arg[ast.value]])
     }
   })
 }
 
-function flatExpr(f: Function, args: Argument[], typeParams?: TsTypeParameterInstantiation, optional = false): Expression {
+function flatExpr(f: Function, args: Expression[], typeParams?: TsType[], optional = false): Expression {
   const ast = parseExpr(f.toString()) as FunctionDeclaration | FunctionExpression | ArrowFunctionExpression
   let params: Record<string, { value?: Expression }> = {}
 
   ast.params.forEach((p, i) => {
     let pat = ast.type == 'ArrowFunctionExpression' ? p : ((p as Param).pat);
     if (pat.type == 'Identifier') {
-      params[pat.value] = args[i] ? { value: args[i].expression } : {}
+      params[pat.value] = args[i] ? { value: args[i] } : {}
     } else if (pat.type == 'AssignmentPattern') {
       if (pat.left.type == 'Identifier') {
-        params[pat.left.value] = { value: args[i].expression || pat.right }
+        params[pat.left.value] = { value: args[i] || pat.right }
       }
     }
   })
@@ -89,17 +89,37 @@ function flatExpr(f: Function, args: Argument[], typeParams?: TsTypeParameterIns
   return output
 }
 
-export function createExprMacro(name: string, f: Function) {
+export function createExprMacro(name: string, f: Function | ExprMacro | { enter?: ExprMacro, leave?: ExprMacro }): MacroPlugin {
+  if (typeof f == 'object') return createMacro({
+    CallExpression: {
+      enter(ast) {
+        if (f.enter && ast.callee.type == 'Identifier' && ast.callee.value == name && !this.track(ast.callee.value)) {
+          return f.enter.apply(this, [ast.arguments.map(i => i.expression), ast.typeArguments?.params, ast.callee.optional])
+        }
+      },
+      leave(ast) {
+        if (f.leave && ast.callee.type == 'Identifier' && ast.callee.value == name && !this.track(ast.callee.value)) {
+          return f.leave.apply(this, [ast.arguments.map(i => i.expression), ast.typeArguments?.params, ast.callee.optional]);
+        }
+      }
+    }
+  })
   return createMacro({
     CallExpression(ast) {
       if (ast.callee.type == 'Identifier' && ast.callee.value == name && !this.track(ast.callee.value)) {
-        return flatExpr(f, ast.arguments, ast.typeArguments, ast.callee.optional)
+        const args = ast.arguments.map(i => i.expression);
+        const tys = ast.typeArguments?.params;
+        return f.toString().startsWith('function') ? (f as ExprMacro).apply(this, [args, tys, ast.callee.optional]) : flatExpr(f, args, tys, ast.callee.optional)
       }
     }
   })
 }
 
 export function createTypeMacro() {
+
+}
+
+export function createTmplMacro(tag: string, ) {
 
 }
 
