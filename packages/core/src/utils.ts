@@ -1,4 +1,4 @@
-import { Identifier, ImportDefaultSpecifier, ImportSpecifier } from "@swc/core"
+import { ExportNamespaceSpecifier, ExportSpecifier, Identifier, ImportDefaultSpecifier, ImportSpecifier } from "@swc/core"
 
 export function hash (str: string): string {
   str = str.replace(/\r/g, "")
@@ -35,7 +35,7 @@ export function unMarkNode<T extends object> (node: T): T {
   return node
 }
 
-export function genSpecifier (name: string, isDefault = false): ImportSpecifier | ImportDefaultSpecifier {
+export function genImportSpecifier (name: string, isDefault = false): ImportSpecifier | ImportDefaultSpecifier {
   const local = {
     type: "Identifier",
     value: name,
@@ -61,6 +61,41 @@ export function genSpecifier (name: string, isDefault = false): ImportSpecifier 
   return {
     type: "ImportSpecifier",
     local,
+    span: {
+      start: 0,
+      end: 0,
+      ctxt: 0,
+    },
+    isTypeOnly: false
+  }
+}
+
+export function genExportSpecifier (name: string, isNamespace = false): ExportSpecifier | ExportNamespaceSpecifier {
+  const orig = {
+    type: "Identifier",
+    value: name,
+    span: {
+      start: 0,
+      end: 0,
+      ctxt: 1
+    },
+    optional: false
+  } as Identifier
+
+  if (isNamespace) {
+    return {
+      type: "ExportNamespaceSpecifier",
+      name: orig,
+      span: {
+        start: 0,
+        end: 0,
+        ctxt: 0,
+      }
+    }
+  }
+  return {
+    type: "ExportSpecifier",
+    orig,
     span: {
       start: 0,
       end: 0,

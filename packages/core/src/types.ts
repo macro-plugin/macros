@@ -23,6 +23,8 @@ export type WalkContext = {
   track: (name: string) => ScopeVar | undefined;
   /** Import some package */
   import: (pkg: string | string[], source: string, isDefault?: boolean) => void;
+  /** Export some package */
+  export: (pkg: string | string[], source?: string | null, isNamespace?: boolean) => void;
   /** Convert source code to node list */
   parse: (src: string, options?: ParseOptions) => ModuleItem[];
   /** Convert expression to ast */

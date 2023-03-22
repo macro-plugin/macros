@@ -1,6 +1,6 @@
 import { BaseNode, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
-import { ImportDeclaration, Program } from "@swc/core"
-import { genSpecifier, hashMap } from "./utils"
+import { ExportNamedDeclaration, ImportDeclaration, Program } from "@swc/core"
+import { genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
 import { parse, parseExpr } from "./parse"
 import { print, printExpr } from "./print"
 
@@ -9,7 +9,9 @@ import trackPlugin from "./track"
 class Walker {
   data: Record<string, unknown> = {}
   imports: ImportDeclaration[] = []
+  exports: ExportNamedDeclaration[] = []
   importHashes: Record<string, true> = {}
+  exportHashes: Record<string, true> = {}
   enter?: WalkFunc
   leave?: WalkFunc
   set = <T>(key: string, value: T) => { this.data[key] = value }
@@ -26,7 +28,7 @@ class Walker {
         this.imports.push({
           type: "ImportDeclaration",
           specifiers: [
-            genSpecifier(s, isDefault)
+            genImportSpecifier(s, isDefault)
           ],
           source: {
             type: "StringLiteral",
@@ -50,6 +52,40 @@ class Walker {
     }
   }
 
+  export = (pkg: string | string[], source?: string | null, isNamespace = false) => {
+    let h
+    for (const s of (typeof pkg === "string" ? [pkg] : pkg)) {
+      h = hashMap({ s, source, isNamespace })
+      if (!(h in this.exportHashes)) {
+        this.exports.push({
+          type: "ExportNamedDeclaration",
+          specifiers: [
+            genExportSpecifier(s, isNamespace)
+          ],
+          source: source == null
+            ? undefined
+            : {
+              type: "StringLiteral",
+              value: source,
+              span: {
+                start: 0,
+                end: 0,
+                ctxt: 0,
+              }
+            },
+          typeOnly: false,
+          span: {
+            start: 0,
+            end: 0,
+            ctxt: 0,
+          },
+        } as ExportNamedDeclaration)
+
+        this.exportHashes[h] = true
+      }
+    }
+  }
+
   constructor ({ enter, leave }: WalkPlugin) {
     this.enter = enter
     this.leave = leave
@@ -63,6 +99,7 @@ class Walker {
       get: this.get,
       track: this.track,
       import: this.import,
+      export: this.export,
       skip: () => {
         _skipped = true
       },
@@ -138,8 +175,8 @@ class Walker {
     } else if (n.type) {
       this.walkSingle(n)
     }
-    if (this.imports.length > 0 && !Array.isArray(n) && (n.type === "Module" || n.type === "Script")) {
-      (n as Program).body = [...this.imports, ...(n as Program).body]
+    if (!Array.isArray(n) && (n.type === "Module" || n.type === "Script") && (this.imports.length > 0 || this.exports.length > 0)) {
+      (n as Program).body = [...this.imports, ...(n as Program).body, ...this.exports]
     }
     return n
   }
