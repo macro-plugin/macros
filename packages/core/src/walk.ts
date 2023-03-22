@@ -1,5 +1,5 @@
 import { BaseNode, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
-import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, Program } from "@swc/core"
+import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, Program } from "@swc/core"
 import { genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
 import { parse, parseExpr } from "./parse"
 import { print, printExpr } from "./print"
@@ -10,6 +10,8 @@ class Walker {
   data: Record<string, unknown> = {}
   imports: ImportDeclaration[] = []
   exports: ExportNamedDeclaration[] = []
+  prepends: ModuleItem[] = []
+  appends: ModuleItem[] = []
   importHashes: Record<string, true> = {}
   exportHashes: Record<string, true> = {}
   enter?: WalkFunc
@@ -93,6 +95,9 @@ class Walker {
     }
   }
 
+  prepend = (stmts: ModuleItem[]) => this.prepends.push(...stmts)
+  append = (stmts: ModuleItem[]) => this.appends.push(...stmts)
+
   constructor ({ enter, leave }: WalkPlugin) {
     this.enter = enter
     this.leave = leave
@@ -107,6 +112,8 @@ class Walker {
       track: this.track,
       import: this.import,
       export: this.export,
+      prepend: this.prepend,
+      append: this.append,
       skip: () => {
         _skipped = true
       },
@@ -182,8 +189,20 @@ class Walker {
     } else if (n.type) {
       this.walkSingle(n)
     }
-    if (!Array.isArray(n) && (n.type === "Module" || n.type === "Script") && (this.imports.length > 0 || this.exports.length > 0)) {
-      (n as Program).body = [...this.imports, ...(n as Program).body, ...this.exports]
+    if (!Array.isArray(n) && (n.type === "Module" || n.type === "Script")) {
+      const _imports = []
+      const _exports = []
+      const _stmts = []
+      for (const i of (n as Program).body) {
+        if (["ImportDeclaration"].includes(i.type)) {
+          _imports.push(i)
+        } else if (["ExportDeclaration", "ExportNamedDeclaration", "ExportDefaultDeclaration", "ExportAllDeclaration"].includes(i.type)) {
+          _exports.push(i)
+        } else {
+          _stmts.push(i)
+        }
+      }
+      (n as Program).body = [..._imports, ...this.imports, ...this.prepends, ..._stmts, ...this.appends, ..._exports, ...this.exports]
     }
     return n
   }

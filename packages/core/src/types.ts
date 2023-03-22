@@ -27,6 +27,10 @@ export type WalkContext = {
   import(pkg: string | string[], source: string, isDefault?: boolean): void;
   /** Export some package */
   export(pkg: string | string[], source?: string | null, isNamespace?: boolean): void;
+  /** Prepend some statement after imports */
+  prepend(stmts: ModuleItem[]): void;
+  /** Append some statement before exports */
+  append(stmts: ModuleItem[]): void;
   /** Convert source code to node list */
   parse(src: string, options?: ParseOptions): ModuleItem[];
   /** Convert expression to ast */

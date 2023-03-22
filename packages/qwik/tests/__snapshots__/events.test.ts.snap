@@ -55,6 +55,7 @@ exports[`useOnWindow event 1`] = `
 "import { component$ } from "@builder.io/qwik";
 import { $ } from "@builder.io/qwik";
 import { useOnWindow } from "@builder.io/qwik";
+;
 export const Online = component$(()=>{
     useOnWindow("online", $(()=>{
         alert("Your Device is now Online");
@@ -64,7 +65,6 @@ export const Online = component$(()=>{
     }));
     return <div></div>;
 });
-;
 "
 `;
 
@@ -72,6 +72,7 @@ exports[`useOnWindow event 2`] = `
 "import { component$ } from "@builder.io/qwik";
 import { $ } from "@builder.io/qwik";
 import { useOnWindow } from "@builder.io/qwik";
+;
 export const Online = component$(()=>{
     useOnWindow("online", $(()=>{
         alert("Your Device is now Online");
@@ -81,6 +82,5 @@ export const Online = component$(()=>{
     }));
     return <div></div>;
 });
-;
 "
 `;
