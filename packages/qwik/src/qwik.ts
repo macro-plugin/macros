@@ -3,13 +3,13 @@ import { WalkContext, createMacro } from "@macro-plugin/core"
 
 function handleFunc (this: WalkContext, ast: FunctionDeclaration | FunctionExpression | ArrowFunctionExpression) {
   let label
-  if (!ast.body || ast.body.type != "BlockStatement") return
+  if (!ast.body || ast.body.type !== "BlockStatement") return
   for (let i = 0; i < ast.body.stmts.length; i++) {
-    if (ast.body.stmts[i].type == "LabeledStatement") {
+    if (ast.body.stmts[i].type === "LabeledStatement") {
       label = ast.body.stmts[i] as LabeledStatement
-      if (label.label.value == "qwik") {
-        if (label.body.type == "ExpressionStatement" && label.body.expression.type == "BooleanLiteral") {
-          ast.body.stmts = ast.body.stmts.filter((_, index) => index != i)
+      if (label.label.value === "qwik") {
+        if (label.body.type === "ExpressionStatement" && label.body.expression.type === "BooleanLiteral") {
+          ast.body.stmts = ast.body.stmts.filter((_, index) => index !== i)
           const isDecl = "identifier" in ast && ast.identifier != null
 
           if (label.body.expression.value) {

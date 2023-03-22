@@ -5,8 +5,8 @@ import { createMacro } from "./api"
 export const createLabeledExpr: ((label: string, specifier: string, source: string) => MacroPlugin) = (label, specifier, source) => {
   return createMacro({
     LabeledStatement (ast) {
-      if (ast.label.value != label) return
-      if (ast.body.type == "ExpressionStatement") {
+      if (ast.label.value !== label) return
+      if (ast.body.type === "ExpressionStatement") {
         this.import([{ name: specifier }], source)
 
         ast.body.expression = {

@@ -1,4 +1,4 @@
-import { Identifier, ImportDefaultSpecifier, ImportSpecifier, Node } from "@swc/core"
+import { Identifier, ImportDefaultSpecifier, ImportSpecifier } from "@swc/core"
 
 import { PluginImportSpecifier } from "./types"
 
@@ -49,7 +49,7 @@ export function genSpecifier (specifier: PluginImportSpecifier): ImportSpecifier
     optional: false
   } as Identifier
 
-  if (specifier.kind == "default") {
+  if (specifier.kind === "default") {
     return {
       type: "ImportDefaultSpecifier",
       local,

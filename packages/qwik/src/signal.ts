@@ -3,15 +3,15 @@ import { createMacro, markedNode } from "@macro-plugin/core"
 
 export const signal = createMacro({
   LabeledStatement (ast) {
-    if (ast.body.type != "BlockStatement" || ast.label.value != "signal") return
+    if (ast.body.type !== "BlockStatement" || ast.label.value !== "signal") return
 
     const signals: Record<string, { value?: Node }> = {}
 
     let name
     for (const i of ast.body.stmts) {
-      if (i.type == "VariableDeclaration" && i.kind == "var") {
+      if (i.type === "VariableDeclaration" && i.kind === "var") {
         for (const d of i.declarations) {
-          if (d.id.type == "Identifier") {
+          if (d.id.type === "Identifier") {
             name = d.id.value
             signals[name] = { value: d.init }
           } else {
@@ -82,7 +82,7 @@ export const signal = createMacro({
     }
   },
   Identifier (ast, parent) {
-    if (parent?.type != "VariableDeclarator" && this.track(ast.value)?.marker == "qwikSignal") {
+    if (parent?.type !== "VariableDeclarator" && this.track(ast.value)?.marker === "qwikSignal") {
       this.replace({
         type: "MemberExpression",
         object: ast,

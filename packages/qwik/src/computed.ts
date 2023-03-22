@@ -2,25 +2,25 @@ import { ArrowFunctionExpression, Expression, ExpressionStatement, Identifier, V
 import { BaseNode, createLabeledMacro, markedNode, unMarkNode, walk } from "@macro-plugin/core"
 
 export const computed = createLabeledMacro("computed", function (stmt) {
-  if (stmt.type != "BlockStatement") return
+  if (stmt.type !== "BlockStatement") return
 
   const computeds: Record<string, { value: BaseNode, computed?: BaseNode | Expression }> = {}
   const signals: string[] = []
 
   let name
   for (const i of stmt.stmts) {
-    if (i.type == "VariableDeclaration" && i.kind == "var") {
+    if (i.type === "VariableDeclaration" && i.kind === "var") {
       for (const d of i.declarations) {
-        if (d.id.type == "Identifier") {
+        if (d.id.type === "Identifier") {
           name = d.id.value
 
           if (d.init) {
             computeds[name] = { value: JSON.parse(JSON.stringify(d.init)), computed: d.init }
-            const isSignal = (name: string) => this.track(name)?.marker == "qwikSignal"
+            const isSignal = (name: string) => this.track(name)?.marker === "qwikSignal"
 
             walk(d.init, {
               enter (node) {
-                if (node.type == "Identifier") {
+                if (node.type === "Identifier") {
                   const name = (node as Identifier).value
                   if (isSignal(name)) {
                     unMarkNode(node);

@@ -152,7 +152,7 @@ class Walker {
     for (let y = scopeVars.length - 1; y >= 0; y--) {
       v = scopeVars[y]
       for (let x = v.length - 1; x >= 0; x--) {
-        if (v[x].name == name) return v[x]
+        if (v[x].name === name) return v[x]
       }
     }
     return undefined

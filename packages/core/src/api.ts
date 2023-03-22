@@ -1,4 +1,4 @@
-import { Argument, ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, Pattern, TsType, TsTypeParameterInstantiation } from "@swc/core"
+import { ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, TsType } from "@swc/core"
 import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, WalkContext } from "./types"
 
 import { isRegExp } from "./utils"
@@ -36,7 +36,7 @@ export function createLitMacro (arg: string | Record<string, unknown>, value?: u
   return createMacro(typeof arg === "string"
     ? {
       Identifier (ast) {
-        if (ast.value == arg && !this.track(arg)) return createLit.apply(this, [value])
+        if (ast.value === arg && !this.track(arg)) return createLit.apply(this, [value])
       }
     }
     : {
@@ -51,11 +51,11 @@ function flatExpr (f: Function, args: Expression[], typeParams?: TsType[], optio
   const params: Record<string, { value?: Expression }> = {}
 
   ast.params.forEach((p, i) => {
-    const pat = ast.type == "ArrowFunctionExpression" ? p : ((p as Param).pat)
-    if (pat.type == "Identifier") {
+    const pat = ast.type === "ArrowFunctionExpression" ? p : ((p as Param).pat)
+    if (pat.type === "Identifier") {
       params[pat.value] = args[i] ? { value: args[i] } : {}
-    } else if (pat.type == "AssignmentPattern") {
-      if (pat.left.type == "Identifier") {
+    } else if (pat.type === "AssignmentPattern") {
+      if (pat.left.type === "Identifier") {
         params[pat.left.value] = { value: args[i] || pat.right }
       }
     }
@@ -87,7 +87,7 @@ function flatExpr (f: Function, args: Expression[], typeParams?: TsType[], optio
       }
     })
 
-    if (ast.body.type != "BlockStatement") output = ast.body
+    if (ast.body.type !== "BlockStatement") output = ast.body
   }
 
   return output
@@ -98,12 +98,12 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
     return createMacro({
       CallExpression: {
         enter (ast) {
-          if (f.enter && ast.callee.type == "Identifier" && ast.callee.value == name && !this.track(ast.callee.value)) {
+          if (f.enter && ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
             return f.enter.apply(this, [ast.arguments.map(i => i.expression), ast.typeArguments?.params, ast.callee.optional])
           }
         },
         leave (ast) {
-          if (f.leave && ast.callee.type == "Identifier" && ast.callee.value == name && !this.track(ast.callee.value)) {
+          if (f.leave && ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
             return f.leave.apply(this, [ast.arguments.map(i => i.expression), ast.typeArguments?.params, ast.callee.optional])
           }
         }
@@ -112,7 +112,7 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
   }
   return createMacro({
     CallExpression (ast) {
-      if (ast.callee.type == "Identifier" && ast.callee.value == name && !this.track(ast.callee.value)) {
+      if (ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
         const args = ast.arguments.map(i => i.expression)
         const tys = ast.typeArguments?.params
         return f.toString().startsWith("function") ? (f as ExprMacro).apply(this, [args, tys, ast.callee.optional]) : flatExpr(f, args, tys, ast.callee.optional)
@@ -136,10 +136,10 @@ export function createLabeledMacro (label: string, f: LabeledMacro | {
   return createMacro({
     LabeledStatement: {
       enter (ast, parent, prop, index) {
-        if (ast.label.value == label) return (typeof f === "object" ? f.enter : f)?.apply(this, [ast.body, parent, prop, index])
+        if (ast.label.value === label) return (typeof f === "object" ? f.enter : f)?.apply(this, [ast.body, parent, prop, index])
       },
       leave (ast, parent, prop, index) {
-        if (ast.label.value == label && typeof f === "object") return f.leave?.apply(this, [ast.body, parent, prop, index])
+        if (ast.label.value === label && typeof f === "object") return f.leave?.apply(this, [ast.body, parent, prop, index])
       }
     }
   })

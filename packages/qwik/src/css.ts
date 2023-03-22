@@ -3,7 +3,7 @@ import { CallExpression, ExpressionStatement } from "@swc/core"
 import { createLabeledMacro } from "@macro-plugin/core"
 
 export const css = createLabeledMacro("css", function (stmt) {
-  if (stmt.type == "ExpressionStatement") {
+  if (stmt.type === "ExpressionStatement") {
     const specifier = this.get("QwikScoped", false) ? "useStyleScoped$" : "useStyle$"
 
     this.import([{ name: specifier }], "@builder.io/qwik")
@@ -39,20 +39,20 @@ export const css = createLabeledMacro("css", function (stmt) {
 })
 
 export const link = createLabeledMacro("link", function (stmt) {
-  if (stmt.type != "ExpressionStatement") return
+  if (stmt.type !== "ExpressionStatement") return
   let name: string
   let linkCount = this.get("QwikLinkCount", 0)
   const scoped = this.get("QwikScoped", false)
   const specifier = scoped ? "useStyleScoped$" : "useStyles$"
   const links: string[] = []
-  if (stmt.expression.type == "StringLiteral") {
+  if (stmt.expression.type === "StringLiteral") {
     name = "__link" + linkCount
     links.push(name)
     this.import([{ name, kind: "default" }], stmt.expression.value)
     linkCount += 1
-  } else if (stmt.expression.type == "ArrayExpression") {
+  } else if (stmt.expression.type === "ArrayExpression") {
     for (const i of stmt.expression.elements) {
-      if (i?.expression.type == "StringLiteral") {
+      if (i?.expression.type === "StringLiteral") {
         name = "__link" + linkCount
         links.push(name)
         this.import([{ name, kind: "default" }], i.expression.value)
@@ -110,14 +110,14 @@ export const link = createLabeledMacro("link", function (stmt) {
 
 export const scoped = createLabeledMacro("scoped", {
   enter (stmt) {
-    if (stmt.type == "BlockStatement") {
+    if (stmt.type === "BlockStatement") {
       this.set("QwikScoped", true)
     } else {
       throw new Error("Only accept BlockStatement in scoped macro.")
     }
   },
   leave (stmt) {
-    if (stmt.type == "BlockStatement") {
+    if (stmt.type === "BlockStatement") {
       this.replace(stmt.stmts)
       this.set("QwikScoped", false)
     }

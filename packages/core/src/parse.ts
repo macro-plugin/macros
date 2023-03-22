@@ -4,7 +4,7 @@ import { parse, parseSync } from "@swc/core"
 export { parse as parseAsync, parseSync as parse } from "@swc/core"
 
 function extractExpr (stmt: ModuleItem | undefined): Expression {
-  if (stmt && stmt.type == "ExpressionStatement" && stmt.expression.type == "ParenthesisExpression") return stmt.expression.expression
+  if (stmt && stmt.type === "ExpressionStatement" && stmt.expression.type === "ParenthesisExpression") return stmt.expression.expression
   return {
     type: "Invalid",
     span: {

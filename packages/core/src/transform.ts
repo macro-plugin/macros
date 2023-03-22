@@ -1,12 +1,11 @@
-import type { Config, MacroPlugin } from "./types"
 import {
   Program,
   print,
   printSync,
-  transformSync as _transform, transform as _transformAsync
 } from "@swc/core"
 import { parse, parseAsync } from "./parse"
 
+import type { Config } from "./types"
 import { walk } from "./walk"
 
 export function createSwcPlugin (config: Config) {

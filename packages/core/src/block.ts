@@ -13,7 +13,7 @@ import { createLabeledMacro } from "./api"
  */
 export const createLabeledBlock: ((label: string, specifier: string, source: string, allowParams?: boolean) => MacroPlugin) = (label, specifier, source, allowParams = false) => createLabeledMacro(label, function (ast) {
   this.import([{ name: specifier }], source)
-  if (ast.type == "BlockStatement") {
+  if (ast.type === "BlockStatement") {
     return ({
       type: "ExpressionStatement",
       expression: {
@@ -55,7 +55,7 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
         ctxt: 0
       }
     }) as ExpressionStatement
-  } else if (ast.type == "ExpressionStatement" && ast.expression.type == "ArrowFunctionExpression") {
+  } else if (ast.type === "ExpressionStatement" && ast.expression.type === "ArrowFunctionExpression") {
     return ({
       type: "ExpressionStatement",
       expression: {
@@ -86,7 +86,7 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
         ctxt: 0
       }
     }) as ExpressionStatement
-  } else if (allowParams && ast.type == "ExpressionStatement" && ast.expression.type == "ArrayExpression") {
+  } else if (allowParams && ast.type === "ExpressionStatement" && ast.expression.type === "ArrayExpression") {
     return ({
       type: "ExpressionStatement",
       expression: {

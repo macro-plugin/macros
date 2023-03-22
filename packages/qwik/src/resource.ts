@@ -5,8 +5,8 @@ import { createLabeledMacro } from "@macro-plugin/core"
 const varToReturn = (body: Statement[]) => {
   let ident: Identifier | undefined
   body = body.map(i => {
-    if (i.type == "VariableDeclaration" && i.kind == "var") {
-      if (i.declarations[0].id.type == "Identifier") {
+    if (i.type === "VariableDeclaration" && i.kind === "var") {
+      if (i.declarations[0].id.type === "Identifier") {
         ident = i.declarations[0].id
       } else {
         throw new Error("Expect an Identifier")
@@ -29,7 +29,7 @@ const varToReturn = (body: Statement[]) => {
 
 export const resource = createLabeledMacro("resource", function (stmt) {
   this.import([{ name: "useResource$" }], "@builder.io/qwik")
-  if (stmt.type == "BlockStatement") {
+  if (stmt.type === "BlockStatement") {
     const [id, stmts] = varToReturn(stmt.stmts)
 
     return {
@@ -96,10 +96,10 @@ export const resource = createLabeledMacro("resource", function (stmt) {
       declare: false,
       kind: "const"
     } as VariableDeclaration
-  } else if (stmt.type == "ExpressionStatement" && stmt.expression.type == "ArrowFunctionExpression") {
+  } else if (stmt.type === "ExpressionStatement" && stmt.expression.type === "ArrowFunctionExpression") {
     let id, stmts
 
-    if (stmt.expression.body.type == "BlockStatement") {
+    if (stmt.expression.body.type === "BlockStatement") {
       [id, stmts] = varToReturn(stmt.expression.body.stmts)
       stmt.expression.body.stmts = stmts
     } else {
