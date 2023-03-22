@@ -3,57 +3,14 @@ import {
   print,
   printSync,
 } from "@swc/core"
+import { Walker, combinePlugins } from "./walk"
 import { parse, parseAsync } from "./parse"
 
 import type { Config } from "./types"
-import { Walker } from "./walk"
 
 export function createSwcPlugin (config: Config) {
   return (program: Program) => {
-    const plugins = config.plugins || []
-    const walker = new Walker({
-      enter (node, parent, prop, index) {
-        let r, e
-
-        const run = (fn: Function) => {
-          r = fn.apply(this, [node, parent, prop, index])
-          if (r) this.replace(r)
-        }
-
-        for (const p of plugins) {
-          if (typeof p === "function") {
-            run(p)
-            continue
-          }
-          if (p.enter) run(p.enter)
-          if (node.type in p) {
-            e = p[node.type as keyof typeof p]
-            if (typeof e === "function") {
-              run(e)
-            } else if (typeof e === "object" && e.enter) {
-              run(e.enter)
-            }
-          }
-        }
-      },
-      leave (node, parent, prop, index) {
-        let r, e
-
-        const run = (fn: Function) => {
-          r = fn.apply(this, [node, parent, prop, index])
-          if (r) this.replace(r)
-        }
-
-        for (const p of plugins) {
-          if (typeof p !== "object") continue
-          if (p.leave) run(p.leave)
-          if (node.type in p) {
-            e = p[node.type as keyof typeof p]
-            if (typeof e === "object" && e.leave) run(e.leave)
-          }
-        }
-      }
-    })
+    const walker = new Walker(combinePlugins(config.plugins || []))
 
     program = walker.walk(program) as Program
     if (config.emitDts) (program as Program & { dts?: string }).dts = walker.emit()

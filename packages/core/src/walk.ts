@@ -1,4 +1,4 @@
-import { BaseNode, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
+import { BaseNode, MacroPlugin, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
 import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration, TsType } from "@swc/core"
 import { genConstType, genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
 import { parse, parseExpr, parseType } from "./parse"
@@ -325,4 +325,50 @@ export class Walker {
 export function walk (n: Node | Node[], plugin: WalkPlugin) {
   const base = new Walker(plugin)
   return base.walk(n)
+}
+
+export function combinePlugins (plugins: MacroPlugin[]): WalkPlugin {
+  return {
+    enter (node, parent, prop, index) {
+      let r, e
+
+      const run = (fn: Function) => {
+        r = fn.apply(this, [node, parent, prop, index])
+        if (r) this.replace(r)
+      }
+
+      for (const p of plugins) {
+        if (typeof p === "function") {
+          run(p)
+          continue
+        }
+        if (p.enter) run(p.enter)
+        if (node.type in p) {
+          e = p[node.type as keyof typeof p]
+          if (typeof e === "function") {
+            run(e)
+          } else if (typeof e === "object" && e.enter) {
+            run(e.enter)
+          }
+        }
+      }
+    },
+    leave (node, parent, prop, index) {
+      let r, e
+
+      const run = (fn: Function) => {
+        r = fn.apply(this, [node, parent, prop, index])
+        if (r) this.replace(r)
+      }
+
+      for (const p of plugins) {
+        if (typeof p !== "object") continue
+        if (p.leave) run(p.leave)
+        if (node.type in p) {
+          e = p[node.type as keyof typeof p]
+          if (typeof e === "object" && e.leave) run(e.leave)
+        }
+      }
+    }
+  }
 }
