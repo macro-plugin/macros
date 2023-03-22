@@ -1,17 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`inject imports 1`] = `
-"import test from "test";
-import { ref } from "vue";
-function myComponent() {
-    const count = ref(0);
-}
-"
-`;
-
 exports[`inject imports and exports 1`] = `
 "import test from "test";
 import { ref } from "vue";
+import "style.css";
 function myComponent() {
     const count = ref(0);
 }

@@ -66,6 +66,7 @@ const arrow = createMacro({
 const inject = createMacro(function () {
   this.import("test", "test", true)
   this.import("ref", "vue")
+  this.import("style.css")
   this.export("ref", "vue")
   this.export("all", undefined, true)
 })
