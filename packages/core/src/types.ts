@@ -1,6 +1,6 @@
-import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, Param, ParseOptions, PrivateMethod, Statement, TsType, VariableDeclarator } from "@swc/core";
+import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, Param, ParseOptions, PrivateMethod, Statement, TsType, VariableDeclarator } from "@swc/core"
 
-import type { Visitor } from "@swc/core/Visitor";
+import type { Visitor } from "@swc/core/Visitor"
 
 export type PluginImportSpecifier = {
   name: string,

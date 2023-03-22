@@ -1,7 +1,7 @@
-import { ArrowFunctionExpression, ExpressionStatement } from "@swc/core";
+import { ArrowFunctionExpression, ExpressionStatement } from "@swc/core"
 
-import { MacroPlugin } from "./types";
-import { createLabeledMacro } from "./api";
+import { MacroPlugin } from "./types"
+import { createLabeledMacro } from "./api"
 
 /**
  * Create a macro plugin that converts `labeled: {}` or `labeled: (...args) => {}` to `$specifier((...args) => {})`,
@@ -12,14 +12,14 @@ import { createLabeledMacro } from "./api";
  * @returns - A labeled macro plugin
  */
 export const createLabeledBlock: ((label: string, specifier: string, source: string, allowParams?: boolean) => MacroPlugin) = (label, specifier, source, allowParams = false) => createLabeledMacro(label, function (ast) {
-  this.import([{ name: specifier }], source);
+  this.import([{ name: specifier }], source)
   if (ast.type == "BlockStatement") {
     return ({
       type: "ExpressionStatement",
       expression: {
-        type: 'CallExpression',
+        type: "CallExpression",
         callee: {
-          type: 'Identifier',
+          type: "Identifier",
           value: specifier,
           span: {
             start: 0,
@@ -29,8 +29,8 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
         },
         arguments: [
           {
-            "expression": {
-              type: 'ArrowFunctionExpression',
+            expression: {
+              type: "ArrowFunctionExpression",
               generator: false,
               async: false,
               params: [],
@@ -55,13 +55,13 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
         ctxt: 0
       }
     }) as ExpressionStatement
-  } else if (ast.type == "ExpressionStatement" && ast.expression.type == 'ArrowFunctionExpression') {
+  } else if (ast.type == "ExpressionStatement" && ast.expression.type == "ArrowFunctionExpression") {
     return ({
       type: "ExpressionStatement",
       expression: {
-        type: 'CallExpression',
+        type: "CallExpression",
         callee: {
-          type: 'Identifier',
+          type: "Identifier",
           value: specifier,
           span: {
             start: 0,
@@ -86,13 +86,13 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
         ctxt: 0
       }
     }) as ExpressionStatement
-  } else if (allowParams && ast.type == "ExpressionStatement" && ast.expression.type == 'ArrayExpression') {
+  } else if (allowParams && ast.type == "ExpressionStatement" && ast.expression.type == "ArrayExpression") {
     return ({
       type: "ExpressionStatement",
       expression: {
-        type: 'CallExpression',
+        type: "CallExpression",
         callee: {
-          type: 'Identifier',
+          type: "Identifier",
           value: specifier,
           span: {
             start: 0,
@@ -114,6 +114,6 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
       }
     }) as ExpressionStatement
   } else {
-    throw new Error('this macro only accept a ArrowFunction or BlockStatement' + (allowParams ? ' or an ArrayExpression' : ''))
+    throw new Error("this macro only accept a ArrowFunction or BlockStatement" + (allowParams ? " or an ArrayExpression" : ""))
   }
 })

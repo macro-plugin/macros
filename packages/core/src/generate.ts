@@ -1,6 +1,6 @@
-import { Expression, ModuleItem, Options, Program, printSync as print } from "@swc/core";
+import { Expression, ModuleItem, Options, Program, printSync as print } from "@swc/core"
 
-import { BaseNode } from "./types";
+import { BaseNode } from "./types"
 
 /**
  * Turns an AST into code, maintaining sourcemaps, user preferences, and valid output.
@@ -8,11 +8,11 @@ import { BaseNode } from "./types";
  * @param options - used for specifying options for code generation.
  * @returns - an object containing the output code and source map.
  */
-export function generate(
+export function generate (
   ast: BaseNode | BaseNode[],
   options?: Options
 ) {
-  let { code, map } = print({
+  const { code, map } = print({
     type: "Script",
     span: { start: 0, end: 0, ctxt: 0 },
     body: Array.isArray(ast) ? ast as unknown as ModuleItem[] : [ast as unknown as ModuleItem],
@@ -21,8 +21,8 @@ export function generate(
   return { code: code.trim(), map }
 }
 
-export function generateExpr(expr: BaseNode, options?: Options) {
-  let { code, map } = generate({
+export function generateExpr (expr: BaseNode, options?: Options) {
+  const { code, map } = generate({
     type: "ExpressionStatement",
     span: {
       start: 0,
@@ -32,5 +32,5 @@ export function generateExpr(expr: BaseNode, options?: Options) {
     expression: expr as Expression
   }, options)
 
-  return { code: code.replace(/\s*;\s*$/, ''), map }
+  return { code: code.replace(/\s*;\s*$/, ""), map }
 }
