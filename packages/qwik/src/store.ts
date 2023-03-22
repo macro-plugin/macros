@@ -2,15 +2,15 @@ import { Node, VariableDeclaration } from "@swc/core"
 import { createLabeledMacro, markedNode } from "@macro-plugin/core"
 
 export const store = createLabeledMacro("store", function (stmt) {
-  if (stmt.type != "BlockStatement") return
+  if (stmt.type !== "BlockStatement") return
 
   const signals: Record<string, { value?: Node }> = {}
 
   let name
   for (const i of stmt.stmts) {
-    if (i.type == "VariableDeclaration" && i.kind == "var") {
+    if (i.type === "VariableDeclaration" && i.kind === "var") {
       for (const d of i.declarations) {
-        if (d.id.type == "Identifier") {
+        if (d.id.type === "Identifier") {
           name = d.id.value
           signals[name] = { value: d.init }
         } else {

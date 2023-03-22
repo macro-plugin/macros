@@ -7,15 +7,15 @@ function getSetter (name: string) {
 
 export default createMacro({
   LabeledStatement (ast) {
-    if (ast.body.type != "BlockStatement" || ast.label.value != "signal") return
+    if (ast.body.type !== "BlockStatement" || ast.label.value !== "signal") return
 
     const signals: Record<string, { value?: BaseNode | Expression, setter: string }> = {}
 
     let name
     for (const i of ast.body.stmts) {
-      if (i.type == "VariableDeclaration" && i.kind == "var") {
+      if (i.type === "VariableDeclaration" && i.kind === "var") {
         for (const d of i.declarations) {
-          if (d.id.type == "Identifier") {
+          if (d.id.type === "Identifier") {
             name = d.id.value
             signals[name] = { value: d.init, setter: getSetter(name) }
           } else {
@@ -107,7 +107,7 @@ export default createMacro({
     }
   },
   AssignmentExpression (ast) {
-    if (ast.left.type == "Identifier" && this.track(ast.left.value)?.marker == "signal") {
+    if (ast.left.type === "Identifier" && this.track(ast.left.value)?.marker === "signal") {
       const name = ast.left.value
       return {
         type: "CallExpression",
@@ -123,7 +123,7 @@ export default createMacro({
         },
         arguments: [
           {
-            expression: ast.operator == "="
+            expression: ast.operator === "="
               ? ast.right
               : {
                 type: "BinaryExpression",
@@ -165,7 +165,7 @@ export default createMacro({
     }
   },
   UpdateExpression (ast) {
-    if (ast.argument.type == "Identifier" && this.track(ast.argument.value)?.marker == "signal") {
+    if (ast.argument.type === "Identifier" && this.track(ast.argument.value)?.marker === "signal") {
       const name = ast.argument.value
       ast.argument = {
         type: "CallExpression",

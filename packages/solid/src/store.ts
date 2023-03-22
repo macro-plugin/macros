@@ -8,10 +8,10 @@ function getSetter (name: string) {
 const plugin = createMacro({
   LabeledStatement (ast) {
     const stores: Record<string, { value?: BaseNode | Expression, setter: string }> = {}
-    if (ast.body.type == "BlockStatement" && ast.label.value == "store") {
+    if (ast.body.type === "BlockStatement" && ast.label.value === "store") {
       let name
       for (const i of ast.body.stmts) {
-        if (i.type == "VariableDeclaration" && i.kind == "var") {
+        if (i.type === "VariableDeclaration" && i.kind === "var") {
           for (const d of i.declarations) {
             if (d.id.type === "Identifier") {
               name = d.id.value
@@ -105,7 +105,7 @@ const plugin = createMacro({
     }
   },
   AssignmentExpression (ast) {
-    if (ast.left.type == "Identifier" && this.track(ast.left.value)?.marker == "store") {
+    if (ast.left.type === "Identifier" && this.track(ast.left.value)?.marker === "store") {
       const name = ast.left.value
       return {
         type: "CallExpression",
@@ -121,7 +121,7 @@ const plugin = createMacro({
         },
         arguments: [
           {
-            expression: ast.operator == "="
+            expression: ast.operator === "="
               ? ast.right
               : {
                 type: "BinaryExpression",
@@ -163,7 +163,7 @@ const plugin = createMacro({
     }
   },
   UpdateExpression (ast) {
-    if (ast.argument.type == "Identifier" && this.track(ast.argument.value)?.marker == "store") {
+    if (ast.argument.type === "Identifier" && this.track(ast.argument.value)?.marker === "store") {
       const name = ast.argument.value
       ast.argument = {
         type: "CallExpression",
