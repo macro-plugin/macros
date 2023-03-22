@@ -1,18 +1,18 @@
-import { Identifier, Statement, VariableDeclaration } from "@swc/core";
+import { Identifier, Statement, VariableDeclaration } from "@swc/core"
 
-import { createLabeledMacro } from "@macro-plugin/core";
+import { createLabeledMacro } from "@macro-plugin/core"
 
 const varToReturn = (body: Statement[]) => {
-  let ident: Identifier | undefined;
+  let ident: Identifier | undefined
   body = body.map(i => {
-    if (i.type == "VariableDeclaration" && i.kind == 'var') {
-      if (i.declarations[0].id.type == 'Identifier') {
-        ident = i.declarations[0].id;
+    if (i.type == "VariableDeclaration" && i.kind == "var") {
+      if (i.declarations[0].id.type == "Identifier") {
+        ident = i.declarations[0].id
       } else {
-        throw new Error('Expect an Identifier')
+        throw new Error("Expect an Identifier")
       }
       return {
-        type: 'ReturnStatement',
+        type: "ReturnStatement",
         argument: i.declarations[0].init,
         span: {
           start: 0,
@@ -27,10 +27,10 @@ const varToReturn = (body: Statement[]) => {
   return [ident, body] as [Identifier, Statement[]]
 }
 
-export const resource = createLabeledMacro('resource', function (stmt) {
-  this.import([{ name: 'useResource$' }], '@builder.io/qwik');
+export const resource = createLabeledMacro("resource", function (stmt) {
+  this.import([{ name: "useResource$" }], "@builder.io/qwik")
   if (stmt.type == "BlockStatement") {
-    const [id, stmts] = varToReturn(stmt.stmts);
+    const [id, stmts] = varToReturn(stmt.stmts)
 
     return {
       type: "VariableDeclaration",
@@ -45,11 +45,11 @@ export const resource = createLabeledMacro('resource', function (stmt) {
           },
           id,
           init: {
-            type: 'CallExpression',
+            type: "CallExpression",
             callee: {
-              type: 'Identifier',
+              type: "Identifier",
               optional: false,
-              value: 'useResource$',
+              value: "useResource$",
               span: {
                 start: 0,
                 end: 0,
@@ -64,7 +64,7 @@ export const resource = createLabeledMacro('resource', function (stmt) {
             arguments: [
               {
                 expression: {
-                  type: 'ArrowFunctionExpression',
+                  type: "ArrowFunctionExpression",
                   generator: false,
                   async: false,
                   params: [],
@@ -74,7 +74,7 @@ export const resource = createLabeledMacro('resource', function (stmt) {
                     ctxt: 0
                   },
                   body: {
-                    type: 'BlockStatement',
+                    type: "BlockStatement",
                     stmts,
                     span: {
                       start: 0,
@@ -96,14 +96,14 @@ export const resource = createLabeledMacro('resource', function (stmt) {
       declare: false,
       kind: "const"
     } as VariableDeclaration
-  } else if (stmt.type == "ExpressionStatement" && stmt.expression.type == 'ArrowFunctionExpression') {
-    let id, stmts;
+  } else if (stmt.type == "ExpressionStatement" && stmt.expression.type == "ArrowFunctionExpression") {
+    let id, stmts
 
-    if (stmt.expression.body.type == 'BlockStatement') {
-      [id, stmts] = varToReturn(stmt.expression.body.stmts);
-      stmt.expression.body.stmts = stmts;
+    if (stmt.expression.body.type == "BlockStatement") {
+      [id, stmts] = varToReturn(stmt.expression.body.stmts)
+      stmt.expression.body.stmts = stmts
     } else {
-      throw new Error('expect an arrow block inside resource.')
+      throw new Error("expect an arrow block inside resource.")
     }
 
     return {
@@ -119,10 +119,10 @@ export const resource = createLabeledMacro('resource', function (stmt) {
           },
           id,
           init: {
-            type: 'CallExpression',
+            type: "CallExpression",
             callee: {
-              type: 'Identifier',
-              value: 'useResource$',
+              type: "Identifier",
+              value: "useResource$",
               span: {
                 start: 0,
                 end: 0,
@@ -152,6 +152,6 @@ export const resource = createLabeledMacro('resource', function (stmt) {
       declare: false,
     } as VariableDeclaration
   } else {
-    throw new Error('this macro only accept a ArrowFunction or BlockStatement')
+    throw new Error("this macro only accept a ArrowFunction or BlockStatement")
   }
 })

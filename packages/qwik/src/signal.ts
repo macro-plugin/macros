@@ -1,39 +1,39 @@
-import { MemberExpression, Node, VariableDeclaration } from "@swc/core";
-import { createMacro, markedNode } from "@macro-plugin/core";
+import { MemberExpression, Node, VariableDeclaration } from "@swc/core"
+import { createMacro, markedNode } from "@macro-plugin/core"
 
 export const signal = createMacro({
-  LabeledStatement(ast) {
-    if (ast.body.type != 'BlockStatement' || ast.label.value != 'signal') return;
+  LabeledStatement (ast) {
+    if (ast.body.type != "BlockStatement" || ast.label.value != "signal") return
 
-    const signals: Record<string, { value?: Node }> = {};
+    const signals: Record<string, { value?: Node }> = {}
 
-    let name;
+    let name
     for (const i of ast.body.stmts) {
-      if (i.type == 'VariableDeclaration' && i.kind == 'var') {
+      if (i.type == "VariableDeclaration" && i.kind == "var") {
         for (const d of i.declarations) {
-          if (d.id.type == 'Identifier') {
-            name = d.id.value;
-            signals[name] = { value: d.init };
+          if (d.id.type == "Identifier") {
+            name = d.id.value
+            signals[name] = { value: d.init }
           } else {
             throw new Error("Expect Identifier in signal")
           }
         }
       } else {
-        throw new Error('Expect a `var` kind VariableDeclaration node in signal block')
+        throw new Error("Expect a `var` kind VariableDeclaration node in signal block")
       }
     }
 
     if (Object.keys(signals).length > 0) {
-      this.import([{ name: 'useSignal' }], '@builder.io/qwik');
+      this.import([{ name: "useSignal" }], "@builder.io/qwik")
       return Object.entries(signals).map(([k, v]) => ({
         type: "VariableDeclaration",
         kind: "const",
         declare: false,
         declarations: [
           {
-            type: 'VariableDeclarator',
-            id: markedNode('qwikSignal', {
-              type: 'Identifier',
+            type: "VariableDeclarator",
+            id: markedNode("qwikSignal", {
+              type: "Identifier",
               value: k,
               optional: false,
               span: {
@@ -43,10 +43,10 @@ export const signal = createMacro({
               }
             }),
             init: {
-              type: 'CallExpression',
+              type: "CallExpression",
               callee: {
-                type: 'Identifier',
-                value: 'useSignal',
+                type: "Identifier",
+                value: "useSignal",
                 optional: false,
                 span: {
                   start: 0,
@@ -81,10 +81,10 @@ export const signal = createMacro({
       } as VariableDeclaration))
     }
   },
-  Identifier(ast, parent) {
-    if (parent?.type != 'VariableDeclarator' && this.track(ast.value)?.marker == 'qwikSignal') {
+  Identifier (ast, parent) {
+    if (parent?.type != "VariableDeclarator" && this.track(ast.value)?.marker == "qwikSignal") {
       this.replace({
-        type: 'MemberExpression',
+        type: "MemberExpression",
         object: ast,
         property: {
           type: "Identifier",
@@ -101,8 +101,8 @@ export const signal = createMacro({
           end: 0,
           ctxt: 0
         }
-      } as MemberExpression);
-      this.skip();
+      } as MemberExpression)
+      this.skip()
     }
   }
 })

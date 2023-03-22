@@ -1,38 +1,38 @@
-import { Node, VariableDeclaration } from "@swc/core";
-import { createLabeledMacro, markedNode } from "@macro-plugin/core";
+import { Node, VariableDeclaration } from "@swc/core"
+import { createLabeledMacro, markedNode } from "@macro-plugin/core"
 
-export const store = createLabeledMacro('store', function (stmt) {
-  if (stmt.type != 'BlockStatement') return;
+export const store = createLabeledMacro("store", function (stmt) {
+  if (stmt.type != "BlockStatement") return
 
-  const signals: Record<string, { value?: Node }> = {};
+  const signals: Record<string, { value?: Node }> = {}
 
-  let name;
+  let name
   for (const i of stmt.stmts) {
-    if (i.type == 'VariableDeclaration' && i.kind == 'var') {
+    if (i.type == "VariableDeclaration" && i.kind == "var") {
       for (const d of i.declarations) {
-        if (d.id.type == 'Identifier') {
-          name = d.id.value;
-          signals[name] = { value: d.init };
+        if (d.id.type == "Identifier") {
+          name = d.id.value
+          signals[name] = { value: d.init }
         } else {
           throw new Error("Expect Identifier in store")
         }
       }
     } else {
-      throw new Error('Expect a `var` kind VariableDeclaration node in store block')
+      throw new Error("Expect a `var` kind VariableDeclaration node in store block")
     }
   }
 
   if (Object.keys(signals).length > 0) {
-    this.import([{ name: 'useStore' }], '@builder.io/qwik');
+    this.import([{ name: "useStore" }], "@builder.io/qwik")
     return Object.entries(signals).map(([k, v]) => ({
       type: "VariableDeclaration",
       kind: "const",
       declare: false,
       declarations: [
         {
-          type: 'VariableDeclarator',
-          id: markedNode('qwikStore', {
-            type: 'Identifier',
+          type: "VariableDeclarator",
+          id: markedNode("qwikStore", {
+            type: "Identifier",
             value: k,
             optional: false,
             span: {
@@ -42,10 +42,10 @@ export const store = createLabeledMacro('store', function (stmt) {
             }
           }),
           init: {
-            type: 'CallExpression',
+            type: "CallExpression",
             callee: {
-              type: 'Identifier',
-              value: 'useStore',
+              type: "Identifier",
+              value: "useStore",
               optional: false,
               span: {
                 start: 0,
