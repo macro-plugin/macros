@@ -1,4 +1,6 @@
-import { ExportNamespaceSpecifier, ExportSpecifier, Identifier, ImportDefaultSpecifier, ImportSpecifier } from "@swc/core"
+import { ExportNamespaceSpecifier, ExportSpecifier, Identifier, ImportDefaultSpecifier, ImportSpecifier, TsKeywordTypeKind, TsType, TsTypeReference, VariableDeclaration } from "@swc/core"
+
+import { defaultGlobalExpr } from "./defaults"
 
 export function hash (str: string): string {
   str = str.replace(/\r/g, "")
@@ -33,6 +35,88 @@ export function unMarkNode<T extends object> (node: T): T {
   // @ts-ignore
   delete node.marker
   return node
+}
+
+export function genConstType (name: string, typeAnnotation: TsType) {
+  return {
+    type: "VariableDeclaration",
+    span: {
+      start: 163,
+      end: 242,
+      ctxt: 0
+    },
+    kind: "const",
+    declare: false,
+    declarations: [
+      {
+        type: "VariableDeclarator",
+        span: {
+          start: 169,
+          end: 242,
+          ctxt: 0
+        },
+        id: {
+          type: "Identifier",
+          span: {
+            start: 169,
+            end: 172,
+            ctxt: 3
+          },
+          value: name,
+          optional: false,
+          typeAnnotation: {
+            type: "TsTypeAnnotation",
+            span: {
+              start: 172,
+              end: 242,
+              ctxt: 0
+            },
+            typeAnnotation
+          }
+        },
+        definite: false
+      }
+    ]
+  } as VariableDeclaration
+}
+
+export function genTsRef (name: string): TsTypeReference {
+  return {
+    type: "TsTypeReference",
+    span: {
+      start: 199,
+      end: 205,
+      ctxt: 0
+    },
+    typeName: {
+      type: "Identifier",
+      span: {
+        start: 199,
+        end: 205,
+        ctxt: 2
+      },
+      value: name,
+      optional: false
+    }
+  }
+}
+
+export function guessType (value: unknown): TsType {
+  let t: typeof value = typeof value
+  if (t === "function") return defaultGlobalExpr
+  if (t === "symbol") return genTsRef("Symbol")
+  if (t === "object" && isRegExp(value as object)) return genTsRef("RegExp")
+  if (value === null) t = "null"
+
+  return {
+    type: "TsKeywordType",
+    span: {
+      start: 199,
+      end: 205,
+      ctxt: 0
+    },
+    kind: t as TsKeywordTypeKind
+  }
 }
 
 export function genImportSpecifier (name: string, isDefault = false): ImportSpecifier | ImportDefaultSpecifier {
