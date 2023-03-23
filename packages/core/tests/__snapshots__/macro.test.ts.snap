@@ -1,5 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`create expr macro in macro block 1`] = `
+";
+let c = 1 + 2;
+"
+`;
+
 exports[`create lit macro in macro block 1`] = `
 "declare global {
     var $Macro: typeof import("@macro-plugin/core").$Macro;

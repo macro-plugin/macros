@@ -32,3 +32,15 @@ const p = __prop__
 
   expect(transform(code, { plugins: [macro] }).code).toMatchSnapshot()
 })
+
+test("create expr macro in macro block", () => {
+  const code = `
+macro: {
+  var $add = (a: number, b: number) => a + b
+}
+
+let c = $add(1, 2)
+  `
+
+  expect(transform(code, { plugins: [macro], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
+})
