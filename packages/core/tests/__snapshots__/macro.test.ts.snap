@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`create lit macro in macro block 1`] = `
+";
+if (true) {
+    console.log("debug");
+}
+"
+`;
+
+exports[`create lit macro with array pattern and object pattern 1`] = `
+";
+const f1 = [
+    1,
+    2,
+    {
+        __third__: 3
+    }
+][0];
+const f2 = [
+    1,
+    2,
+    {
+        __third__: 3
+    }
+][1];
+const f3 = ([
+    1,
+    2,
+    {
+        __third__: 3
+    }
+][2])["__third__"];
+const k = ({
+    __prop__: 1,
+    __key__: 2
+})["__key__"];
+const p = ({
+    __prop__: 1,
+    __key__: 2
+})["__prop__"];
+"
+`;
