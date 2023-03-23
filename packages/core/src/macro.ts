@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ArrowFunctionExpression, EmptyStatement, Expression, MemberExpression, Pattern, Statement } from "@swc/core"
+import { ArrowFunctionExpression, EmptyStatement, Expression, FunctionDeclaration, FunctionExpression, MemberExpression, Pattern, Statement } from "@swc/core"
 import { ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro } from "./types"
 import { createLitMacro, createMacro } from "./api"
-import { genTypeImport, noop } from "./utils"
+import { flatExpr, genTypeImport, noop } from "./utils"
 
 export var $Macro: (f: MacroPlugin) => void = noop
 
@@ -27,6 +27,7 @@ export const macro = createMacro({
 
       this.stopTracking()
 
+      const exprMacros = this.get("ExprMacros", {} as Record<string, FunctionDeclaration | FunctionExpression | ArrowFunctionExpression>)
       const plugins: MacroPlugin[] = []
       const stmts: Statement[] = ast.body.type === "BlockStatement" ? ast.body.stmts : [ast.body]
       const handleDecl = (pat: Pattern, init?: Expression) => {
@@ -170,7 +171,11 @@ export const macro = createMacro({
       for (const s of stmts) {
         if (s.type === "VariableDeclaration" && s.kind === "var") {
           for (const d of s.declarations) {
-            handleDecl(d.id, d.init)
+            if (d.id.type === "Identifier" && d.init && ["FunctionExpression", "ArrowFunctionExpression", "FunctionDeclaration"].includes(d.init.type)) {
+              exprMacros[d.id.value] = d.init as FunctionExpression | ArrowFunctionExpression | FunctionDeclaration
+            } else {
+              handleDecl(d.id, d.init)
+            }
           }
         }
       }
@@ -190,6 +195,14 @@ export const macro = createMacro({
       if (ast.label.value !== "macro") return
 
       this.startTracking()
+    }
+  },
+  CallExpression (ast) {
+    if (ast.callee.type === "Identifier") {
+      const exprMacros = this.get("ExprMacros", {} as Record<string, FunctionDeclaration | FunctionExpression | ArrowFunctionExpression>)
+      if (ast.callee.value in exprMacros) {
+        return flatExpr(exprMacros[ast.callee.value], ast.arguments.map(i => i.expression), ast.typeArguments?.params, ast.callee.optional)
+      }
     }
   }
 })
