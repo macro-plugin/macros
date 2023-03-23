@@ -1,34 +1,10 @@
-import { ArrowFunctionExpression, Expression, FunctionDeclaration, FunctionExpression, Invalid, Param, TsFunctionType, TsType } from "@swc/core"
-import type { BaseNode, ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro, WalkContext } from "./types"
+import type { ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro } from "./types"
+import { TsFunctionType, TsType } from "@swc/core"
+import { createLit, flatExpr, guessType } from "./utils"
 import { defaultGlobalExpr, defaultGlobalTmpl, defaultGlobalType } from "./defaults"
-import { guessType, isRegExp } from "./utils"
-
-import { parseExpr } from "./parse"
-import { walk } from "./walk"
 
 export function createMacro (macro: MacroPlugin) {
   return macro
-}
-
-function createLit (this: WalkContext, value: unknown): BaseNode {
-  if (value === undefined) {
-    return {
-      type: "Identifier",
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 2
-      },
-      value: "undefined",
-      optional: false
-    }
-  }
-  if (value && typeof value === "object") {
-    if (isRegExp(value)) return this.parseExpr(value.toString())
-    if ("span" in value && "type" in value) return value as BaseNode
-  }
-  if (typeof value === "function") return this.parseExpr(value.toString())
-  return this.parseExpr(JSON.stringify(value))
 }
 
 export function createLitMacro(map: Record<string, unknown>, typeAnnotations?: Record<string, string | TsType>): MacroPlugin;
@@ -65,54 +41,6 @@ export function createLitMacro (arg: string | Record<string, unknown>, value?: u
         }
       }
     })
-}
-
-function flatExpr (f: Function, args: Expression[], typeParams?: TsType[], optional = false): Expression {
-  if (optional) throw new Error("optional is not supported.")
-  const ast = parseExpr(f.toString()) as FunctionDeclaration | FunctionExpression | ArrowFunctionExpression
-  const params: Record<string, { value?: Expression }> = {}
-
-  ast.params.forEach((p, i) => {
-    const pat = ast.type === "ArrowFunctionExpression" ? p : ((p as Param).pat)
-    if (pat.type === "Identifier") {
-      params[pat.value] = args[i] ? { value: args[i] } : {}
-    } else if (pat.type === "AssignmentPattern") {
-      if (pat.left.type === "Identifier") {
-        params[pat.left.value] = { value: args[i] || pat.right }
-      }
-    }
-  })
-
-  let output: Invalid | Expression = {
-    type: "Invalid",
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 0
-    }
-  }
-
-  if (ast.body) {
-    walk(ast.body, {
-      // @ts-ignore
-      enter (ast: BaseNode) {
-        if (ast.type === "Identifier" && ast.value in params) {
-          const v = params[ast.value].value
-          if (v) this.replace(v)
-        }
-      },
-      // @ts-ignore
-      leave (ast: BaseNode) {
-        if (ast.type === "ReturnStatement" && ast.argument) {
-          output = ast.argument
-        }
-      }
-    })
-
-    if (ast.body.type !== "BlockStatement") output = ast.body
-  }
-
-  return output
 }
 
 export function createExprMacro (name: string, f: Function | ExprMacro | { enter?: ExprMacro, leave?: ExprMacro }, fnType: TsFunctionType | string = defaultGlobalExpr): MacroPlugin {
