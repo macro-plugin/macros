@@ -40,7 +40,10 @@ export function createLitMacro (arg: string | Record<string, unknown>, value?: u
         this.declareGlobalConst(arg, typeAnnotation || guessType(value))
       },
       Identifier (ast) {
-        if (ast.value === arg && !this.track(arg)) return createLit.apply(this, [value])
+        if (ast.value === arg && !this.track(arg)) {
+          this.replace(createLit.apply(this, [value]))
+          this.skip()
+        }
       }
     }
     : {
@@ -56,7 +59,10 @@ export function createLitMacro (arg: string | Record<string, unknown>, value?: u
         }
       },
       Identifier (ast) {
-        if (ast.value in arg && !this.track(ast.value)) return createLit.apply(this, [arg[ast.value]])
+        if (ast.value in arg && !this.track(ast.value)) {
+          this.replace(createLit.apply(this, [arg[ast.value]]))
+          this.skip()
+        }
       }
     })
 }
