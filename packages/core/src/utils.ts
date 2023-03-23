@@ -83,6 +83,83 @@ export function genConstType (name: string, typeAnnotation: TsType) {
   } as VariableDeclaration
 }
 
+export function genTypeImport (lib: string, mod: string, kind = "const") {
+  return {
+    type: "VariableDeclaration",
+    span: {
+      start: 19,
+      end: 73,
+      ctxt: 0
+    },
+    kind,
+    declare: false,
+    declarations: [
+      {
+        type: "VariableDeclarator",
+        span: {
+          start: 23,
+          end: 73,
+          ctxt: 0
+        },
+        id: {
+          type: "Identifier",
+          span: {
+            start: 23,
+            end: 29,
+            ctxt: 2
+          },
+          value: mod,
+          optional: false,
+          typeAnnotation: {
+            type: "TsTypeAnnotation",
+            span: {
+              start: 29,
+              end: 73,
+              ctxt: 0
+            },
+            typeAnnotation: {
+              type: "TsTypeQuery",
+              span: {
+                start: 31,
+                end: 73,
+                ctxt: 0
+              },
+              exprName: {
+                type: "TsImportType",
+                span: {
+                  start: 38,
+                  end: 73,
+                  ctxt: 0
+                },
+                argument: {
+                  type: "StringLiteral",
+                  span: {
+                    start: 45,
+                    end: 65,
+                    ctxt: 0
+                  },
+                  value: lib,
+                },
+                qualifier: {
+                  type: "Identifier",
+                  span: {
+                    start: 67,
+                    end: 73,
+                    ctxt: 2
+                  },
+                  value: mod,
+                  optional: false
+                },
+              },
+            }
+          }
+        },
+        definite: false
+      }
+    ]
+  } as VariableDeclaration
+}
+
 export function genTsRef (name: string): TsTypeReference {
   return {
     type: "TsTypeReference",

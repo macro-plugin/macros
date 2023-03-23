@@ -12,7 +12,7 @@ test("create lit macro in macro block", () => {
   `
 
   const r = transform(code, { plugins: [macro], emitDts: true })
-  expect(r.dts).toEqual("")
+  expect(r.dts).toMatchSnapshot()
   expect(r.code).toMatchSnapshot()
 })
 

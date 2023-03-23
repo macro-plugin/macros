@@ -1,6 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`create lit macro in macro block 1`] = `
+"declare global {
+    var $Macro: typeof import("@macro-plugin/core").$Macro;
+    var $Lit: typeof import("@macro-plugin/core").$Lit;
+    var $Expr: typeof import("@macro-plugin/core").$Expr;
+    var $Type: typeof import("@macro-plugin/core").$Type;
+    var $Tmpl: typeof import("@macro-plugin/core").$Tmpl;
+    var $Labeled: typeof import("@macro-plugin/core").$Labeled;
+}"
+`;
+
+exports[`create lit macro in macro block 2`] = `
 ";
 if (true) {
     console.log("debug");

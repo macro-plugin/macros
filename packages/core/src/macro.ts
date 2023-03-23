@@ -3,8 +3,7 @@
 import { ArrowFunctionExpression, EmptyStatement, Expression, MemberExpression, Pattern, Statement } from "@swc/core"
 import { ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro } from "./types"
 import { createLitMacro, createMacro } from "./api"
-
-import { noop } from "./utils"
+import { genTypeImport, noop } from "./utils"
 
 export var $Macro: (f: MacroPlugin) => void = noop
 
@@ -20,7 +19,7 @@ export var $Labeled: (<label extends string>(f: LabeledMacro | { enter?: Labeled
 
 export const macro = createMacro({
   Module () {
-    // this.declare
+    this.declareGlobal(["$Macro", "$Lit", "$Expr", "$Type", "$Tmpl", "$Labeled"].map(i => genTypeImport("@macro-plugin/core", i, "var")))
   },
   LabeledStatement: {
     enter (ast) {
