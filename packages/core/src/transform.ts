@@ -3,14 +3,15 @@ import {
   print,
   printSync,
 } from "@swc/core"
-import { Walker, combinePlugins } from "./walk"
 import { parse, parseAsync } from "./parse"
 
 import type { Config } from "./types"
+import { Walker } from "./walk"
+import { createWalkPlugin } from "./utils"
 
 export function createSwcPlugin (config: Config) {
   return (program: Program) => {
-    const walker = new Walker(combinePlugins(config.plugins || []))
+    const walker = new Walker(createWalkPlugin(config.plugins || []), true)
 
     program = walker.walk(program) as Program
     if (config.emitDts) (program as Program & { dts?: string }).dts = walker.emit()

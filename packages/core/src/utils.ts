@@ -1,4 +1,5 @@
 import { ExportNamespaceSpecifier, ExportSpecifier, Identifier, ImportDefaultSpecifier, ImportSpecifier, TsKeywordTypeKind, TsType, TsTypeReference, VariableDeclaration } from "@swc/core"
+import { MacroPlugin, WalkPlugin } from "./types"
 
 import { defaultGlobalExpr } from "./defaults"
 
@@ -186,5 +187,52 @@ export function genExportSpecifier (name: string, isNamespace = false): ExportSp
       ctxt: 0,
     },
     isTypeOnly: false
+  }
+}
+
+export function createWalkPlugin (plugins: MacroPlugin | MacroPlugin[]): WalkPlugin {
+  if (!Array.isArray(plugins)) plugins = [plugins]
+  return {
+    enter (node, parent, prop, index) {
+      let r, e
+
+      const run = (fn: Function) => {
+        r = fn.apply(this, [node, parent, prop, index])
+        if (r) this.replace(r)
+      }
+
+      for (const p of plugins as MacroPlugin[]) {
+        if (typeof p === "function") {
+          run(p)
+          continue
+        }
+        if (p.enter) run(p.enter)
+        if (node.type in p) {
+          e = p[node.type as keyof typeof p]
+          if (typeof e === "function") {
+            run(e)
+          } else if (typeof e === "object" && e.enter) {
+            run(e.enter)
+          }
+        }
+      }
+    },
+    leave (node, parent, prop, index) {
+      let r, e
+
+      const run = (fn: Function) => {
+        r = fn.apply(this, [node, parent, prop, index])
+        if (r) this.replace(r)
+      }
+
+      for (const p of plugins as MacroPlugin[]) {
+        if (typeof p !== "object") continue
+        if (p.leave) run(p.leave)
+        if (node.type in p) {
+          e = p[node.type as keyof typeof p]
+          if (typeof e === "object" && e.leave) run(e.leave)
+        }
+      }
+    }
   }
 }
