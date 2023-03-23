@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`create complex macro with macros 1`] = `
+";
+let a = 4;
+let b = 1 + 2;
+let c = 8;
+let d = "That Bob is 12";
+if (__debug__) {
+    console.log("debug");
+}
+let f = "world";
+"
+`;
+
 exports[`create expr macro in macro block 1`] = `
 ";
 let c = 1 + 2;
