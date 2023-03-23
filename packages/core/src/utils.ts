@@ -3,6 +3,7 @@ import { BaseNode, MacroPlugin, WalkContext, WalkPlugin } from "./types"
 
 import { defaultGlobalExpr } from "./defaults"
 import { parseExpr } from "./parse"
+import { printExpr } from "./print"
 import { walk } from "./walk"
 
 export function hash (str: string): string {
@@ -40,6 +41,11 @@ export function unMarkNode<T extends object> (node: T): T {
   // @ts-ignore
   delete node.marker
   return node
+}
+
+export function evalFunc<F = Function> (expr: Expression): F {
+  // eslint-disable-next-line no-new-func
+  return (new Function(`return (${printExpr(expr).code})`))()
 }
 
 export function createLit (this: WalkContext, value: unknown): BaseNode {
