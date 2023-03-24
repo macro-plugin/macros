@@ -3,7 +3,7 @@
 import { ArrowFunctionExpression, EmptyStatement, Expression, FunctionDeclaration, FunctionExpression, MemberExpression, Pattern, Statement, StringLiteral, TsLiteralType } from "@swc/core"
 import { ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro } from "./types"
 import { createExprMacro, createLabeledMacro, createLitMacro, createMacro, createTmplMacro, createTypeMacro } from "./api"
-import { evalFunc, flatExpr, genTypeImport, noop } from "./utils"
+import { evalAst, flatExpr, genTypeImport, noop } from "./utils"
 
 export var $Macro: (f: MacroPlugin) => void = noop
 
@@ -181,13 +181,13 @@ export const macro = createMacro({
                     litMacros[d.id.value] = d.init.arguments[0].expression
                     break
                   case "$Expr":
-                    plugins.push(createExprMacro(d.id.value, evalFunc(d.init.arguments[0].expression)))
+                    plugins.push(createExprMacro(d.id.value, evalAst(d.init.arguments[0].expression)))
                     break
                   case "$Tmpl":
-                    plugins.push(createTmplMacro(d.id.value, evalFunc(d.init.arguments[0].expression)))
+                    plugins.push(createTmplMacro(d.id.value, evalAst(d.init.arguments[0].expression)))
                     break
                   case "$Type":
-                    plugins.push(createTypeMacro(d.id.value, evalFunc(d.init.arguments[0].expression)))
+                    plugins.push(createTypeMacro(d.id.value, evalAst(d.init.arguments[0].expression)))
                     break
                   case "$Labeled":
                   case "$Macro":
@@ -206,13 +206,13 @@ export const macro = createMacro({
           switch (s.expression.callee.value) {
             case "$Labeled":
               if (s.expression.arguments[0].expression.type === "StringLiteral") {
-                plugins.push(createLabeledMacro(s.expression.arguments[0].expression.value, evalFunc(s.expression.arguments[1].expression)))
+                plugins.push(createLabeledMacro(s.expression.arguments[0].expression.value, evalAst(s.expression.arguments[1].expression)))
               } else {
-                plugins.push(createLabeledMacro(((s.expression.typeArguments?.params[0] as TsLiteralType).literal as StringLiteral).value, evalFunc(s.expression.arguments[1].expression)))
+                plugins.push(createLabeledMacro(((s.expression.typeArguments?.params[0] as TsLiteralType).literal as StringLiteral).value, evalAst(s.expression.arguments[1].expression)))
               }
               break
             case "$Macro":
-              plugins.push(createMacro(evalFunc(s.expression.arguments[0].expression)))
+              plugins.push(createMacro(evalAst(s.expression.arguments[0].expression)))
               break
             case "$Lit":
             case "$Expr":

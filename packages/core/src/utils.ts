@@ -43,9 +43,13 @@ export function unMarkNode<T extends object> (node: T): T {
   return node
 }
 
-export function evalFunc<F = Function> (expr: Expression): F {
+export function evalExpr<T = unknown> (expr: string): T {
   // eslint-disable-next-line no-new-func
-  return (new Function(`return (${printExpr(expr).code})`))()
+  return (new Function(`return (${expr})`))()
+}
+
+export function evalAst<F = Function> (expr: Expression): F {
+  return evalExpr(printExpr(expr).code)
 }
 
 export function createLit (this: WalkContext, value: unknown): BaseNode {
