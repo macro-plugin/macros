@@ -17,9 +17,10 @@
     "strict": true,
     "checkJs": true,
     "allowJs": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "paths": {
       "@macro-plugin/*": ["packages/*/src"]
     }
-  },
+  }
 }
