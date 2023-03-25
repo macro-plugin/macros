@@ -1,0 +1,37 @@
+{
+  "name": "@macro-plugin/jest",
+  "version": "1.0.0",
+  "description": "macro-plugin integration for jest",
+  "main": "dist/index.js",
+  "homepage": "https://github.com/macro-plugin/jest",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "npm test --workspaces",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint . --ext .ts && echo 'No lint errors found!'"
+  },
+  "keywords": [],
+  "author": "Raven Satir",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macro-plugin/jest.git"
+  },
+  "peerDependencies": {
+    "@swc/core": "*",
+    "@macro-plugin/core": "1.0.0"
+  },
+  "devDependencies": {
+    "@jest/create-cache-key-function": "^27.4.2",
+    "jsonc-parser": "^3.2.0",
+    "@jest/transform": "^27.5.1",
+    "jest": "^27.4.4",
+    "typescript": "^5.0.2"
+  },
+  "engines": {
+    "npm": ">= 7.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
