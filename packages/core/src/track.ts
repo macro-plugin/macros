@@ -10,10 +10,10 @@ export default createMacro({
     function pushIdentifier (node: Pattern, value: Expression | Declaration | undefined = undefined) {
       if (node.type === "Identifier") {
         // @ts-ignore
-        scopeVars[scopeVars.length - 1].push({ name: node.value, value, marker: node.marker })
+        scopeVars[scopeVars.length - 1]?.push({ name: node.value, value, marker: node.marker })
       } else if (node.type === "PrivateName") {
         // @ts-ignore
-        scopeVars[scopeVars.length - 1].push({ name: node.id.value, value, marker: node.marker, private: true })
+        scopeVars[scopeVars.length - 1]?.push({ name: node.id.value, value, marker: node.marker, private: true })
       } else {
         throw new Error(`Unhandled type ${node.type}!`)
       }
