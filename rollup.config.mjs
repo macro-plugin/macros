@@ -1,29 +1,29 @@
-import { readFileSync, rmSync } from "fs";
+import { readFileSync, rmSync } from "fs"
 
-import { defineConfig } from "rollup";
-import dts from "rollup-plugin-dts";
-import path from "path";
-import terser from "@rollup/plugin-terser";
-import typescript from 'rollup-plugin-typescript2';
+import { defineConfig } from "rollup"
+import dts from "rollup-plugin-dts"
+import path from "path"
+import terser from "@rollup/plugin-terser"
+import typescript from "rollup-plugin-typescript2"
 
-const name = path.basename(path.resolve('.'));
-const pkg = JSON.parse(readFileSync('./package.json').toString());
+const name = path.basename(path.resolve("."))
+const pkg = JSON.parse(readFileSync("./package.json").toString())
 
 /**
  * @returns {import("rollup").OutputOptions[]}
  */
-function createOutput() {
+function createOutput () {
   return [
     {
-      file: `dist/index.js`,
+      file: "dist/index.js",
       format: "cjs",
     },
     {
-      file: `dist/index.mjs`,
+      file: "dist/index.mjs",
       format: "es",
     },
     {
-      file: `dist/index.esm.js`,
+      file: "dist/index.esm.js",
       format: "esm",
       plugins: [
         terser({
@@ -37,7 +37,7 @@ function createOutput() {
       ]
     },
     {
-      file: `dist/index.iife.js`,
+      file: "dist/index.iife.js",
       format: "iife",
       name: "Macro" + name[0].toUpperCase() + name.slice(1),
       plugins: [
@@ -64,12 +64,16 @@ export default defineConfig([
     output: createOutput(),
     plugins: [
       {
-        name: 'del',
-        buildStart() {
+        name: "del",
+        buildStart () {
           rmSync("./dist", { recursive: true, force: true })
         }
       },
-      typescript(),
+      typescript({
+        tsconfigOverride: {
+          include: ["packages/**/src"]
+        }
+      }),
     ],
     external: Object.keys(pkg.dependencies)
   },
@@ -82,8 +86,8 @@ export default defineConfig([
     plugins: [
       dts(),
       {
-        name: 'del',
-        buildEnd() {
+        name: "del",
+        buildEnd () {
           rmSync("./dist/packages", { recursive: true, force: true })
         }
       }
