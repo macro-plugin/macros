@@ -34,16 +34,16 @@ test("transform debug", () => {
   const code = `
     debug: console.log("Hello World");
   `
-  expect(transform(code, { plugins: [debug] }).code.trim()).toBe("")
+  expect(transform(code, { macros: [debug] }).code.trim()).toBe("")
   DEBUG = true
-  expect(transform(code, { plugins: [debug] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [debug] }).code).toMatchSnapshot()
 })
 
 test("transform simple plugin string", () => {
   const code = `
     hello: 'kity'
   `
-  expect(transform(code, { plugins: [hello] }).code).toEqual("world;\n")
+  expect(transform(code, { macros: [hello] }).code).toEqual("world;\n")
 })
 
 test("transform complex", () => {
@@ -54,7 +54,7 @@ test("transform complex", () => {
       console.log(a);
     }
   `
-  expect(transform(code, { plugins: [codeblock] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [codeblock] }).code).toMatchSnapshot()
 })
 
 test("transform codeblock to call", () => {
@@ -65,14 +65,14 @@ test("transform codeblock to call", () => {
       console.log(a);
     }
   `
-  expect(transform(code, { plugins: [codecall] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [codecall] }).code).toMatchSnapshot()
 })
 
 test("return empty", () => {
   const code = `
     empty: console.log(123)
   `
-  expect(transform(code, { plugins: [empty] }).code).toEqual("")
+  expect(transform(code, { macros: [empty] }).code).toEqual("")
 })
 
 test("transform in typescript", () => {
@@ -82,7 +82,7 @@ test("transform in typescript", () => {
     debug: console.log(a);
   `
   expect(transform(code, {
-    plugins: [debug],
+    macros: [debug],
     jsc: {
       parser: {
         syntax: "typescript"
@@ -97,7 +97,7 @@ test("transform in jsx", () => {
   `
 
   expect(transform(code, {
-    plugins: [stringify],
+    macros: [stringify],
     jsc: {
       parser: {
         syntax: "typescript",

@@ -16,5 +16,5 @@ test("qwik resource", () => {
     var someResource = await expensiveCompute(bar, props.url);
   }
   `
-  expect(transform(code, { plugins: [signal, resource] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [signal, resource] }).code).toMatchSnapshot()
 })

@@ -11,7 +11,7 @@ test("qwik css link", () => {
       return <span class="my-text">Some text</span>
     }
   `
-  expect(transform(code, { plugins: [qwik, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [qwik, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })
 
 test("qwik css links", () => {
@@ -26,7 +26,7 @@ test("qwik css links", () => {
       return <span class="my-text">Some text</span>
     }
   `
-  expect(transform(code, { plugins: [qwik, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [qwik, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })
 
 test("qwik css string", () => {
@@ -42,7 +42,7 @@ test("qwik css string", () => {
       return <span class="my-text">Some text</span>
     }
   `
-  expect(transform(code, { plugins: [qwik, css], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [qwik, css], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })
 
 test("qwik scoped css", () => {
@@ -62,5 +62,5 @@ test("qwik scoped css", () => {
     return <span class="my-text">Some text</span>
   }
 `
-  expect(transform(code, { plugins: [qwik, scoped, css, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [qwik, scoped, css, link], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })

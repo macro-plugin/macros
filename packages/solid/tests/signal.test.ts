@@ -17,7 +17,7 @@ test("solid signal macro", () => {
     --count
   `
 
-  expect(transform(code, { plugins: [signal] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [signal] }).code).toMatchSnapshot()
 })
 
 test("overwrite signal inside function", () => {
@@ -64,5 +64,5 @@ test("overwrite signal inside function", () => {
     }
   `
 
-  expect(transform(code, { plugins: [signal] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [signal] }).code).toMatchSnapshot()
 })

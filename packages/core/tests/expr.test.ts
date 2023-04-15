@@ -6,18 +6,18 @@ test("create expr macro with arrow function", () => {
     return $a + $b
   })
 
-  expect(transform("$add(1, 2)", { plugins: [macro] }).code).toBe("1 + 2;\n")
+  expect(transform("$add(1, 2)", { macros: [macro] }).code).toBe("1 + 2;\n")
 })
 
 test("create expr macro with arrow expr", () => {
   const macro = createExprMacro("$add", ($a: number, $b: number) => $a + $b)
 
-  expect(transform("$add(1, 2)", { plugins: [macro] }).code).toBe("1 + 2;\n")
+  expect(transform("$add(1, 2)", { macros: [macro] }).code).toBe("1 + 2;\n")
 })
 
 test("expr macro with condition", () => {
   const macro = createExprMacro("$add", ($a: number, $b: number) => $a < 0 ? $b : $a + $b)
-  expect(transform("$add(-1, 2)", { plugins: [macro] }).code).toBe("-1 < 0 ? 2 : -1 + 2;\n")
+  expect(transform("$add(-1, 2)", { macros: [macro] }).code).toBe("-1 < 0 ? 2 : -1 + 2;\n")
 })
 
 test("create complex expr macro", () => {
@@ -29,9 +29,9 @@ test("create complex expr macro", () => {
     return this.parseExpr(`${a} + ${b}`)
   }, "(a: number, b: number) => number")
 
-  expect(transform("$add(-1, 2)", { plugins: [macro] }).code).toBe("2;\n")
-  expect(transform("$add(1, 2)", { plugins: [macro] }).code).toBe("1 + 2;\n")
-  expect(transform("$add(1, 2)", { plugins: [macro], emitDts: true }).dts).toMatchSnapshot()
+  expect(transform("$add(-1, 2)", { macros: [macro] }).code).toBe("2;\n")
+  expect(transform("$add(1, 2)", { macros: [macro] }).code).toBe("1 + 2;\n")
+  expect(transform("$add(1, 2)", { macros: [macro], emitDts: true }).dts).toMatchSnapshot()
 })
 
 test("create a type macro with createExprMacro", () => {
@@ -87,7 +87,7 @@ test("create a type macro with createExprMacro", () => {
   const r = transform(`const emit = defineEmits<{
     (e: 'change', id: number): void
     (e: 'update', value: string): void
-  }>()`, { plugins: [macro], emitDts: true, jsc: { parser: { syntax: "typescript" } } })
+  }>()`, { macros: [macro], emitDts: true, jsc: { parser: { syntax: "typescript" } } })
 
   expect(r.code).toMatchSnapshot()
   expect(r.dts).toMatchSnapshot()
@@ -146,7 +146,7 @@ test("create a type macro with createTypeMacro", () => {
   const r = transform(`const emit = defineEmits<{
     (e: 'change', id: number): void
     (e: 'update', value: string): void
-  }>()`, { plugins: [macro], emitDts: true, jsc: { parser: { syntax: "typescript" } } })
+  }>()`, { macros: [macro], emitDts: true, jsc: { parser: { syntax: "typescript" } } })
 
   expect(r.code).toMatchSnapshot()
   expect(r.dts).toMatchSnapshot()
@@ -185,7 +185,7 @@ test("create a template macro", () => {
   let person = 'Bob'
   let age = 12
   const des = real\`That \${person} is \${age}\`
-  `, { plugins: [macro], emitDts: true })
+  `, { macros: [macro], emitDts: true })
 
   expect(r.code).toMatchSnapshot()
   expect(r.dts).toMatchSnapshot()

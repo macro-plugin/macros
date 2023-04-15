@@ -13,7 +13,7 @@ test("$Identifier macro transform", () => {
     }
   `
 
-  expect(transform(code, { plugins: [$Identifier] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [$Identifier] }).code).toMatchSnapshot()
 })
 
 test("$StringLiteral macro transform", () => {
@@ -23,7 +23,7 @@ test("$StringLiteral macro transform", () => {
   const b = $StringLiteral(v)
   `
 
-  expect(transform(code, { plugins: [$StringLiteral] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [$StringLiteral] }).code).toMatchSnapshot()
 })
 
 test("$Argument macro transform", () => {
@@ -32,7 +32,7 @@ test("$Argument macro transform", () => {
   const b = $Argument($Identifier("list"), true)
 `
 
-  expect(transform(code, { plugins: [$Identifier, $Argument] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [$Identifier, $Argument] }).code).toMatchSnapshot()
 })
 
 test("$CallExpression macro transform", () => {
@@ -43,5 +43,5 @@ test("$CallExpression macro transform", () => {
   ])
 `
 
-  expect(transform(code, { plugins: [$Identifier, $CallExpression, $Argument, $StringLiteral] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [$Identifier, $CallExpression, $Argument, $StringLiteral] }).code).toMatchSnapshot()
 })

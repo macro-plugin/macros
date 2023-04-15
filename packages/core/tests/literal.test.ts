@@ -9,11 +9,11 @@ test("create literal macro", () => {
   }
   `
 
-  expect(transform(code, { plugins: [createLitMacro("__DEV__", true)] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [createLitMacro("__DEV__", true)] }).code).toMatchSnapshot()
 })
 
 test("use as swc plugin", () => {
-  const plugin = createSwcPlugin({ plugins: [createLitMacro("__DEV__", true)] })
+  const plugin = createSwcPlugin({ macros: [createLitMacro("__DEV__", true)] })
 
   const code = `
   if (__DEV__) {
@@ -36,7 +36,7 @@ test("should pass overwrited variable", () => {
 
   const after = __DEV__
   `
-  expect(transform(code, { plugins: [createLitMacro("__DEV__", true)] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [createLitMacro("__DEV__", true)] }).code).toMatchSnapshot()
 })
 
 test("should support all jsonable values", () => {
@@ -52,7 +52,7 @@ test("should support all jsonable values", () => {
     const h = __regex__
   `
   const r = transform(code, {
-    plugins: [
+    macros: [
       createLitMacro("__num__", 123),
       createLitMacro("__str__", "Hello World"),
       createLitMacro("__bool__", false),
@@ -75,7 +75,7 @@ test("should allow ast for more complex value", () => {
     const expr = __expr__
   `
   expect(transform(code, {
-    plugins: [
+    macros: [
       createLitMacro("__expr__", parseExpr('call("hello", "world")'))
     ]
   }).code).toMatchSnapshot()
@@ -95,7 +95,7 @@ test("should support pass an object", () => {
     const i = __expr__
   `
   const r = transform(code, {
-    plugins: [
+    macros: [
       createLitMacro({
         __num__: 123,
         __str__: "Hello World",

@@ -8,7 +8,7 @@ test("qwik labeled macro", () => {
     qwik: true
   }
   `
-  expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [qwik] }).code).toMatchSnapshot()
 })
 
 test("qwik labeled macro with value false", () => {
@@ -17,7 +17,7 @@ test("qwik labeled macro with value false", () => {
     qwik: false
   }
   `
-  expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [qwik] }).code).toMatchSnapshot()
 })
 
 test("qwik labeled macro with wrong value", () => {
@@ -26,7 +26,7 @@ test("qwik labeled macro with wrong value", () => {
     qwik: {}
   }
   `
-  expect(() => transform(code, { plugins: [qwik] }).code).toThrow()
+  expect(() => transform(code, { macros: [qwik] }).code).toThrow()
 })
 
 test("qwik labeled macro in function expression", () => {
@@ -39,7 +39,7 @@ test("qwik labeled macro in function expression", () => {
     qwik: true
   }
   `
-  expect(transform(code, { plugins: [qwik] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [qwik] }).code).toMatchSnapshot()
 })
 
 test("complex qwik app", () => {
@@ -59,5 +59,5 @@ test("complex qwik app", () => {
     )
   }
   `
-  expect(transform(code, { plugins: [qwik, signal, computed], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [qwik, signal, computed], jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })

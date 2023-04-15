@@ -18,7 +18,7 @@ test("qwik task", () => {
     doubleCount = 2 * newCount;
   }`
 
-  expect(transform(code, { plugins: [signal, task] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [signal, task] }).code).toMatchSnapshot()
 })
 
 test("qwik vtask", () => {
@@ -34,5 +34,5 @@ test("qwik vtask", () => {
     }
   ]
   `
-  expect(transform(code, { plugins: [signal, vtask] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [signal, vtask] }).code).toMatchSnapshot()
 })

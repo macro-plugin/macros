@@ -94,6 +94,6 @@ export type MacroPluginWithProxy = MacroPlugin & {
 }
 
 export type Config = Omit<Options, "plugin"> & {
-  plugins?: MacroPlugin[];
+  macros?: MacroPlugin[];
   emitDts?: boolean;
 }

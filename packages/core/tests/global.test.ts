@@ -85,8 +85,8 @@ test("transform function block", () => {
       return a + b
     }
   `
-  expect(transform(code, { plugins: [arrow] }).code).toMatchSnapshot()
-  expect(transform(code2, { plugins: [arrow] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [arrow] }).code).toMatchSnapshot()
+  expect(transform(code2, { macros: [arrow] }).code).toMatchSnapshot()
 })
 
 test("inject imports and exports", () => {
@@ -97,7 +97,7 @@ test("inject imports and exports", () => {
   `
 
   expect(transform(code, {
-    plugins: [inject],
+    macros: [inject],
     jsc: {
       parser: {
         syntax: "typescript",

@@ -11,7 +11,7 @@ test("create lit macro in macro block", () => {
   }
   `
 
-  const r = transform(code, { plugins: [macro], emitDts: true })
+  const r = transform(code, { macros: [macro], emitDts: true })
   expect(r.dts).toMatchSnapshot()
   expect(r.code).toMatchSnapshot()
 })
@@ -30,7 +30,7 @@ const k = __key__
 const p = __prop__
 `
 
-  expect(transform(code, { plugins: [macro] }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [macro] }).code).toMatchSnapshot()
 })
 
 test("create expr macro in macro block", () => {
@@ -42,7 +42,7 @@ macro: {
 let c = $add(1, 2)
   `
 
-  expect(transform(code, { plugins: [macro], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [macro], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
 })
 
 test("create complex macro with macros", () => {
@@ -119,5 +119,5 @@ debug: console.log('debug')
 let f = 'hello'
 `
 
-  expect(transform(code, { plugins: [macro], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
+  expect(transform(code, { macros: [macro], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
 })

@@ -23,7 +23,7 @@ test("track variables", () => {
   `
 
   transform(code, {
-    plugins: [trackValue]
+    macros: [trackValue]
   })
 
   // `a` been overwrited
