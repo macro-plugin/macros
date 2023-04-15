@@ -8,6 +8,11 @@ import typescript from "rollup-plugin-typescript2"
 
 const name = path.basename(path.resolve("."))
 const pkg = JSON.parse(readFileSync("./package.json").toString())
+const external = [
+  ...Object.keys(pkg.dependencies || {}),
+  "@swc/core",
+  "@macro-plugin/core"
+]
 
 /**
  * @returns {import("rollup").OutputOptions[]}
@@ -75,7 +80,7 @@ export default defineConfig([
         }
       }),
     ],
-    external: Object.keys(pkg.dependencies)
+    external
   },
   {
     input: `./dist/packages/${name}/src/index.d.ts`,
@@ -91,6 +96,7 @@ export default defineConfig([
           rmSync("./dist/packages", { recursive: true, force: true })
         }
       }
-    ]
+    ],
+    external
   }
 ])
