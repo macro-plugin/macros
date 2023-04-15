@@ -25,6 +25,7 @@ module.exports = {
     "no-undef": 0,
     "no-var": 0,
     "no-redeclare": 0,
+    "no-extra-parens": 0,
     "no-constant-condition": 1,
     "no-use-before-define": 0,
     "no-trailing-spaces": 2,
