@@ -1,12 +1,12 @@
-import { existsSync, readFileSync } from "fs"
+import { Config, createSwcPlugin } from "@macro-plugin/core"
+import { Options, version as swcVersion, transform, transformSync } from "@swc/core"
+import type { TransformOptions, Transformer } from "@jest/transform"
+
 import { createHash } from "crypto"
+import { existsSync } from "fs"
+import getCacheKeyFunction from "@jest/create-cache-key-function"
 import path from "path"
 import process from "process"
-import getCacheKeyFunction from "@jest/create-cache-key-function"
-import type { Transformer, TransformOptions } from "@jest/transform"
-import { parse as parseJsonC, type ParseError } from "jsonc-parser"
-import { transformSync, transform, Options, version as swcVersion } from "@swc/core"
-import { transform as macroTransform, transformAsync as macroTransformAsync, Config } from "@macro-plugin/core"
 import { version } from "../package.json"
 
 const nodeTargetDefaults = new Map([
@@ -31,24 +31,18 @@ function set (obj: any, path: string, value: any) {
   o[key] = value
 }
 
-function getOptionsFromSwrc (): Options {
-  const swcrc = path.join(process.cwd(), ".swcrc")
-  if (existsSync(swcrc)) {
-    const errors = [] as ParseError[]
-    const options = parseJsonC(readFileSync(swcrc, "utf-8"), errors)
-
-    if (errors.length > 0) {
-      throw new Error(`Error parsing ${swcrc}: ${errors.join(", ")}`)
-    }
-
+function loadConfigFile (): Options {
+  const configFile = path.join(process.cwd(), "macros.config.js")
+  if (existsSync(configFile)) {
+    const options = require(configFile)
     return options as Options
   }
   return {}
 }
 
-function buildSwcTransformOpts (swcOptions: (Config & { experimental?: unknown }) | undefined): Options {
+function buildTransformOpts (swcOptions: (Config & { experimental?: unknown }) | undefined): Options {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { experimental, ...computedSwcOptions } = swcOptions || (getOptionsFromSwrc() as Options & { experimental?: unknown })
+  const { experimental, ...computedSwcOptions } = swcOptions || (loadConfigFile() as Options & { experimental?: unknown })
 
   if (!computedSwcOptions.jsc?.target) {
     set(
@@ -106,39 +100,38 @@ function createTransformer (swcTransformOpts: Config & {
     }
   }
 } = { jsc: { parser: { syntax: "typescript" } } }): Transformer {
-  const computedSwcOptions = buildSwcTransformOpts(swcTransformOpts)
-
+  const computedSwcOptions = buildTransformOpts(swcTransformOpts)
+  const macroPlugin = createSwcPlugin({ ...computedSwcOptions })
   const cacheKeyFunction = getCacheKeyFunction([], [swcVersion, version, JSON.stringify(computedSwcOptions)])
   const { enabled: canInstrument, ...instrumentOptions } = swcTransformOpts?.experimental?.customCoverageInstrumentation ?? {}
+
   return {
     canInstrument: !!canInstrument, // Tell jest we'll instrument by our own
     process (src, filename, jestOptions) {
       // Determine if we actually instrument codes if jest runs with --coverage
       insertInstrumentationOptions(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
 
-      const { code } = macroTransform(src, swcTransformOpts)
-
-      return transformSync(code, {
+      return transformSync(src, {
         ...computedSwcOptions,
         module: {
           ...computedSwcOptions.module,
           type: (jestOptions.supportsStaticESM ? "es6" : "commonjs" as any)
         },
+        plugin: macroPlugin,
         filename
       })
     },
     async processAsync (src, filename, jestOptions) {
       insertInstrumentationOptions(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
 
-      const { code } = await macroTransformAsync(src, swcTransformOpts)
-
-      return await transform(code, {
+      return await transform(src, {
         ...computedSwcOptions,
         module: {
           ...computedSwcOptions.module,
           // async transform is always ESM
           type: ("es6" as any)
         },
+        plugin: macroPlugin,
         filename
       })
     },
