@@ -93,7 +93,11 @@ export type MacroPluginWithProxy = MacroPlugin & {
   proxy<Runtime extends Function>(runtime: Runtime): MacroPlugin & Runtime
 }
 
-export type Config = Omit<Options, "plugin"> & {
+export type MacroOptions = {
   macros?: MacroPlugin[];
   emitDts?: boolean;
+  dtsOutputPath?: string;
+  onEmitDts?: (dts: string) => void;
 }
+
+export type Config = Omit<Options, "plugin"> & MacroOptions

@@ -14,7 +14,12 @@ export function createSwcPlugin (config: Config) {
     const walker = new Walker(createWalkPlugin(config.macros || []), true)
 
     program = walker.walk(program) as Program
-    if (config.emitDts) (program as Program & { dts?: string }).dts = walker.emit()
+    if (config.emitDts) {
+      const dts = walker.emit()
+      config.onEmitDts?.(dts);
+      (program as Program & { dts?: string }).dts = dts
+    }
+
     return program
   }
 }
