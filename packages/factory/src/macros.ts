@@ -2,11 +2,13 @@ import type { ArrayExpression, BooleanLiteral, Expression, NullLiteral } from "@
 import { createArgument, createBigIntLiteral, createBooleanLiteral, createCallExpression, createIdentifier, createInvalid, createNumericLiteral, createRegExpLiteral, createStringLiteral } from "./runtime"
 import { createExprMacro, parseExpr, printExpr, span } from "@macro-plugin/core"
 
+const spanStr = JSON.stringify(span)
+
 export const createAst = (type: string, props: Record<string, Expression> = {}) => {
   return parseExpr(`{
     "type": "${type}",
-    ${Object.entries(props).map(([k, v]) => JSON.stringify(k) + ": " + (v ? printExpr(v).code : undefined)) + ","}
-    "span": ${JSON.stringify(span)},
+    ${Object.entries(props).map(([k, v]) => '"' + k + '": ' + (v ? printExpr(v).code : undefined)) + ","}
+    "span": ${spanStr},
   }`)
 }
 
