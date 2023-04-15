@@ -1,0 +1,43 @@
+{
+  "name": "@macro-plugin/factory",
+  "version": "1.0.0",
+  "description": "@macro-plugin/factory",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "label",
+    "macro",
+    "macros"
+  ],
+  "scripts": {
+    "build": "rollup -c ../../rollup.config.mjs"
+  },
+  "dependencies": {
+    "@macro-plugin/core": "1.0.0"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./runtime": {
+      "import": "./dist/runtime.mjs",
+      "require": "./dist/runtime.js",
+      "types": "./dist/runtime.d.ts"
+    },
+    "./macros": {
+      "import": "./dist/macros.mjs",
+      "require": "./dist/macros.js",
+      "types": "./dist/macros.d.ts"
+    }
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}
