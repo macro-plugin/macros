@@ -1,6 +1,6 @@
 import { Config, createSwcPlugin } from "@macro-plugin/core"
 import type { TransformOptions, Transformer } from "@jest/transform"
-import { buildTransformOpts, insertInstrumentationOptions } from "./utils"
+import { buildTransformOpts, insertInstrumentationOpts } from "./utils"
 import { version as swcVersion, transform, transformSync } from "@swc/core"
 
 import { createHash } from "crypto"
@@ -19,8 +19,9 @@ function createTransformer (swcTransformOpts: Config & {
     }
   }
 } = { jsc: { parser: { syntax: "typescript" } } }): Transformer {
-  const computedSwcOptions = buildTransformOpts(swcTransformOpts)
-  const macroPlugin = createSwcPlugin({ ...computedSwcOptions })
+  const [computedSwcOptions, macroOptions] = buildTransformOpts(swcTransformOpts)
+  const macroPlugin = createSwcPlugin({ ...computedSwcOptions, ...macroOptions })
+
   const cacheKeyFunction = getCacheKeyFunction([], [swcVersion, version, JSON.stringify(computedSwcOptions)])
   const { enabled: canInstrument, ...instrumentOptions } = swcTransformOpts?.experimental?.customCoverageInstrumentation ?? {}
 
@@ -28,7 +29,7 @@ function createTransformer (swcTransformOpts: Config & {
     canInstrument: !!canInstrument, // Tell jest we'll instrument by our own
     process (src, filename, jestOptions) {
       // Determine if we actually instrument codes if jest runs with --coverage
-      insertInstrumentationOptions(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
+      insertInstrumentationOpts(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
 
       return transformSync(src, {
         ...computedSwcOptions,
@@ -41,7 +42,7 @@ function createTransformer (swcTransformOpts: Config & {
       })
     },
     async processAsync (src, filename, jestOptions) {
-      insertInstrumentationOptions(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
+      insertInstrumentationOpts(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
 
       return await transform(src, {
         ...computedSwcOptions,

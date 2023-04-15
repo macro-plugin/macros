@@ -1,7 +1,8 @@
-import type { Config } from "@macro-plugin/core"
+import type { Config, MacroOptions } from "@macro-plugin/core"
+import { existsSync, readFile, writeFile } from "fs"
+
 import type { Options } from "@swc/core"
 import type { TransformOptions } from "@jest/transform"
-import { existsSync } from "fs"
 import path from "path"
 import process from "process"
 
@@ -27,38 +28,54 @@ function set (obj: any, path: string, value: any) {
   o[key] = value
 }
 
-function loadConfigFile (): Options {
+function loadConfigFile (): Config {
   const configFile = path.join(process.cwd(), "macros.config.js")
   if (existsSync(configFile)) {
     const options = require(configFile)
-    return options as Options
+    return options as Config
   }
   return {}
 }
 
-export function buildTransformOpts (swcOptions: (Config & { experimental?: unknown }) | undefined): Options {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { experimental, ...computedSwcOptions } = swcOptions || (loadConfigFile() as Options & { experimental?: unknown })
+function writeDts (p: string, dts: string) {
+  const emit = () => writeFile(p, dts, () => {})
 
-  if (!computedSwcOptions.jsc?.target) {
+  if (existsSync(p)) {
+    readFile(p, (err, data) => {
+      if ((err == null && dts !== data.toString()) || err) emit()
+    })
+  } else {
+    emit()
+  }
+}
+
+export function buildTransformOpts (swcOptions: (Config & { experimental?: unknown }) | undefined): [Options, MacroOptions] {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let { experimental, macros, emitDts, dtsOutputPath, onEmitDts, ...options } = swcOptions || (loadConfigFile() as Config & { experimental?: unknown })
+
+  if (!options.jsc?.target) {
     set(
-      computedSwcOptions,
+      options,
       "jsc.target",
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       nodeTargetDefaults.get(process.version.match(/v(\d+)/)![1]) || "es2018"
     )
   }
 
-  set(computedSwcOptions, "jsc.transform.hidden.jest", true)
+  set(options, "jsc.transform.hidden.jest", true)
 
-  if (!computedSwcOptions.sourceMaps) {
-    set(computedSwcOptions, "sourceMaps", "inline")
+  if (!options.sourceMaps) {
+    set(options, "sourceMaps", "inline")
   }
 
-  return computedSwcOptions
+  if (emitDts && !onEmitDts) {
+    onEmitDts = (dts: string) => writeDts(path.resolve(dtsOutputPath || "./macros.d.ts"), dts)
+  }
+
+  return [options, { macros, emitDts, dtsOutputPath, onEmitDts }]
 }
 
-export function insertInstrumentationOptions (jestOptions: TransformOptions<unknown>, canInstrument: boolean, swcTransformOpts: Options, instrumentOptions?: any) {
+export function insertInstrumentationOpts (jestOptions: TransformOptions<unknown>, canInstrument: boolean, swcTransformOpts: Options, instrumentOptions?: any) {
   const shouldInstrument = jestOptions.instrument && canInstrument
 
   if (!shouldInstrument) {
