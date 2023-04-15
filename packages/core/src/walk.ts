@@ -317,7 +317,7 @@ export class Walker {
       ...(globalDts ? [globalDts] : []),
       ...this.moduleDts,
       ...this.appendDts
-    ]).code.replace(/declare module global/g, "declare global")
+    ]).code.replace(/declare module global/g, "declare global") + "\nexport {}\n"
   }
 
   track (name: string) {
