@@ -1,4 +1,6 @@
-import { createLitMacro, parseExpr, transform } from "../src"
+import { createLitMacro, createSwcPlugin, parseExpr, transform } from "../src"
+
+import { transformSync as swcTransform } from "@swc/core"
 
 test("create literal macro", () => {
   const code = `
@@ -6,7 +8,20 @@ test("create literal macro", () => {
     console.log('development')
   }
   `
+
   expect(transform(code, { plugins: [createLitMacro("__DEV__", true)] }).code).toMatchSnapshot()
+})
+
+test("use as swc plugin", () => {
+  const plugin = createSwcPlugin({ plugins: [createLitMacro("__DEV__", true)] })
+
+  const code = `
+  if (__DEV__) {
+    console.log('development')
+  }
+  `
+
+  expect(swcTransform(code, { plugin, jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
 })
 
 test("should pass overwrited variable", () => {
