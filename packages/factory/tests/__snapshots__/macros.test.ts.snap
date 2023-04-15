@@ -1,0 +1,163 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`$Argument macro transform 1`] = `
+"const a = {
+    "expression": {
+        "type": "Identifier",
+        "value": "ref",
+        "optional": false,
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        }
+    }
+};
+const b = {
+    "spread": {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    },
+    "expression": {
+        "type": "Identifier",
+        "value": "list",
+        "optional": false,
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        }
+    }
+};
+"
+`;
+
+exports[`$CallExpression macro transform 1`] = `
+"const a = {
+    "type": "CallExpression",
+    "callee": {
+        "type": "Identifier",
+        "value": "ref",
+        "optional": false,
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        }
+    },
+    "arguments": [],
+    "typeArguments": undefined,
+    "span": {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    }
+};
+const b = {
+    "type": "CallExpression",
+    "callee": {
+        "type": "Identifier",
+        "value": "ref",
+        "optional": false,
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        }
+    },
+    "arguments": [
+        {
+            "expression": {
+                "type": "StringLiteral",
+                "value": "hello",
+                "raw": undefined,
+                "span": {
+                    "start": 0,
+                    "end": 0,
+                    "ctxt": 0
+                }
+            }
+        }
+    ],
+    "typeArguments": undefined,
+    "span": {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    }
+};
+"
+`;
+
+exports[`$Identifier macro transform 1`] = `
+"function id() {
+    const a = {
+        "type": "Identifier",
+        "value": "value",
+        "optional": false,
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        }
+    };
+    const b = {
+        "type": "Identifier",
+        "value": "value",
+        "optional": false,
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        }
+    };
+    const c = {
+        "type": "Identifier",
+        "value": "value",
+        "optional": true,
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        }
+    };
+    const d = "value";
+    const e = {
+        "type": "Identifier",
+        "value": d,
+        "optional": true,
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        }
+    };
+}
+"
+`;
+
+exports[`$StringLiteral macro transform 1`] = `
+"const a = {
+    "type": "StringLiteral",
+    "value": "hello",
+    "raw": undefined,
+    "span": {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    }
+};
+const v = "world";
+const b = {
+    "type": "StringLiteral",
+    "value": v,
+    "raw": undefined,
+    "span": {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    }
+};
+"
+`;
