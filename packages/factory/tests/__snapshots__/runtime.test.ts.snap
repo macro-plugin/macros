@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`$Argument macro call 1`] = `
+{
+  "expression": {
+    "optional": false,
+    "span": {
+      "ctxt": 0,
+      "end": 0,
+      "start": 0,
+    },
+    "type": "Identifier",
+    "value": "ref",
+  },
+  "spread": undefined,
+}
+`;
+
+exports[`$CallExpression macro call 1`] = `
+{
+  "arguments": [],
+  "callee": {
+    "optional": false,
+    "span": {
+      "ctxt": 0,
+      "end": 0,
+      "start": 0,
+    },
+    "type": "Identifier",
+    "value": "ref",
+  },
+  "span": {
+    "ctxt": 0,
+    "end": 0,
+    "start": 0,
+  },
+  "type": "CallExpression",
+  "typeArguments": undefined,
+}
+`;
+
+exports[`$CallExpression macro call 2`] = `
+{
+  "arguments": [
+    {
+      "expression": {
+        "raw": undefined,
+        "span": {
+          "ctxt": 0,
+          "end": 0,
+          "start": 0,
+        },
+        "type": "StringLiteral",
+        "value": "hello",
+      },
+      "spread": undefined,
+    },
+  ],
+  "callee": {
+    "optional": false,
+    "span": {
+      "ctxt": 0,
+      "end": 0,
+      "start": 0,
+    },
+    "type": "Identifier",
+    "value": "ref",
+  },
+  "span": {
+    "ctxt": 0,
+    "end": 0,
+    "start": 0,
+  },
+  "type": "CallExpression",
+  "typeArguments": undefined,
+}
+`;
