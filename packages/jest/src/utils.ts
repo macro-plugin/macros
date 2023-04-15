@@ -49,7 +49,7 @@ function loadConfigFile (): Config {
   if (existsSync(jsConfig)) return require(jsConfig) as Config
 
   const tsConfig = path.join(cwd, "macros.config.ts")
-  if (existsSync(tsConfig)) return hookRequire<Config>(tsConfig)
+  if (existsSync(tsConfig)) return hookRequire<{ default: Config }>(tsConfig)?.default || {}
 
   return {}
 }
