@@ -68,14 +68,10 @@ importers:
       '@jest/create-cache-key-function': ^27.4.2
       '@jest/transform': ^27.5.1
       jest: ^27.4.4
-      jsonc-parser: ^3.2.0
-      typescript: ^5.0.2
     devDependencies:
       '@jest/create-cache-key-function': 27.5.1
       '@jest/transform': 27.5.1
       jest: 27.5.1
-      jsonc-parser: 3.2.0
-      typescript: 5.0.2
 
   packages/ptag:
     specifiers: {}
