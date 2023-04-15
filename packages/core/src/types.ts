@@ -82,12 +82,16 @@ export type GlobalMacroPlugin = {
   leave?: GlobalMacro,
 }
 
-export type MacroPlugin = GlobalMacro | (GlobalMacroPlugin & {
+export type MacroPlugin = (GlobalMacro | (GlobalMacroPlugin & {
   [k in keyof Visitor & string as SliceVisit<k>]?: GlobalMacro<Parameters<Visitor[k]>[0]> | {
     enter?: GlobalMacro<Parameters<Visitor[k]>[0]>,
     leave?: GlobalMacro<Parameters<Visitor[k]>[0]>,
   }
-})
+}))
+
+export type MacroPluginWithProxy = MacroPlugin & {
+  proxy<Runtime extends Function>(runtime: Runtime): MacroPlugin & Runtime
+}
 
 export type Config = Omit<Options, "plugin"> & {
   plugins?: MacroPlugin[];

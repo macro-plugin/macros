@@ -1,10 +1,31 @@
-import type { ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro } from "./types"
+import type { ExprMacro, LabeledMacro, MacroPlugin, MacroPluginWithProxy, TmplMacro, TypeMacro } from "./types"
 import { TsFunctionType, TsType } from "@swc/core"
-import { createLit, flatExpr, guessType } from "./utils"
+import { createLit, flatExpr, guessType, macroProxySymbol } from "./utils"
 import { defaultGlobalExpr, defaultGlobalTmpl, defaultGlobalType } from "./defaults"
 
 export function createMacro (macro: MacroPlugin) {
   return macro
+}
+
+export function createProxyMacro (macro: MacroPlugin) {
+  return new Proxy(macro, {
+    get (macro, p) {
+      if (p === "proxy") {
+        return (runtime: Function) => new Proxy(runtime, {
+          ownKeys (target) {
+            return [...Reflect.ownKeys(macro), ...Reflect.ownKeys(target)]
+          },
+          has (target, p) {
+            return Reflect.has(macro, p) || Reflect.has(target, p)
+          },
+          get (target, p) {
+            return p === macroProxySymbol || Reflect.get(macro, p) || Reflect.get(target, p)
+          },
+        })
+      }
+      return Reflect.get(macro, p)
+    },
+  }) as MacroPluginWithProxy
 }
 
 export function createLitMacro(map: Record<string, unknown>, typeAnnotations?: Record<string, string | TsType>): MacroPlugin;
@@ -43,9 +64,9 @@ export function createLitMacro (arg: string | Record<string, unknown>, value?: u
     })
 }
 
-export function createExprMacro (name: string, f: Function | ExprMacro | { enter?: ExprMacro, leave?: ExprMacro }, fnType: TsFunctionType | string = defaultGlobalExpr): MacroPlugin {
+export function createExprMacro (name: string, f: Function | ExprMacro | { enter?: ExprMacro, leave?: ExprMacro }, fnType: TsFunctionType | string = defaultGlobalExpr): MacroPluginWithProxy {
   if (typeof f === "object") {
-    return createMacro({
+    return createProxyMacro({
       Module () {
         this.declareGlobalConst(name, fnType)
       },
@@ -63,7 +84,7 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
       }
     })
   }
-  return createMacro({
+  return createProxyMacro({
     Module () {
       this.declareGlobalConst(name, fnType)
     },

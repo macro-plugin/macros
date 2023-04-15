@@ -1,10 +1,16 @@
 import { ArrowFunctionExpression, ExportNamespaceSpecifier, ExportSpecifier, Expression, FunctionDeclaration, FunctionExpression, Identifier, ImportDefaultSpecifier, ImportSpecifier, Invalid, Param, TsKeywordTypeKind, TsType, TsTypeReference, VariableDeclaration } from "@swc/core"
-import { BaseNode, MacroPlugin, WalkContext, WalkPlugin } from "./types"
+import { BaseNode, GlobalMacroPlugin, MacroPlugin, WalkContext, WalkPlugin } from "./types"
 
 import { defaultGlobalExpr } from "./defaults"
 import { parseExpr } from "./parse"
 import { printExpr } from "./print"
 import { walk } from "./walk"
+
+export const macroProxySymbol = Symbol.for("macroProxy")
+
+export function isMacroProxy (v: unknown): boolean {
+  return !!(v && (v as { [macroProxySymbol]?: boolean })[macroProxySymbol])
+}
 
 export function hash (str: string): string {
   str = str.replace(/\r/g, "")
@@ -21,6 +27,10 @@ export function hashMap (map: object): string {
 
 export function isRegExp<T extends object> (input: T): boolean {
   return Object.prototype.toString.call(input) === "[object RegExp]"
+}
+
+export function isNode<T> (value: T): boolean {
+  return value && typeof value === "object" && "type" in value
 }
 
 export const noop = () => {}
@@ -133,17 +143,17 @@ export function createWalkPlugin (plugins: MacroPlugin | MacroPlugin[]): WalkPlu
       }
 
       for (const p of plugins as MacroPlugin[]) {
-        if (typeof p === "function") {
+        if (typeof p === "function" && !isMacroProxy(p)) {
           run(p)
           continue
         }
-        if (p.enter) run(p.enter)
+        if ((p as GlobalMacroPlugin).enter) run((p as Required<GlobalMacroPlugin>).enter)
         if (node.type in p) {
           e = p[node.type as keyof typeof p]
           if (typeof e === "function") {
             run(e)
-          } else if (typeof e === "object" && e.enter) {
-            run(e.enter)
+          } else if (typeof e === "object" && (e as GlobalMacroPlugin).enter) {
+            run((e as Required<GlobalMacroPlugin>).enter)
           }
         }
       }
