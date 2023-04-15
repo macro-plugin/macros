@@ -27,7 +27,8 @@
   "devDependencies": {
     "@jest/create-cache-key-function": "^27.4.2",
     "@jest/transform": "^27.5.1",
-    "jest": "^27.4.4"
+    "jest": "^27.4.4",
+    "pirates": "^4.0.5"
   },
   "exports": {
     "./package.json": "./package.json",

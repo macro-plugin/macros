@@ -3,8 +3,10 @@ import { existsSync, readFile, writeFile } from "fs"
 
 import type { Options } from "@swc/core"
 import type { TransformOptions } from "@jest/transform"
+import { addHook } from "pirates"
 import path from "path"
 import process from "process"
+import { transformSync } from "@swc/core"
 
 const nodeTargetDefaults = new Map([
   ["12", "es2018"],
@@ -28,12 +30,27 @@ function set (obj: any, path: string, value: any) {
   o[key] = value
 }
 
+function hookRequire<T> (id: string): T {
+  const revert = addHook(
+    code => transformSync(code, { module: { type: "commonjs" }, jsc: { parser: { syntax: "typescript" }, target: "esnext" }, swcrc: false, configFile: false }).code,
+    { exts: [".js", ".ts"] }
+  )
+
+  const r = require(id)
+  revert()
+
+  return r
+}
+
 function loadConfigFile (): Config {
-  const configFile = path.join(process.cwd(), "macros.config.js")
-  if (existsSync(configFile)) {
-    const options = require(configFile)
-    return options as Config
-  }
+  const cwd = process.cwd()
+
+  const jsConfig = path.join(cwd, "macros.config.js")
+  if (existsSync(jsConfig)) return require(jsConfig) as Config
+
+  const tsConfig = path.join(cwd, "macros.config.ts")
+  if (existsSync(tsConfig)) return hookRequire<Config>(tsConfig)
+
   return {}
 }
 
