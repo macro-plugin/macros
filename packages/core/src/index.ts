@@ -1,6 +1,6 @@
 export { createLabeledBlock } from "./block"
 export { createLabeledExpr } from "./expr"
-export { transform, transformAst, transformAsync } from "./transform"
+export { createSwcPlugin, transform, transformAst, transformAsync } from "./transform"
 export { print, printAsync, printExpr, printExprAsync } from "./print"
 export { parse, parseAsync, parseExpr, parseType } from "./parse"
 export { walk, Walker } from "./walk"
