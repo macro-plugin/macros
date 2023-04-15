@@ -54,7 +54,9 @@ exports[`should support all jsonable values 2`] = `
     const __array__: number[];
     const __object__: Record<string, number>;
     const __regex__: RegExp;
-}"
+}
+export {}
+"
 `;
 
 exports[`should support pass an object 1`] = `
@@ -90,5 +92,14 @@ exports[`should support pass an object 2`] = `
     const __object__: Record<string, number>;
     const __regex__: RegExp;
     const __expr__: string;
-}"
+}
+export {}
+"
+`;
+
+exports[`use as swc plugin 1`] = `
+"if (true) {
+    console.log("development");
+}
+"
 `;

@@ -27,7 +27,9 @@ exports[`create lit macro in macro block 1`] = `
     var $Type: typeof import("@macro-plugin/core").$Type;
     var $Tmpl: typeof import("@macro-plugin/core").$Tmpl;
     var $Labeled: typeof import("@macro-plugin/core").$Labeled;
-}"
+}
+export {}
+"
 `;
 
 exports[`create lit macro in macro block 2`] = `
