@@ -1,7 +1,11 @@
-import type { ExprMacro, LabeledMacro, MacroPlugin, MacroPluginWithProxy, TmplMacro, TypeMacro } from "./types"
+import type { Config, ExprMacro, LabeledMacro, MacroPlugin, MacroPluginWithProxy, TmplMacro, TypeMacro } from "./types"
 import { TsFunctionType, TsType } from "@swc/core"
 import { createLit, flatExpr, guessType, macroProxySymbol } from "./utils"
 import { defaultGlobalExpr, defaultGlobalTmpl, defaultGlobalType } from "./defaults"
+
+export function defineConfig (config: Config) {
+  return config
+}
 
 export function createMacro (macro: MacroPlugin) {
   return macro
