@@ -68,7 +68,7 @@ function writeDts (p: string, dts: string) {
 
 export function buildTransformOpts (swcOptions: (Config & { experimental?: unknown }) | undefined): [Options, MacroOptions] {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let { experimental, macros, emitDts, dtsOutputPath, onEmitDts, ...options } = swcOptions || (loadConfigFile() as Config & { experimental?: unknown })
+  let { experimental, macros, emitDts, dtsOutputPath, onEmitDts, ...options } = { ...(swcOptions || {}), ...loadConfigFile() }
 
   if (!options.jsc?.target) {
     set(

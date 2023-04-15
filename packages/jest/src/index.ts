@@ -18,7 +18,7 @@ function createTransformer (swcTransformOpts: Config & {
       instrumentLog?: { level: string, enableTrace: boolean }
     }
   }
-} = { jsc: { parser: { syntax: "typescript" } } }): Transformer {
+}): Transformer {
   const [computedSwcOptions, macroOptions] = buildTransformOpts(swcTransformOpts)
   const macroPlugin = createSwcPlugin({ ...computedSwcOptions, ...macroOptions })
 
