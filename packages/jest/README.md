@@ -47,7 +47,10 @@ export default defineConfig({
   macros: [],
   emitDts: true,
   jsc: {
-    target: "es2021",
+    parser: {
+      syntax: "typescript"
+    },
+    target: "esnext",
   },
 })
 ```
@@ -62,7 +65,10 @@ module.exports = {
   macros: [],
   emitDts: true,
   jsc: {
-    target: "es2021",
+    parser: {
+      syntax: "typescript"
+    },
+    target: "esnext",
   },
 }
 ```
