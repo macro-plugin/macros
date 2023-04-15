@@ -61,6 +61,12 @@ importers:
     dependencies:
       '@swc/core': 1.3.40
 
+  packages/factory:
+    specifiers:
+      '@macro-plugin/core': 1.0.0
+    dependencies:
+      '@macro-plugin/core': link:../core
+
   packages/jest:
     specifiers:
       '@jest/create-cache-key-function': ^27.4.2
