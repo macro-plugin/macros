@@ -5,6 +5,7 @@ import { version as swcVersion, transform, transformSync } from "@swc/core"
 
 import { createHash } from "crypto"
 import getCacheKeyFunction from "@jest/create-cache-key-function"
+import { readFileSync } from "fs"
 import { version } from "../package.json"
 
 function createTransformer (swcTransformOpts: Config & {
@@ -19,10 +20,10 @@ function createTransformer (swcTransformOpts: Config & {
     }
   }
 }): Transformer {
-  const [computedSwcOptions, macroOptions] = buildTransformOpts(swcTransformOpts)
+  const [computedSwcOptions, macroOptions, configPath] = buildTransformOpts(swcTransformOpts)
   const macroPlugin = createSwcPlugin({ ...computedSwcOptions, ...macroOptions })
 
-  const cacheKeyFunction = getCacheKeyFunction([], [swcVersion, version, JSON.stringify(computedSwcOptions)])
+  const cacheKeyFunction = getCacheKeyFunction([], [swcVersion, version, JSON.stringify(swcTransformOpts), configPath ? readFileSync(configPath).toString() : ""])
   const { enabled: canInstrument, ...instrumentOptions } = swcTransformOpts?.experimental?.customCoverageInstrumentation ?? {}
 
   return {

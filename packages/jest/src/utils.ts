@@ -42,16 +42,16 @@ function hookRequire<T> (id: string): T {
   return r
 }
 
-function loadConfigFile (): Config {
+function loadConfigFile (): [string | undefined, Config] {
   const cwd = process.cwd()
 
   const jsConfig = path.join(cwd, "macros.config.js")
-  if (existsSync(jsConfig)) return require(jsConfig) as Config
+  if (existsSync(jsConfig)) return [jsConfig, require(jsConfig) as Config]
 
   const tsConfig = path.join(cwd, "macros.config.ts")
-  if (existsSync(tsConfig)) return hookRequire<{ default: Config }>(tsConfig)?.default || {}
+  if (existsSync(tsConfig)) return [tsConfig, hookRequire<{ default: Config }>(tsConfig)?.default || {}]
 
-  return {}
+  return [undefined, {}]
 }
 
 function writeDts (p: string, dts: string) {
@@ -66,9 +66,11 @@ function writeDts (p: string, dts: string) {
   }
 }
 
-export function buildTransformOpts (swcOptions: (Config & { experimental?: unknown }) | undefined): [Options, MacroOptions] {
+export function buildTransformOpts (swcOptions: (Config & { experimental?: unknown }) | undefined): [Options, MacroOptions, string | undefined] {
+  const [configPath, config] = loadConfigFile()
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let { experimental, macros, emitDts, dtsOutputPath, onEmitDts, ...options } = { ...(swcOptions || {}), ...loadConfigFile() }
+  let { experimental, macros, emitDts, dtsOutputPath, onEmitDts, ...options } = { ...(swcOptions || {}), ...config }
 
   if (!options.jsc?.target) {
     set(
@@ -89,7 +91,7 @@ export function buildTransformOpts (swcOptions: (Config & { experimental?: unkno
     onEmitDts = (dts: string) => writeDts(path.resolve(dtsOutputPath || "./macros.d.ts"), dts)
   }
 
-  return [options, { macros, emitDts, dtsOutputPath, onEmitDts }]
+  return [options, { macros, emitDts, dtsOutputPath, onEmitDts }, configPath]
 }
 
 export function insertInstrumentationOpts (jestOptions: TransformOptions<unknown>, canInstrument: boolean, swcTransformOpts: Options, instrumentOptions?: any) {
