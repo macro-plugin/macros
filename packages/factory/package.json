@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "browser": "dist/runtime.min.js",
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -15,7 +16,7 @@
     "macros"
   ],
   "scripts": {
-    "build": "rollup -c ../../rollup.config.mjs"
+    "build": "rollup -c ./rollup.config.mjs"
   },
   "dependencies": {
     "@macro-plugin/core": "1.0.0"
