@@ -34,7 +34,7 @@ export var $Ast = createExprMacro("$Ast", function (args) {
       end: 0,
       ctxt: 0
     },
-    properties: Object.entries(args[0]).map(([k, v]) => ({
+    properties: Object.entries(args[0].type === "StringLiteral" ? this.parseExpr(args[0].value) : args[0]).map(([k, v]) => ({
       type: "KeyValueProperty",
       key: {
         type: "Identifier",
@@ -49,4 +49,4 @@ export var $Ast = createExprMacro("$Ast", function (args) {
       value: createLit.apply(this, [k === "span" ? { start: 0, end: 0, ctxt: 0 } : v])
     }))
   }
-}, '(expr: string) => import("@swc/core").Expression')
+}, '<T>(expr: T) => import("@swc/core").Expression')
