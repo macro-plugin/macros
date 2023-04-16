@@ -1,7 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`$Ast macro 1`] = `
-"{
+"const i = {
+    type: "Identifier",
+    span: {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    },
+    value: "abc",
+    optional: false
+};
+const d = {
+    type: "Identifier",
+    span: {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    },
+    value: "abc",
+    optional: false
+};
+const a = {
     type: "StringLiteral",
     span: {
         "start": 0,
@@ -10,6 +30,28 @@ exports[`$Ast macro 1`] = `
     },
     value: "hello",
     raw: "'hello'"
+};
+const b = {
+    type: "BinaryExpression",
+    span: {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    },
+    operator: "+",
+    left: 1,
+    right: 2
+};
+const c = {
+    type: "BinaryExpression",
+    span: {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    },
+    operator: "*",
+    left: a,
+    right: 3
 };
 "
 `;

@@ -9,5 +9,11 @@ test("$Eval macro", () => {
 })
 
 test("$Ast macro", () => {
-  expect(transform("$Ast('hello')", { macros: [$Ast] }).code).toMatchSnapshot()
+  expect(transform(`
+  const i = $Ast(abc)
+  const d = $Ast('abc')
+  const a = $Ast("'hello'")
+  const b = $Ast(1 + 2)
+  const c = $Ast('a * 3')
+  `, { macros: [$Ast] }).code).toMatchSnapshot()
 })
