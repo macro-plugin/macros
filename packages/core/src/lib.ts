@@ -1,4 +1,4 @@
-import { createLit, evalAst, evalExpr } from "./utils"
+import { evalAst, evalExpr } from "./utils"
 
 import { Identifier } from "@swc/core"
 import { createExprMacro } from "./api"
@@ -27,26 +27,5 @@ export var $Eval = createExprMacro("$Eval", function (args) {
 }, "(<T>(expr: string) => T) & (<T>(expr: T) => T) & (<F extends (...args: any) => any>(expr: F, ...args: Parameters<F>) => ReturnType<F>)")
 
 export var $Ast = createExprMacro("$Ast", function (args) {
-  return {
-    type: "ObjectExpression",
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 0
-    },
-    properties: Object.entries(args[0].type === "StringLiteral" ? this.parseExpr(args[0].value) : args[0]).map(([k, v]) => ({
-      type: "KeyValueProperty",
-      key: {
-        type: "Identifier",
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        },
-        value: k,
-        optional: false
-      },
-      value: createLit.apply(this, [k === "span" ? { start: 0, end: 0, ctxt: 0 } : v])
-    }))
-  }
+  return this.parseExpr(JSON.stringify(args[0].type === "StringLiteral" ? this.parseExpr(args[0].value) : args[0]).replace(/("(start|end|ctxt)":\s*)(\d+)/g, "$10"))
 }, '<T>(expr: T) => import("@swc/core").Expression')
