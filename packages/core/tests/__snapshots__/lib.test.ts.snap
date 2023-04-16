@@ -2,56 +2,92 @@
 
 exports[`$Ast macro 1`] = `
 "const i = {
-    type: "Identifier",
-    span: {
+    "type": "Identifier",
+    "span": {
         "start": 0,
         "end": 0,
         "ctxt": 0
     },
-    value: "abc",
-    optional: false
+    "value": "abc",
+    "optional": false
 };
 const d = {
-    type: "Identifier",
-    span: {
+    "type": "Identifier",
+    "span": {
         "start": 0,
         "end": 0,
         "ctxt": 0
     },
-    value: "abc",
-    optional: false
+    "value": "abc",
+    "optional": false
 };
 const a = {
-    type: "StringLiteral",
-    span: {
+    "type": "StringLiteral",
+    "span": {
         "start": 0,
         "end": 0,
         "ctxt": 0
     },
-    value: "hello",
-    raw: "'hello'"
+    "value": "hello",
+    "raw": "'hello'"
 };
 const b = {
-    type: "BinaryExpression",
-    span: {
+    "type": "BinaryExpression",
+    "span": {
         "start": 0,
         "end": 0,
         "ctxt": 0
     },
-    operator: "+",
-    left: 1,
-    right: 2
+    "operator": "+",
+    "left": {
+        "type": "NumericLiteral",
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        },
+        "value": 1,
+        "raw": "1"
+    },
+    "right": {
+        "type": "NumericLiteral",
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        },
+        "value": 2,
+        "raw": "2"
+    }
 };
 const c = {
-    type: "BinaryExpression",
-    span: {
+    "type": "BinaryExpression",
+    "span": {
         "start": 0,
         "end": 0,
         "ctxt": 0
     },
-    operator: "*",
-    left: a,
-    right: 3
+    "operator": "*",
+    "left": {
+        "type": "Identifier",
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        },
+        "value": "a",
+        "optional": false
+    },
+    "right": {
+        "type": "NumericLiteral",
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        },
+        "value": 3,
+        "raw": "3"
+    }
 };
 "
 `;
