@@ -59,7 +59,7 @@ export var $Env = createExprMacro("$Env", function (args, typeArgs) {
     span,
     value
   }
-}, "<R>(key: string) => R")
+}, "<R = string>(key: string) => R")
 
 export var $Stringify = createExprMacro("$Stringify", function (args, typeArgs) {
   return {
@@ -69,9 +69,49 @@ export var $Stringify = createExprMacro("$Stringify", function (args, typeArgs) 
   }
 }, "((expr: any) => string) & (<T>() => string)")
 
+export var $Span = createExprMacro("$Span", function () {
+  const currentSpan: [number, number] = this.span()
+  return {
+    type: "ArrayExpression",
+    span,
+    elements: [
+      {
+        expression: {
+          type: "NumericLiteral",
+          span,
+          value: currentSpan[0],
+        }
+      },
+      {
+        expression: {
+          type: "NumericLiteral",
+          span,
+          value: currentSpan[1]
+        }
+      }
+    ]
+  }
+}, "() => [number, number]")
+
+export var $Line = createExprMacro("$Line", function () {
+  return {
+    type: "NumericLiteral",
+    span,
+    value: this.src?.slice(0, this.span()[0]).split(/\r\n|\r|\n/).length || 1
+  }
+}, "() => number")
+
+export var $Column = createExprMacro("$Column", function () {
+  return {
+    type: "NumericLiteral",
+    span,
+    value: (this.src?.slice(0, this.span()[0]))?.match(/\n[^\n]*$/)?.[0].length || 1
+  }
+}, "() => number")
+
 export const printTmpl = (strings: string[], exprs: Expression[]) => strings.reduce((query, queryPart, i) => {
   const valueExists = i < exprs.length
-  const text = query + queryPart
+  const text: string = query + queryPart
 
   return valueExists ? text + printExpr(exprs[i]).code : text
 }, "")
