@@ -1,6 +1,6 @@
 import { Expression, Identifier } from "@swc/core"
 import { createExprMacro, createTmplMacro } from "./api"
-import { evalAst, evalExpr, span } from "./utils"
+import { evalAst, evalExpr, hash, span } from "./utils"
 
 import { printExpr } from "./print"
 import { walk } from "./walk"
@@ -35,7 +35,7 @@ export var $Ast = createExprMacro("$Ast", function (args) {
 
 export var $Env = createExprMacro("$Env", function (args, typeArgs) {
   if (args[0].type !== "StringLiteral") throw new Error("$Env macro only support StringLiteral as input.")
-  const value = process.env[args[0].value] ?? ""
+  const value: string = process.env[args[0].value] ?? ""
 
   if (typeArgs && typeArgs?.[0].type === "TsKeywordType") {
     switch (typeArgs[0].kind) {
@@ -108,6 +108,14 @@ export var $Column = createExprMacro("$Column", function () {
     value: (this.src?.slice(0, this.span()[0]))?.match(/\n[^\n]*$/)?.[0].length || 1
   }
 }, "() => number")
+
+export var $ID = createExprMacro("$ID", function () {
+  return {
+    type: "StringLiteral",
+    span,
+    value: hash(`${this.src}${this.span()}`)
+  }
+}, "() => string")
 
 export const printTmpl = (strings: string[], exprs: Expression[]) => strings.reduce((query, queryPart, i) => {
   const valueExists = i < exprs.length
