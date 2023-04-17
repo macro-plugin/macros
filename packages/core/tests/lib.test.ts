@@ -1,4 +1,4 @@
-import { $Ast, $Eval, $Expr, $Quote, transform } from "../src"
+import { $Ast, $Eval, $Expr, $Quote, $Stringify, transform } from "../src"
 
 test("$Eval macro", () => {
   expect(transform("$Eval(1 + 2 / 10)", { macros: [$Eval] }).code).toEqual("1.2;\n")
@@ -29,4 +29,13 @@ test("$Quote macro", () => {
   `, { macros: [$Ast, $Expr, $Quote], emitDts: true, jsc: { parser: { syntax: "typescript", tsx: true } } })
   expect(r.dts).toMatchSnapshot()
   expect(r.code).toMatchSnapshot()
+})
+
+test("$Stringify macro", () => {
+  expect(transform(`
+  const a = $Stringify(abc)
+  const b = $Stringify('abc')
+  const c = $Stringify(1 + 2)
+  const d = $Stringify(hello(1, 2))
+  `, { macros: [$Stringify] }).code).toMatchSnapshot()
 })
