@@ -9,9 +9,9 @@ import { parse, parseAsync } from "./parse"
 import type { Config } from "./types"
 import { Walker } from "./walk"
 
-export function createSwcPlugin (config: Config, spanOffset = 0) {
+export function createSwcPlugin (config: Config, src?: string, spanOffset = 0) {
   return (program: Program) => {
-    const walker = new Walker(createWalkPlugin(config.macros || []), true)
+    const walker = new Walker(createWalkPlugin(config.macros || []), src, true)
 
     program = walker.walk(program, spanOffset) as Program
     if (config.emitDts) {
@@ -24,8 +24,8 @@ export function createSwcPlugin (config: Config, spanOffset = 0) {
   }
 }
 
-export function transformAst (ast: Program, config: Config, spanOffset = 0): Program & { dts?: string } {
-  return createSwcPlugin(config, spanOffset)(ast)
+export function transformAst (ast: Program, config: Config, src?: string, spanOffset = 0): Program & { dts?: string } {
+  return createSwcPlugin(config, src, spanOffset)(ast)
 }
 
 /**
@@ -36,7 +36,7 @@ export function transformAst (ast: Program, config: Config, spanOffset = 0): Pro
  */
 export function transform (code: string, config: Config) {
   const spanOffset = getSpanOffset()
-  const ast = transformAst(parse(code, config.jsc?.parser), config, spanOffset)
+  const ast = transformAst(parse(code, config.jsc?.parser), config, code, spanOffset)
   const dts = ast.dts
   if (dts) delete ast.dts
   return { ...printSync(ast), ast: ast as Program, dts }
@@ -51,7 +51,7 @@ export function transform (code: string, config: Config) {
 export async function transformAsync (code: string, config: Config) {
   const spanOffset = getSpanOffset()
   const parsed = await parseAsync(code, config.jsc?.parser)
-  const ast = transformAst(parsed, config, spanOffset)
+  const ast = transformAst(parsed, config, code, spanOffset)
   const result = await print(ast)
   const dts = ast.dts
   if (dts) delete ast.dts

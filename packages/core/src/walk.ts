@@ -7,6 +7,7 @@ import { print, printExpr, printType } from "./print"
 import trackPlugin from "./track"
 
 export class Walker {
+  src: string | undefined
   node = { type: "Invalid", span } as Node
   data: Record<string, unknown> = {}
   imports: ImportDeclaration[] = []
@@ -177,9 +178,10 @@ export class Walker {
     declareGlobalConst: this.declareGlobalConst
   }
 
-  constructor ({ enter, leave }: WalkPlugin, enableTracker = false) {
+  constructor ({ enter, leave }: WalkPlugin, src?: string, enableTracker = false) {
     enter && this.enters.push(enter)
     leave && this.leaves.push(leave)
+    this.src = src
     this.enableTracker = enableTracker
   }
 
@@ -188,6 +190,7 @@ export class Walker {
     this.node = n
 
     const ctx: WalkContext = {
+      src: this.src,
       ...this.defaultContext,
       skip: () => {
         _skipped = true
