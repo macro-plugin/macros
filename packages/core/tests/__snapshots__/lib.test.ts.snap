@@ -91,3 +91,82 @@ const c = {
 };
 "
 `;
+
+exports[`$Quote macro 1`] = `
+"declare global {
+    const $Ast: <T>(expr: T) => import("@swc/core").Expression;
+    const $Expr: (strings: TemplateStringsArray, ...expressions: unknown[]) => import("@swc/core").Expression;
+    const $Quote: (strings: TemplateStringsArray, ...expressions: unknown[]) => (import("@swc/core").Expression)[];
+}
+export {}
+"
+`;
+
+exports[`$Quote macro 2`] = `
+"const someNumber = {
+    "type": "NumericLiteral",
+    "span": {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    },
+    "value": 5,
+    "raw": "5"
+};
+const someIdent = {
+    "type": "Identifier",
+    "span": {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    },
+    "value": "hello",
+    "optional": false
+};
+const someExpr = {
+    "type": "BinaryExpression",
+    "span": {
+        "start": 0,
+        "end": 0,
+        "ctxt": 0
+    },
+    "operator": "+",
+    "left": {
+        "type": "NumericLiteral",
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        },
+        "value": 3,
+        "raw": "3"
+    },
+    "right": someNumber
+};
+const tokens = [
+    {
+        "type": "VariableDeclaration",
+        "span": {
+            "start": 0,
+            "end": 0,
+            "ctxt": 0
+        },
+        "kind": "let",
+        "declare": false,
+        "declarations": [
+            {
+                "type": "VariableDeclarator",
+                "span": {
+                    "start": 0,
+                    "end": 0,
+                    "ctxt": 0
+                },
+                "id": someIdent,
+                "init": someExpr,
+                "definite": false
+            }
+        ]
+    }
+];
+"
+`;
