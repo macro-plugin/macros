@@ -33,13 +33,13 @@ export var $Ast = createExprMacro("$Ast", function (args) {
   return this.parseExpr(printAst(args[0].type === "StringLiteral" ? this.parseExpr(args[0].value) : args[0]))
 }, '<T>(expr: T) => import("@swc/core").Expression')
 
-export var $Stringify = createExprMacro("$Stringify", function (args) {
+export var $Stringify = createExprMacro("$Stringify", function (args, typeArgs) {
   return {
     type: "StringLiteral",
     span,
-    value: this.printExpr(args[0])
+    value: typeArgs && typeArgs.length > 0 ? this.printType(typeArgs[0]) : this.printExpr(args[0])
   }
-}, "<T>(expr: T) => string")
+}, "((expr: any) => string) & (<T>() => string)")
 
 export const printTmpl = (strings: string[], exprs: Expression[]) => strings.reduce((query, queryPart, i) => {
   const valueExists = i < exprs.length
