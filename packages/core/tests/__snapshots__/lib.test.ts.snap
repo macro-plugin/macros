@@ -176,5 +176,6 @@ exports[`$Stringify macro 1`] = `
 const b = '"abc"';
 const c = "1 + 2";
 const d = "hello(1, 2)";
+const e = "number | string";
 "
 `;

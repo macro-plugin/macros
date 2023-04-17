@@ -37,5 +37,6 @@ test("$Stringify macro", () => {
   const b = $Stringify('abc')
   const c = $Stringify(1 + 2)
   const d = $Stringify(hello(1, 2))
-  `, { macros: [$Stringify] }).code).toMatchSnapshot()
+  const e = $Stringify<number | string>()
+  `, { macros: [$Stringify], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
 })
