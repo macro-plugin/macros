@@ -33,6 +33,34 @@ export var $Ast = createExprMacro("$Ast", function (args) {
   return this.parseExpr(printAst(args[0].type === "StringLiteral" ? this.parseExpr(args[0].value) : args[0]))
 }, '<T>(expr: T) => import("@swc/core").Expression')
 
+export var $Env = createExprMacro("$Env", function (args, typeArgs) {
+  if (args[0].type !== "StringLiteral") throw new Error("$Env macro only support StringLiteral as input.")
+  const value = process.env[args[0].value] ?? ""
+
+  if (typeArgs && typeArgs?.[0].type === "TsKeywordType") {
+    switch (typeArgs[0].kind) {
+      case "boolean":
+        return {
+          type: "BooleanLiteral",
+          value: !!value,
+          span
+        }
+      case "number":
+        return {
+          type: "NumericLiteral",
+          value: +value,
+          span
+        }
+    }
+  }
+
+  return {
+    type: "StringLiteral",
+    span,
+    value
+  }
+}, "<R>(key: string) => R")
+
 export var $Stringify = createExprMacro("$Stringify", function (args, typeArgs) {
   return {
     type: "StringLiteral",
