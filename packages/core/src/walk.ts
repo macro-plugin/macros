@@ -1,12 +1,13 @@
 import { BaseNode, MacroPlugin, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
-import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration, TsType } from "@swc/core"
-import { createWalkPlugin, genConstType, genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
+import { ExportNamedDeclaration, HasSpan, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration, TsType } from "@swc/core"
+import { createWalkPlugin, genConstType, genExportSpecifier, genImportSpecifier, hashMap, span } from "./utils"
 import { parse, parseExpr, parseType } from "./parse"
 import { print, printExpr, printType } from "./print"
 
 import trackPlugin from "./track"
 
 export class Walker {
+  node = { type: "Invalid", span } as Node
   data: Record<string, unknown> = {}
   imports: ImportDeclaration[] = []
   exports: ExportNamedDeclaration[] = []
@@ -22,6 +23,7 @@ export class Walker {
   enters: WalkFunc[] = []
   leaves: WalkFunc[] = []
   enableTracker = false
+  spanOffset = 0
   set = <T>(key: string, value: T) => { this.data[key] = value }
   get = <T>(key: string, defaultValue?: T) => {
     if (!(key in this.data)) this.data[key] = defaultValue
@@ -146,6 +148,12 @@ export class Walker {
   declareAppend = (stmts: ModuleItem[]) => this.appendDts.push(...stmts)
 
   defaultContext = {
+    span: () => {
+      const start = (this.node as Node & HasSpan).span.start
+      const end = (this.node as Node & HasSpan).span.end
+
+      return [start > this.spanOffset ? start - this.spanOffset - 1 : 0, end > this.spanOffset ? end - this.spanOffset - 1 : 0] as [number, number]
+    },
     set: this.set,
     get: this.get,
     track: this.track,
@@ -177,6 +185,7 @@ export class Walker {
 
   walkSingle (n: Node, parent?: Node, prop?: string, index?: number) {
     let _replaced; let _skipped; let _removed; let _skipCount = 0
+    this.node = n
 
     const ctx: WalkContext = {
       ...this.defaultContext,
@@ -246,7 +255,8 @@ export class Walker {
     }
   }
 
-  walk (n: Node | Node[]) {
+  walk (n: Node | Node[], spanOffset = 0) {
+    this.spanOffset = spanOffset
     if (Array.isArray(n)) {
       this.walkMany(n)
     } else if (n.type) {

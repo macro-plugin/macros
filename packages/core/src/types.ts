@@ -9,6 +9,8 @@ export type ScopeVar = { name: string, private?: boolean, value?: Node, marker?:
 export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration | ImportDeclaration | Param | ClassMethod | PrivateMethod | Statement | VariableDeclarator | ModuleItem;
 
 export type WalkContext = {
+  /** Get current walking node's span */
+  span(): [number, number];
   /** Save data to current plugin cache */
   set<T>(key: string, data: T): void;
   /** Get data from current plugin cache */

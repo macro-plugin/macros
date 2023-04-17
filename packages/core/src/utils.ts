@@ -1,8 +1,8 @@
 import { ArrowFunctionExpression, ExportNamespaceSpecifier, ExportSpecifier, Expression, FunctionDeclaration, FunctionExpression, Identifier, ImportDefaultSpecifier, ImportSpecifier, Invalid, Param, TsKeywordTypeKind, TsType, TsTypeReference, VariableDeclaration } from "@swc/core"
 import { BaseNode, GlobalMacroPlugin, MacroPlugin, WalkContext, WalkPlugin } from "./types"
+import { parse, parseExpr } from "./parse"
 
 import { defaultGlobalExpr } from "./defaults"
-import { parseExpr } from "./parse"
 import { printExpr } from "./print"
 import { walk } from "./walk"
 
@@ -19,6 +19,10 @@ export function hash (str: string): string {
 
   while (i--) hash = ((hash << 5) - hash) ^ str.charCodeAt(i)
   return (hash >>> 0).toString(36)
+}
+
+export function getSpanOffset (): number {
+  return parse("").span.end
 }
 
 export function hashMap (map: object): string {

@@ -3,17 +3,17 @@ import {
   print,
   printSync,
 } from "@swc/core"
+import { createWalkPlugin, getSpanOffset } from "./utils"
 import { parse, parseAsync } from "./parse"
 
 import type { Config } from "./types"
 import { Walker } from "./walk"
-import { createWalkPlugin } from "./utils"
 
-export function createSwcPlugin (config: Config) {
+export function createSwcPlugin (config: Config, spanOffset = 0) {
   return (program: Program) => {
     const walker = new Walker(createWalkPlugin(config.macros || []), true)
 
-    program = walker.walk(program) as Program
+    program = walker.walk(program, spanOffset) as Program
     if (config.emitDts) {
       const dts = walker.emit()
       config.onEmitDts?.(dts);
@@ -24,8 +24,8 @@ export function createSwcPlugin (config: Config) {
   }
 }
 
-export function transformAst (ast: Program, config: Config): Program & { dts?: string } {
-  return createSwcPlugin(config)(ast)
+export function transformAst (ast: Program, config: Config, spanOffset = 0): Program & { dts?: string } {
+  return createSwcPlugin(config, spanOffset)(ast)
 }
 
 /**
@@ -35,7 +35,8 @@ export function transformAst (ast: Program, config: Config): Program & { dts?: s
  * @returns - an object containing the output code and source map.
  */
 export function transform (code: string, config: Config) {
-  const ast = transformAst(parse(code, config.jsc?.parser), config)
+  const spanOffset = getSpanOffset()
+  const ast = transformAst(parse(code, config.jsc?.parser), config, spanOffset)
   const dts = ast.dts
   if (dts) delete ast.dts
   return { ...printSync(ast), ast: ast as Program, dts }
@@ -48,8 +49,9 @@ export function transform (code: string, config: Config) {
  * @returns - an object containing the output code and source map.
  */
 export async function transformAsync (code: string, config: Config) {
+  const spanOffset = getSpanOffset()
   const parsed = await parseAsync(code, config.jsc?.parser)
-  const ast = transformAst(parsed, config)
+  const ast = transformAst(parsed, config, spanOffset)
   const result = await print(ast)
   const dts = ast.dts
   if (dts) delete ast.dts
