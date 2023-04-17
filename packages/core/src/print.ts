@@ -1,6 +1,7 @@
-import { Expression, ModuleItem, Options, Program, print as _printAsync, printSync } from "@swc/core"
+import { Expression, ModuleItem, Options, Program, TsType, print as _printAsync, printSync } from "@swc/core"
 
 import { BaseNode } from "./types"
+import { span } from "./utils"
 
 /**
  * Turns an AST into code, maintaining sourcemaps, user preferences, and valid output.
@@ -14,7 +15,7 @@ export function print (
 ) {
   const { code, map } = printSync({
     type: "Script",
-    span: { start: 0, end: 0, ctxt: 0 },
+    span,
     body: Array.isArray(ast) ? ast as unknown as ModuleItem[] : [ast as unknown as ModuleItem],
   } as Program, options)
 
@@ -27,7 +28,7 @@ export async function printAsync (
 ) {
   const { code, map } = await _printAsync({
     type: "Script",
-    span: { start: 0, end: 0, ctxt: 0 },
+    span,
     body: Array.isArray(ast) ? ast as unknown as ModuleItem[] : [ast as unknown as ModuleItem],
   } as Program, options)
 
@@ -37,11 +38,7 @@ export async function printAsync (
 export function printExpr (expr: BaseNode, options?: Options) {
   const { code, map } = print({
     type: "ExpressionStatement",
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 0
-    },
+    span,
     expression: expr as Expression
   }, options)
 
@@ -51,13 +48,43 @@ export function printExpr (expr: BaseNode, options?: Options) {
 export async function printExprAsync (expr: BaseNode, options?: Options) {
   const { code, map } = await printAsync({
     type: "ExpressionStatement",
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 0
-    },
+    span,
     expression: expr as Expression
   }, options)
 
   return { code: code.replace(/\s*;\s*$/, ""), map }
+}
+
+export function printType (ty: TsType, options?: Options) {
+  const { code, map } = print({
+    type: "TsTypeAliasDeclaration",
+    span,
+    declare: false,
+    id: {
+      type: "Identifier",
+      span,
+      value: "__PrintType__",
+      optional: false
+    },
+    typeAnnotation: ty,
+  }, options)
+
+  return { code: code.replace(/\s*type\s+__PrintType__\s*=\s*/, "").replace(/\s*;\s*$/, ""), map }
+}
+
+export async function printTypeAsync (ty: TsType, options?: Options) {
+  const { code, map } = await printAsync({
+    type: "TsTypeAliasDeclaration",
+    span,
+    declare: false,
+    id: {
+      type: "Identifier",
+      span,
+      value: "__PrintType__",
+      optional: false
+    },
+    typeAnnotation: ty,
+  }, options)
+
+  return { code: code.replace(/\s*type\s+__PrintType__\s*=\s*/, "").replace(/\s*;\s*$/, ""), map }
 }
