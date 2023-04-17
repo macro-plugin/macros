@@ -2,7 +2,7 @@ import { BaseNode, MacroPlugin, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugi
 import { ExportNamedDeclaration, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration, TsType } from "@swc/core"
 import { createWalkPlugin, genConstType, genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
 import { parse, parseExpr, parseType } from "./parse"
-import { print, printExpr } from "./print"
+import { print, printExpr, printType } from "./print"
 
 import trackPlugin from "./track"
 
@@ -157,6 +157,7 @@ export class Walker {
     parseType,
     parse: (src: string, options: ParseOptions) => parse(src, options).body,
     printExpr: (expr: Node) => printExpr(expr as BaseNode).code,
+    printType: (ty: TsType) => printType(ty).code,
     addPlugin: this.addPlugin,
     startTracking: () => (this.enableTracker = true),
     stopTracking: () => (this.enableTracker = false),

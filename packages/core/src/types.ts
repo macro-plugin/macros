@@ -53,6 +53,8 @@ export type WalkContext = {
   print(ast?: Node | Node[]): string;
   /** Convert an expression node to source code */
   printExpr(expr?: Node): string;
+  /** Convert a type node to source code */
+  printType(ty?: TsType): string;
   /** Add new macro plugins to the ast walker */
   addPlugin(macro: MacroPlugin | MacroPlugin[]): void;
   /** Start tracking variables */
