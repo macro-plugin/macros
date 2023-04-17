@@ -1,4 +1,4 @@
-import { $Ast, $Env, $Eval, $Expr, $Quote, $Stringify, transform } from "../src"
+import { $Ast, $Column, $Env, $Eval, $Expr, $Line, $Quote, $Span, $Stringify, transform } from "../src"
 
 test("$Eval macro", () => {
   expect(transform("$Eval(1 + 2 / 10)", { macros: [$Eval] }).code).toEqual("1.2;\n")
@@ -48,4 +48,30 @@ test("$Env macro", () => {
   const b = $Env<boolean>("DEV")
   const n = $Env<number>("DEV")
   `, { macros: [$Env], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
+})
+
+test("$Span macro", () => {
+  const code = "$Span()"
+  expect(code.slice(0, 7)).toBe("$Span()")
+  expect(/^\s*\[\s*0,\s*7/.test(transform(code, { macros: [$Span] }).code)).toBe(true)
+
+  const multiline = `
+    const a = $Span()
+  `
+  expect(multiline.slice(15, 22)).toBe("$Span()")
+  expect(/\s*\[\s*15,\s*22/.test(transform(multiline, { macros: [$Span] }).code)).toBe(true)
+})
+
+test("$Line macro", () => {
+  expect(transform(`const ln = $Line()
+  const ln2 = $Line()
+  const ln3 = $Line()
+  `, { macros: [$Line] }).code).toEqual("const ln = 1;\nconst ln2 = 2;\nconst ln3 = 3;\n")
+})
+
+test("$Column macro", () => {
+  expect(transform(`$Column()
+  $Column()
+  const col = $Column()
+  $Column()`, { macros: [$Column] }).code).toEqual("1;\n3;\nconst col = 15;\n3;\n")
 })
