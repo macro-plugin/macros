@@ -92,6 +92,14 @@ const c = {
 "
 `;
 
+exports[`$Env macro 1`] = `
+"const e = "vi";
+const s = "vi";
+const b = false;
+const n = 0;
+"
+`;
+
 exports[`$Quote macro 1`] = `
 "declare global {
     const $Ast: <T>(expr: T) => import("@swc/core").Expression;

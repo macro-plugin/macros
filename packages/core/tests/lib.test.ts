@@ -1,4 +1,4 @@
-import { $Ast, $Eval, $Expr, $Quote, $Stringify, transform } from "../src"
+import { $Ast, $Env, $Eval, $Expr, $Quote, $Stringify, transform } from "../src"
 
 test("$Eval macro", () => {
   expect(transform("$Eval(1 + 2 / 10)", { macros: [$Eval] }).code).toEqual("1.2;\n")
@@ -39,4 +39,13 @@ test("$Stringify macro", () => {
   const d = $Stringify(hello(1, 2))
   const e = $Stringify<number | string>()
   `, { macros: [$Stringify], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
+})
+
+test("$Env macro", () => {
+  expect(transform(`
+  const e = $Env("EDITOR")
+  const s = $Env<string>("EDITOR")
+  const b = $Env<boolean>("DEV")
+  const n = $Env<number>("DEV")
+  `, { macros: [$Env], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()
 })
