@@ -48,9 +48,9 @@ let c = $add(1, 2)
 test("create complex macro with macros", () => {
   const code = `
 macro: {
-  var __num__ = $Lit<number>(4)
+  var __num__ = $LitMacro<number>(4)
 
-  var add = $Expr<(a: number, b: number) => number>(function(args) {
+  var add = $ExprMacro<(a: number, b: number) => number>(function(args) {
     const a = this.printExpr(args[0])
     const b = this.printExpr(args[1])
 
@@ -58,11 +58,11 @@ macro: {
     return this.parseExpr(\`\${a} + \${b}\`)
   })
 
-  var typeAdd = $Type<(<a extends number, b extends number>() => number)>(function (typeParams) {
+  var typeAdd = $TypeMacro<(<a extends number, b extends number>() => number)>(function (typeParams) {
     return this.parseExpr((typeParams[0].literal.value + typeParams[1].literal.value).toString())
   })
 
-  var real = $Tmpl(function (strings, personExpr, ageExpr) {
+  var real = $TmplMacro(function (strings, personExpr, ageExpr) {
     return {
       type: "StringLiteral",
       span: {
@@ -74,7 +74,7 @@ macro: {
     }
   })
 
-  $Labeled("debug", function (stmt) {
+  $LabeledMacro("debug", function (stmt) {
     return {
       "type": "IfStatement",
       "span": {

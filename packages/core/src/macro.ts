@@ -7,19 +7,19 @@ import { evalAst, flatExpr, genTypeImport, noop } from "./utils"
 
 export var $Macro: (f: MacroPlugin) => void = noop
 
-export var $Lit = <LitType>(i: LitType) => i
+export var $LitMacro = <LitType>(i: LitType) => i
 
-export var $Expr = <FnType = ((...args: unknown[]) => unknown)>(f: ExprMacro | { enter?: ExprMacro; leave?: ExprMacro }) => f as unknown as FnType
+export var $ExprMacro = <FnType = ((...args: unknown[]) => unknown)>(f: ExprMacro | { enter?: ExprMacro; leave?: ExprMacro }) => f as unknown as FnType
 
-export var $Type = <FnType = ((...args: unknown[]) => unknown)>(f: TypeMacro | { enter?: TypeMacro; leave?: TypeMacro }) => f as unknown as FnType
+export var $TypeMacro = <FnType = ((...args: unknown[]) => unknown)>(f: TypeMacro | { enter?: TypeMacro; leave?: TypeMacro }) => f as unknown as FnType
 
-export var $Tmpl = <ReturnType = string>(f: TmplMacro | { enter?: TmplMacro; leave?: TmplMacro }) => f as unknown as (strings: TemplateStringsArray, ...exprs: unknown[]) => ReturnType
+export var $TmplMacro = <ReturnType = string>(f: TmplMacro | { enter?: TmplMacro; leave?: TmplMacro }) => f as unknown as (strings: TemplateStringsArray, ...exprs: unknown[]) => ReturnType
 
-export var $Labeled: (<label extends string>(f: LabeledMacro | { enter?: LabeledMacro; leave?: LabeledMacro }, label?: label) => void) & ((label: string, f: LabeledMacro | { enter?: LabeledMacro; leave?: LabeledMacro }) => void) = noop
+export var $LabeledMacro: (<label extends string>(f: LabeledMacro | { enter?: LabeledMacro; leave?: LabeledMacro }, label?: label) => void) & ((label: string, f: LabeledMacro | { enter?: LabeledMacro; leave?: LabeledMacro }) => void) = noop
 
 export const macro = createMacro({
   Module () {
-    this.declareGlobal(["$Macro", "$Lit", "$Expr", "$Type", "$Tmpl", "$Labeled"].map(i => genTypeImport("@macro-plugin/core", i, "var")))
+    this.declareGlobal(["$Macro", "$LitMacro", "$ExprMacro", "$TypeMacro", "$TmplMacro", "$LabeledMacro"].map(i => genTypeImport("@macro-plugin/core", i, "var")))
   },
   LabeledStatement: {
     enter (ast) {
@@ -177,19 +177,19 @@ export const macro = createMacro({
                 exprMacros[d.id.value] = d.init as FunctionExpression | ArrowFunctionExpression | FunctionDeclaration
               } else if (d.init.type === "CallExpression" && d.init.callee.type === "Identifier") {
                 switch (d.init.callee.value) {
-                  case "$Lit":
+                  case "$LitMacro":
                     litMacros[d.id.value] = d.init.arguments[0].expression
                     break
-                  case "$Expr":
+                  case "$ExprMacro":
                     plugins.push(createExprMacro(d.id.value, evalAst(d.init.arguments[0].expression)))
                     break
-                  case "$Tmpl":
+                  case "$TmplMacro":
                     plugins.push(createTmplMacro(d.id.value, evalAst(d.init.arguments[0].expression)))
                     break
-                  case "$Type":
+                  case "$TypeMacro":
                     plugins.push(createTypeMacro(d.id.value, evalAst(d.init.arguments[0].expression)))
                     break
-                  case "$Labeled":
+                  case "$LabeledMacro":
                   case "$Macro":
                     throw new Error("VariableDeclaration is not expected for $Labeled and $Macro.")
                   default:
@@ -204,7 +204,7 @@ export const macro = createMacro({
           }
         } else if (s.type === "ExpressionStatement" && s.expression.type === "CallExpression" && s.expression.callee.type === "Identifier") {
           switch (s.expression.callee.value) {
-            case "$Labeled":
+            case "$LabeledMacro":
               if (s.expression.arguments[0].expression.type === "StringLiteral") {
                 plugins.push(createLabeledMacro(s.expression.arguments[0].expression.value, evalAst(s.expression.arguments[1].expression)))
               } else {
@@ -214,10 +214,10 @@ export const macro = createMacro({
             case "$Macro":
               plugins.push(createMacro(evalAst(s.expression.arguments[0].expression)))
               break
-            case "$Lit":
-            case "$Expr":
-            case "$Tmpl":
-            case "$Type":
+            case "$LitMacro":
+            case "$ExprMacro":
+            case "$TmplMacro":
+            case "$TypeMacro":
               throw new Error("Expect VariableDeclaration for $Lit, $Expr, $Tmpl, $Type.")
           }
         }
