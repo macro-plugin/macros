@@ -1,7 +1,8 @@
-import { evalAst, evalExpr } from "./utils"
+import { Expression, Identifier } from "@swc/core"
+import { createExprMacro, createTmplMacro } from "./api"
+import { evalAst, evalExpr, span } from "./utils"
 
-import { Identifier } from "@swc/core"
-import { createExprMacro } from "./api"
+import { printExpr } from "./print"
 import { walk } from "./walk"
 
 export var $Eval = createExprMacro("$Eval", function (args) {
@@ -26,6 +27,87 @@ export var $Eval = createExprMacro("$Eval", function (args) {
   return this.parseExpr(evalAst(args[0]).toString())
 }, "(<T>(expr: string) => T) & (<T>(expr: T) => T) & (<F extends (...args: any) => any>(expr: F, ...args: Parameters<F>) => ReturnType<F>)")
 
+export const printAst = (ast: object) => JSON.stringify(ast).replace(/("(start|end|ctxt)":\s*)(\d+)/g, "$10")
+
 export var $Ast = createExprMacro("$Ast", function (args) {
-  return this.parseExpr(JSON.stringify(args[0].type === "StringLiteral" ? this.parseExpr(args[0].value) : args[0]).replace(/("(start|end|ctxt)":\s*)(\d+)/g, "$10"))
+  return this.parseExpr(printAst(args[0].type === "StringLiteral" ? this.parseExpr(args[0].value) : args[0]))
 }, '<T>(expr: T) => import("@swc/core").Expression')
+
+export const printTmpl = (strings: string[], exprs: Expression[]) => strings.reduce((query, queryPart, i) => {
+  const valueExists = i < exprs.length
+  const text = query + queryPart
+
+  return valueExists ? text + printExpr(exprs[i]).code : text
+}, "")
+
+export const printRawTmpl = (strings: string[], exprs: unknown[]) => strings.reduce((query, queryPart, i) => {
+  const valueExists = i < exprs.length
+  const text = query + queryPart
+
+  return valueExists ? text + exprs[i] : text
+}, "")
+
+function walkObject (obj: object | null, onEnter: (k: string, v: unknown, parent: Record<string, any>) => unknown, grand?: Record<string, any>, grandKey?: string) {
+  if (obj && typeof obj === "object") {
+    const allKeys = Object.keys(obj)
+    for (let i = 0; i < allKeys.length; i++) {
+      const k = allKeys[i]
+      const v = obj[k as keyof typeof obj]
+
+      const r = onEnter(k, v, obj)
+      if (r != null && grand) {
+        grand[grandKey!] = r
+        break
+      }
+
+      if (typeof v === "object") {
+        walkObject(v, onEnter, obj, k)
+      }
+    }
+  }
+  return obj
+}
+
+export var $Expr = createTmplMacro("$Expr", function (strings, ...exprs) {
+  const exprMarkers: string[] = exprs.map((_, i) => "_macro_marker_" + i + "_")
+  const options = { syntax: "typescript", tsx: true } as const
+  const ast = this.parseExpr(printRawTmpl(strings, exprMarkers), options)
+
+  walkObject(ast, (k, v, parent) => {
+    if (k === "span") {
+      parent[k] = span
+      return
+    }
+
+    if (typeof v === "string") {
+      const i = exprMarkers.findIndex((m) => m === v)
+      if (i !== -1) return "__macro$$Start__" + this.printExpr(exprs[i]) + "__macro$$End__"
+    }
+  })
+
+  const expr = JSON.stringify(ast, undefined, 2).replace(/("__macro\$\$Start__)|(__macro\$\$End__")/g, "").replace(/\\"/g, '"')
+
+  return this.parseExpr(expr)
+}, "import(\"@swc/core\").Expression")
+
+export var $Quote = createTmplMacro("$Quote", function (strings, ...exprs) {
+  const exprMarkers: string[] = exprs.map((_, i) => "_macro_marker_" + i + "_")
+  const options = { syntax: "typescript", tsx: true } as const
+  const ast = this.parse(printRawTmpl(strings, exprMarkers), options)
+
+  walkObject(ast, (k, v, parent) => {
+    if (k === "span") {
+      parent[k] = span
+      return
+    }
+
+    if (typeof v === "string") {
+      const i = exprMarkers.findIndex((m) => m === v)
+      if (i !== -1) return "__macro$$Start__" + this.printExpr(exprs[i]) + "__macro$$End__"
+    }
+  })
+
+  const expr = JSON.stringify(ast, undefined, 2).replace(/("__macro\$\$Start__)|(__macro\$\$End__")/g, "").replace(/\\"/g, '"')
+
+  return this.parseExpr(expr)
+}, "(import(\"@swc/core\").Expression)[]")
