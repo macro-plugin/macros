@@ -102,13 +102,33 @@ export type MacroPluginWithProxy = MacroPlugin & {
 export type MacroOptions = {
   /** global macros to be used */
   macros?: MacroPlugin[];
-  /** external packages that includes macros */
+  /**
+   * Packages that includes macros.
+   *
+   * **Note**: All macros from these packages would been registed as **global macros**.
+   *
+   * The `macros` options also can implement similar behavior:
+   * ```js
+   * import * as macroPackage from "package-name"
+   *
+   * export default defineConfig({
+   *   macros: [...Object.values(macroPackage)]
+   * })
+   * ```
+   */
+  depends?: string[];
+  /**
+   * External packages that includes macros.
+   *
+   * **Note**: All macros from these packages are lazy loading, they are only enabled when you imported them.
+   * If you want include all macros globally from some package, please put them in `depends` options.
+   */
   externals?: string[];
-  /** emit dts file, default iss false */
+  /** emit dts file, default is false */
   emitDts?: boolean;
   /** the dts output path, default is `./macros.d.ts` */
   dtsOutputPath?: string;
-  /** hook when emit dts, we use this hook to emit dts file */
+  /** hook when emit dts, we use this hook for emitting dts file */
   onEmitDts?: (dts: string) => void;
 }
 
