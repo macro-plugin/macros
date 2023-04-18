@@ -1,4 +1,4 @@
-import { $Ast, $Column, $Concat, $Env, $Eval, $Expr, $ID, $Include, $Line, $Quote, $Span, $Stringify, transform } from "../src"
+import { $Ast, $Column, $Concat, $Env, $Eval, $Expr, $ID, $Include, $IncludeJSON, $Line, $Quote, $Span, $Stringify, transform } from "../src"
 
 test("$Eval macro", () => {
   expect(transform("$Eval(1 + 2 / 10)", { macros: [$Eval] }).code).toEqual("1.2;\n")
@@ -82,6 +82,10 @@ test("$ID macro", () => {
 
 test("$Include macro", () => {
   expect(transform("$Include('packages/factory/src/index.ts')", { macros: [$Include] }).code).toMatchSnapshot()
+})
+
+test("$IncludeJSON macro", () => {
+  expect(transform("$IncludeJSON('packages/core/package.json')", { macros: [$IncludeJSON] }).code.includes("@macro-plugin/core")).toBe(true)
 })
 
 test("$Concat macro", () => {
