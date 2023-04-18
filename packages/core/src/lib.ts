@@ -1,8 +1,11 @@
-import { CallExpression, Expression, Identifier } from "@swc/core"
+import { CallExpression, Expression, Identifier, transformFileSync } from "@swc/core"
 import { createExprMacro, createTmplMacro } from "./api"
 import { evalAst, evalExpr, hash, span } from "./utils"
 
+import { createSwcPlugin } from "./transform"
+import { parse } from "./parse"
 import { printExpr } from "./print"
+import { readFileSync } from "fs"
 import { walk } from "./walk"
 
 export var $Eval = createExprMacro("$Eval", function (args) {
@@ -185,6 +188,51 @@ export var $Todo = createExprMacro("$Todo", function () {
 export var $UnReachable = createExprMacro("$UnReachable", function () {
   return throwError("internal error: entered unreachable code")
 }, "() => never")
+
+export var $Include = createExprMacro("$Include", function (args) {
+  if (args[0]?.type !== "StringLiteral") throw new Error("$Include only accept StringLiteral as input.")
+
+  let moduleType: "es6" | "commonjs" | "umd" | "nodenext" = "commonjs"
+  if (args[1]?.type === "StringLiteral" && ["es6", "commonjs", "umd", "nodenext"].includes(args[1].value)) {
+    moduleType = args[1].value as "es6" | "commonjs" | "umd" | "nodenext"
+  }
+
+  const jsc = { parser: { syntax: "typescript" } } as const
+  // TODO: allow plugin access current config
+  const plugin = createSwcPlugin({ macros: [], jsc })
+
+  return {
+    type: "CallExpression",
+    span,
+    callee: {
+      type: "ParenthesisExpression",
+      span,
+      expression: {
+        type: "ArrowFunctionExpression",
+        span,
+        params: [],
+        body: {
+          type: "BlockStatement",
+          span,
+          stmts: parse(transformFileSync(args[0].value, { jsc, plugin, module: { type: moduleType } }).code).body
+        },
+        async: false,
+        generator: false,
+      }
+    },
+    arguments: [],
+  }
+}, "(path: string, target?: 'es6' | 'commonjs' | 'umd' | 'nodenext') => void")
+
+export var $IncludeStr = createExprMacro("$IncludeStr", function (args) {
+  if (args[0]?.type !== "StringLiteral") throw new Error("$Include only accept StringLiteral as input.")
+
+  return {
+    type: "StringLiteral",
+    value: readFileSync(args[0].value).toString(),
+    span
+  }
+}, "(path: string) => string")
 
 export const printTmpl = (strings: string[], exprs: Expression[]) => strings.reduce((query, queryPart, i) => {
   const valueExists = i < exprs.length
