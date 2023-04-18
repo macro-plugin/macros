@@ -1,4 +1,4 @@
-import { Expression, Identifier } from "@swc/core"
+import { CallExpression, Expression, Identifier } from "@swc/core"
 import { createExprMacro, createTmplMacro } from "./api"
 import { evalAst, evalExpr, hash, span } from "./utils"
 
@@ -116,6 +116,75 @@ export var $ID = createExprMacro("$ID", function () {
     value: hash(`${this.src}${this.span()}`)
   }
 }, "() => string")
+
+function throwError (msg: string): CallExpression {
+  return {
+    type: "CallExpression",
+    span,
+    callee: {
+      type: "ParenthesisExpression",
+      span,
+      expression: {
+        type: "ArrowFunctionExpression",
+        span,
+        params: [],
+        body: {
+          type: "BlockStatement",
+          span,
+          stmts: [
+            {
+              type: "ThrowStatement",
+              span,
+              argument: {
+                type: "NewExpression",
+                span,
+                callee: {
+                  type: "Identifier",
+                  span,
+                  value: "Error",
+                  optional: false
+                },
+                arguments: [
+                  {
+                    expression: {
+                      type: "StringLiteral",
+                      span,
+                      value: msg,
+                    }
+                  }
+                ],
+              }
+            }
+          ]
+        },
+        async: false,
+        generator: false,
+      }
+    },
+    arguments: [],
+  }
+}
+
+// TODO: add filename and span to log message
+export var $UnImplemented = createExprMacro("$UnImplemented", function () {
+  // eslint-disable-next-line no-console
+  console.error("not implemented")
+
+  return throwError("not implemented")
+}, "() => never")
+
+// TODO: add filename and span to log message
+export var $Todo = createExprMacro("$Todo", function () {
+  // eslint-disable-next-line no-console
+  console.warn("not yet implemented")
+
+  this.replace(throwError("not yet implemented"))
+}, "() => never")
+
+// TODO: add filename and span to log message
+export var $UnReachable = createExprMacro("$UnReachable", function () {
+  return throwError("internal error: entered unreachable code")
+}, "() => never")
 
 export const printTmpl = (strings: string[], exprs: Expression[]) => strings.reduce((query, queryPart, i) => {
   const valueExists = i < exprs.length
