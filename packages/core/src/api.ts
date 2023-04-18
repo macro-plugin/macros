@@ -1,6 +1,6 @@
 import type { Config, ExprMacro, LabeledMacro, MacroPlugin, MacroPluginWithProxy, TmplMacro, TypeMacro } from "./types"
 import { TsFunctionType, TsType } from "@swc/core"
-import { createLit, flatExpr, guessType, macroProxySymbol } from "./utils"
+import { createLit, flatExpr, guessType } from "./utils"
 import { defaultGlobalExpr, defaultGlobalTmpl, defaultGlobalType } from "./defaults"
 
 export function defineConfig (config: Config) {
@@ -8,6 +8,7 @@ export function defineConfig (config: Config) {
 }
 
 export function createMacro (macro: MacroPlugin) {
+  Reflect.set(macro, "__macro_plugin__", true)
   return macro
 }
 
@@ -23,11 +24,11 @@ export function createProxyMacro (macro: MacroPlugin) {
             return Reflect.has(macro, p) || Reflect.has(target, p)
           },
           get (target, p) {
-            return p === macroProxySymbol || Reflect.get(macro, p) || Reflect.get(target, p)
+            return p === "__macro_proxy__" || Reflect.get(macro, p) || Reflect.get(target, p)
           },
         })
       }
-      return Reflect.get(macro, p)
+      return p === "__macro_plugin__" || Reflect.get(macro, p)
     },
   }) as MacroPluginWithProxy
 }

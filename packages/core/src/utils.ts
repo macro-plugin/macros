@@ -6,10 +6,12 @@ import { defaultGlobalExpr } from "./defaults"
 import { printExpr } from "./print"
 import { walk } from "./walk"
 
-export const macroProxySymbol = Symbol.for("macroProxy")
+export function isMacroPlugin (v: unknown): boolean {
+  return !!(v && (v as { __macro_plugin__?: boolean }).__macro_plugin__)
+}
 
 export function isMacroProxy (v: unknown): boolean {
-  return !!(v && (v as { [macroProxySymbol]?: boolean })[macroProxySymbol])
+  return !!(v && (v as { __macro_proxy__?: boolean }).__macro_proxy__)
 }
 
 export function hash (str: string): string {
