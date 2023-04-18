@@ -109,10 +109,11 @@ export type MacroOptions = {
    *
    * The `macros` options also can implement similar behavior:
    * ```js
+   * import { defineConfig, isMacroPlugin } from "@macro-plugin/core"
    * import * as macroPackage from "package-name"
    *
    * export default defineConfig({
-   *   macros: [...Object.values(macroPackage)]
+   *   macros: [...Object.values(macroPackage).filter(isMacroPlugin)]
    * })
    * ```
    */
