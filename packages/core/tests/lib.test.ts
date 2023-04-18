@@ -1,4 +1,4 @@
-import { $Ast, $Column, $Env, $Eval, $Expr, $ID, $Line, $Quote, $Span, $Stringify, transform } from "../src"
+import { $Ast, $Column, $Env, $Eval, $Expr, $ID, $Include, $Line, $Quote, $Span, $Stringify, transform } from "../src"
 
 test("$Eval macro", () => {
   expect(transform("$Eval(1 + 2 / 10)", { macros: [$Eval] }).code).toEqual("1.2;\n")
@@ -78,4 +78,8 @@ test("$Column macro", () => {
 
 test("$ID macro", () => {
   expect(transform("const id = $ID()\nconst id2 = $ID()", { macros: [$ID] }).code).toEqual("const id = \"lb6ods\";\nconst id2 = \"vzqptz\";\n")
+})
+
+test("$Include macro", () => {
+  expect(transform("$Include('packages/factory/src/index.ts')", { macros: [$Include] }).code).toMatchSnapshot()
 })
