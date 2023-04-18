@@ -234,6 +234,12 @@ export var $IncludeStr = createExprMacro("$IncludeStr", function (args) {
   }
 }, "(path: string) => string")
 
+export var $IncludeJSON = createExprMacro("$IncludeJSON", function (args) {
+  if (args[0]?.type !== "StringLiteral") throw new Error("$Include only accept StringLiteral as input.")
+
+  return this.parseExpr(readFileSync(args[0].value).toString())
+}, "<T extends Record<string, any>>(path: string) => T")
+
 export var $Concat = createExprMacro("$Concat", function (args) {
   let value: string = ""
   const msg = 'only literals (like `"foo"`, `42` and `3.14`) can be passed to `$Concat()`'
