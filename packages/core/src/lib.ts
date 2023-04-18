@@ -234,6 +234,38 @@ export var $IncludeStr = createExprMacro("$IncludeStr", function (args) {
   }
 }, "(path: string) => string")
 
+export var $Concat = createExprMacro("$Concat", function (args) {
+  let value: string = ""
+  const msg = 'only literals (like `"foo"`, `42` and `3.14`) can be passed to `$Concat()`'
+  for (const arg of args) {
+    switch (arg.type) {
+      case "StringLiteral":
+      case "BooleanLiteral":
+      case "NumericLiteral":
+      case "BigIntLiteral":
+        value += arg.value
+        break
+      case "NullLiteral":
+        value += "null"
+        break
+      case "Identifier":
+        if (arg.value === "undefined") {
+          value += arg.value
+          break
+        } else {
+          throw new Error(msg)
+        }
+      default:
+        throw new Error(msg)
+    }
+  }
+  return {
+    type: "StringLiteral",
+    value,
+    span
+  }
+}, "(...args: (string | null | undefined | boolean | number | bigint)[]) => string")
+
 export const printTmpl = (strings: string[], exprs: Expression[]) => strings.reduce((query, queryPart, i) => {
   const valueExists = i < exprs.length
   const text: string = query + queryPart
