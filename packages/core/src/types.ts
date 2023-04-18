@@ -100,9 +100,15 @@ export type MacroPluginWithProxy = MacroPlugin & {
 }
 
 export type MacroOptions = {
+  /** global macros to be used */
   macros?: MacroPlugin[];
+  /** external packages that includes macros */
+  externals?: string[];
+  /** emit dts file, default iss false */
   emitDts?: boolean;
+  /** the dts output path, default is `./macros.d.ts` */
   dtsOutputPath?: string;
+  /** hook when emit dts, we use this hook to emit dts file */
   onEmitDts?: (dts: string) => void;
 }
 
