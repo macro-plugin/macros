@@ -1,11 +1,11 @@
 import { CallExpression, Expression, Identifier, transformFileSync } from "@swc/core"
 import { createExprMacro, createTmplMacro } from "./api"
 import { evalAst, evalExpr, hash, span } from "./utils"
+import { readFileSync, writeFileSync } from "fs"
 
 import { createSwcPlugin } from "./transform"
 import { parse } from "./parse"
 import { printExpr } from "./print"
-import { readFileSync } from "fs"
 import { walk } from "./walk"
 
 export var $Eval = createExprMacro("$Eval", function (args) {
@@ -225,7 +225,7 @@ export var $Include = createExprMacro("$Include", function (args) {
 }, "(path: string, target?: 'es6' | 'commonjs' | 'umd' | 'nodenext') => void")
 
 export var $IncludeStr = createExprMacro("$IncludeStr", function (args) {
-  if (args[0]?.type !== "StringLiteral") throw new Error("$Include only accept StringLiteral as input.")
+  if (args[0]?.type !== "StringLiteral") throw new Error("$IncludeStr only accept StringLiteral as input.")
 
   return {
     type: "StringLiteral",
@@ -235,10 +235,24 @@ export var $IncludeStr = createExprMacro("$IncludeStr", function (args) {
 }, "(path: string) => string")
 
 export var $IncludeJSON = createExprMacro("$IncludeJSON", function (args) {
-  if (args[0]?.type !== "StringLiteral") throw new Error("$Include only accept StringLiteral as input.")
+  if (args[0]?.type !== "StringLiteral") throw new Error("$IncludeJSON only accept StringLiteral as input.")
 
-  return this.parseExpr(readFileSync(args[0].value).toString())
-}, "<T extends Record<string, any>>(path: string) => T")
+  let json = readFileSync(args[0].value).toString()
+  if (args[1]?.type === "StringLiteral") {
+    const value = (JSON.parse(json) as Record<string, unknown>)[args[1].value]
+    json = JSON.stringify(value)
+  }
+
+  return this.parseExpr(json)
+}, "(<T extends Record<string, any>>(path: string) => T) & (<R = string>(path: string, key: string) => R)")
+
+export var $WriteFile = createExprMacro("$WriteFile", function (args) {
+  if (args[0]?.type !== "StringLiteral") throw new Error("$WriteFile only accept StringLiteral as first parameter.")
+  if (args[1]?.type !== "StringLiteral") throw new Error("$WriteFile only accept StringLiteral as second parameter.")
+
+  writeFileSync(args[0].value, args[1].value, { encoding: "utf-8" })
+  return { type: "Identifier", value: "undefined", span }
+}, "(file: string, data: string) => void")
 
 export var $Concat = createExprMacro("$Concat", function (args) {
   let value: string = ""

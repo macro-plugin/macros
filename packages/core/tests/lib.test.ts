@@ -86,6 +86,8 @@ test("$Include macro", () => {
 
 test("$IncludeJSON macro", () => {
   expect(transform("$IncludeJSON('packages/core/package.json')", { macros: [$IncludeJSON] }).code.includes("@macro-plugin/core")).toBe(true)
+  expect(transform("$IncludeJSON('packages/core/package.json', 'name')", { macros: [$IncludeJSON] }).code).toBe("\"@macro-plugin/core\";\n")
+  expect(transform("$IncludeJSON('package.json', 'private')", { macros: [$IncludeJSON] }).code).toBe("true;\n")
 })
 
 test("$Concat macro", () => {
