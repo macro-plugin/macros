@@ -1,0 +1,16 @@
+{
+  "name": "rollup-project",
+  "type": "module",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -cw"
+  },
+  "devDependencies": {
+    "@macro-plugin/core": "workspace:*",
+    "@macro-plugin/rollup": "workspace:*"
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}
