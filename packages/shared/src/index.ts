@@ -31,6 +31,9 @@ function set (obj: any, path: string, value: any) {
   o[key] = value
 }
 
+const h = Object.prototype.hasOwnProperty
+export const hasProp = <T extends object>(target: T, prop: PropertyKey) => h.call(target, prop)
+
 export function isModule (): boolean {
   try {
     require("fs")
