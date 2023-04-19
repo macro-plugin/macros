@@ -51,6 +51,24 @@ importers:
       tslib: 2.5.0
       typescript: 5.0.2
 
+  examples/jest-project:
+    specifiers:
+      '@macro-plugin/core': workspace:*
+      '@macro-plugin/jest': workspace:*
+      jest: ^29.5.0
+    devDependencies:
+      '@macro-plugin/core': link:../../packages/core
+      '@macro-plugin/jest': link:../../packages/jest
+      jest: 29.5.0
+
+  examples/rollup-project:
+    specifiers:
+      '@macro-plugin/core': workspace:*
+      '@macro-plugin/rollup': workspace:*
+    devDependencies:
+      '@macro-plugin/core': link:../../packages/core
+      '@macro-plugin/rollup': link:../../packages/rollup
+
   packages/core:
     specifiers:
       '@swc/core': ^1.3.40
@@ -67,11 +85,16 @@ importers:
     specifiers:
       '@jest/create-cache-key-function': ^27.4.2
       '@jest/transform': ^27.5.1
+      '@macro-plugin/core': 1.0.0
+      '@macro-plugin/shared': 1.0.0
       jest: ^27.4.4
       pirates: ^4.0.5
+    dependencies:
+      '@macro-plugin/core': link:../core
     devDependencies:
       '@jest/create-cache-key-function': 27.5.1
       '@jest/transform': 27.5.1
+      '@macro-plugin/shared': link:../shared
       jest: 27.5.1
       pirates: 4.0.5
 
@@ -83,6 +106,26 @@ importers:
       '@macro-plugin/core': 1.0.0
     dependencies:
       '@macro-plugin/core': link:../core
+
+  packages/rollup:
+    specifiers:
+      '@macro-plugin/core': 1.0.0
+      '@macro-plugin/shared': 1.0.0
+      rollup: ^3.20.0
+    dependencies:
+      '@macro-plugin/core': link:../core
+    devDependencies:
+      '@macro-plugin/shared': link:../shared
+      rollup: 3.20.0
+
+  packages/shared:
+    specifiers:
+      '@macro-plugin/core': 1.0.0
+      pirates: ^4.0.5
+    dependencies:
+      '@macro-plugin/core': link:../core
+    devDependencies:
+      pirates: 4.0.5
 
   packages/solid:
     specifiers:
