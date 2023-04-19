@@ -7,9 +7,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:update": "jest --updateSnapshot",
-    "build": "nx run-many --target=build",
-    "build:force": "nx run-many --target=build --skip-nx-cache",
-    "build:affected": "nx affected --target=build",
+    "build": "nx run-many --target=build --exclude *-project",
+    "build:force": "nx run-many --target=build --skip-nx-cache --exclude *-project",
+    "build:affected": "nx affected --target=build --exclude *-project",
     "graph": "nx graph",
     "coverage": "jest --coverage"
   },
