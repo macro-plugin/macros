@@ -1,14 +1,40 @@
-import { Config, createSwcPlugin } from "@macro-plugin/core"
+import { Config, createSwcPlugin, getSpanOffset } from "@macro-plugin/core"
+import { Options, version as swcVersion, transform, transformSync } from "@swc/core"
 import type { TransformOptions, Transformer } from "@jest/transform"
-import { buildTransformOpts, insertInstrumentationOpts } from "./utils"
-import { version as swcVersion, transform, transformSync } from "@swc/core"
 
+import { buildTransformOptions } from "@macro-plugin/shared"
 import { createHash } from "crypto"
 import getCacheKeyFunction from "@jest/create-cache-key-function"
 import { readFileSync } from "fs"
 import { version } from "../package.json"
 
-function createTransformer (swcTransformOpts: Config & {
+function insertInstrumentOptions (jestOptions: TransformOptions<unknown>, canInstrument: boolean, inputOptions: Options, instrumentOptions?: any) {
+  const shouldInstrument = jestOptions.instrument && canInstrument
+
+  if (!shouldInstrument) {
+    return inputOptions
+  }
+
+  if (inputOptions?.jsc?.experimental?.plugins?.some((x) => x[0] === "swc-plugin-coverage-instrument")) {
+    return
+  }
+
+  if (!inputOptions.jsc) {
+    inputOptions.jsc = {}
+  }
+
+  if (!inputOptions.jsc.experimental) {
+    inputOptions.jsc.experimental = {}
+  }
+
+  if (!Array.isArray(inputOptions.jsc.experimental.plugins)) {
+    inputOptions.jsc.experimental.plugins = []
+  }
+
+  inputOptions.jsc.experimental.plugins?.push(["swc-plugin-coverage-instrument", instrumentOptions ?? {}])
+}
+
+async function createTransformer (inputOptions: Config & {
   experimental?: {
     customCoverageInstrumentation?: {
       enabled: boolean
@@ -19,18 +45,17 @@ function createTransformer (swcTransformOpts: Config & {
       instrumentLog?: { level: string, enableTrace: boolean }
     }
   }
-}): Transformer {
-  const [computedSwcOptions, macroOptions, configPath] = buildTransformOpts(swcTransformOpts)
-  const macroPlugin = createSwcPlugin({ ...computedSwcOptions, ...macroOptions })
-
-  const cacheKeyFunction = getCacheKeyFunction([], [swcVersion, version, JSON.stringify(swcTransformOpts), configPath ? readFileSync(configPath).toString() : ""])
-  const { enabled: canInstrument, ...instrumentOptions } = swcTransformOpts?.experimental?.customCoverageInstrumentation ?? {}
+}): Promise<Transformer> {
+  const [computedSwcOptions, macroOptions, configPath] = await buildTransformOptions(inputOptions)
+  const cacheKeyFunction = getCacheKeyFunction([], [swcVersion, version, JSON.stringify(inputOptions), configPath ? readFileSync(configPath).toString() : ""])
+  const { enabled: canInstrument, ...instrumentOptions } = inputOptions?.experimental?.customCoverageInstrumentation ?? {}
 
   return {
     canInstrument: !!canInstrument, // Tell jest we'll instrument by our own
     process (src, filename, jestOptions) {
       // Determine if we actually instrument codes if jest runs with --coverage
-      insertInstrumentationOpts(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
+      insertInstrumentOptions(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
+      const offset = getSpanOffset()
 
       return transformSync(src, {
         ...computedSwcOptions,
@@ -38,12 +63,13 @@ function createTransformer (swcTransformOpts: Config & {
           ...computedSwcOptions.module,
           type: (jestOptions.supportsStaticESM ? "es6" : "commonjs" as any)
         },
-        plugin: macroPlugin,
+        plugin: createSwcPlugin(macroOptions, src, offset),
         filename
       })
     },
     async processAsync (src, filename, jestOptions) {
-      insertInstrumentationOpts(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
+      insertInstrumentOptions(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
+      const offset = getSpanOffset()
 
       return await transform(src, {
         ...computedSwcOptions,
@@ -52,7 +78,7 @@ function createTransformer (swcTransformOpts: Config & {
           // async transform is always ESM
           type: ("es6" as any)
         },
-        plugin: macroPlugin,
+        plugin: createSwcPlugin(macroOptions, src, offset),
         filename
       })
     },
