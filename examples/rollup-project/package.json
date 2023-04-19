@@ -8,6 +8,7 @@
     "watch": "rollup -cw"
   },
   "devDependencies": {
+    "rollup": "^3.20.0",
     "@macro-plugin/core": "workspace:*",
     "@macro-plugin/rollup": "workspace:*"
   },
