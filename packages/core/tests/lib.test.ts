@@ -43,8 +43,8 @@ test("$Stringify macro", () => {
 
 test("$Env macro", () => {
   expect(transform(`
-  const e = $Env("EDITOR")
-  const s = $Env<string>("EDITOR")
+  const e = $Env("NODE_ENV")
+  const s = $Env<string>("NODE_ENV")
   const b = $Env<boolean>("DEV")
   const n = $Env<number>("DEV")
   `, { macros: [$Env], jsc: { parser: { syntax: "typescript" } } }).code).toMatchSnapshot()

@@ -93,8 +93,8 @@ const c = {
 `;
 
 exports[`$Env macro 1`] = `
-"const e = "vi";
-const s = "vi";
+"const e = "test";
+const s = "test";
 const b = false;
 const n = 0;
 "
