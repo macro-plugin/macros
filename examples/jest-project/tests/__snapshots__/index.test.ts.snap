@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ast macro 1`] = `
+{
+  "left": 2,
+  "operator": "*",
+  "right": 3,
+  "span": {
+    "ctxt": 0,
+    "end": 0,
+    "start": 0,
+  },
+  "type": "BinaryExpression",
+}
+`;
+
+exports[`ast macro 2`] = `
+{
+  "elements": [],
+  "span": {
+    "ctxt": 0,
+    "end": 0,
+    "start": 0,
+  },
+  "type": "ArrayExpression",
+}
+`;
+
+exports[`ast macro 3`] = `
+{
+  "arguments": [],
+  "callee": [Function],
+  "span": {
+    "ctxt": 0,
+    "end": 0,
+    "start": 0,
+  },
+  "type": "CallExpression",
+  "typeArguments": null,
+}
+`;
