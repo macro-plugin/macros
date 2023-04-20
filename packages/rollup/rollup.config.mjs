@@ -2,8 +2,11 @@ import commonjs from "@rollup/plugin-commonjs"
 import { defineConfig } from "rollup"
 import dts from "rollup-plugin-dts"
 import nodeResolve from "@rollup/plugin-node-resolve"
+import path from "path"
 import { rmSync } from "fs"
 import typescript from "rollup-plugin-typescript2"
+
+const name = path.basename(path.resolve("."))
 
 export default defineConfig([
   {
@@ -39,13 +42,14 @@ export default defineConfig([
     ]
   },
   {
-    input: "./dist/packages/rollup/src/index.d.ts",
+    input: `./dist/packages/${name}/src/index.d.ts`,
     output: [{
       file: "dist/index.d.ts",
       format: "es"
     }],
     external: [
       "rollup",
+      "vite",
       "@swc/core",
       "@macro-plugin/core",
     ],
