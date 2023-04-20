@@ -1,4 +1,4 @@
-# @swc/vite
+# @macro-plugin/vite
 
 [Macro Plugin](https://github.com/macro-plugin) integration for vite. It supports transform macros and typescript and also jsx.
 
