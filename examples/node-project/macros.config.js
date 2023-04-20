@@ -10,5 +10,10 @@ module.exports = {
     createLitMacro({
       __DEV__: false
     })
-  ]
+  ],
+  jsc: {
+    parser: {
+      syntax: "typescript"
+    }
+  }
 }

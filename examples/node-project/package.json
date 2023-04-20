@@ -3,7 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "build": "node -r @macro-plugin/register ./src/index.ts"
+    "eval": "macros run ./src/index.ts",
+    "build": "macros build ./src/index.ts",
+    "dev": "macros dev ./src/index.ts",
+    "emit": "macros emit",
+    "shell": "macros shell",
+    "shell:swc": "macros shell --transform --swc",
+    "shell:ast": "macros shell --ast",
+    "shell:transform": "macros shell --transform"
   },
   "devDependencies": {
     "@macro-plugin/core": "workspace:*",
