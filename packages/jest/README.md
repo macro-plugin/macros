@@ -1,6 +1,6 @@
-# @swc/jest
+# @macro-plugin/jest
 
-[macro-plugin](https://github.com/macro-plugin) integration for jest.
+[Macro Plugin](https://github.com/macro-plugin) integration for jest. It supports transform macros and typescript and also jsx.
 
 ## Installation
 
