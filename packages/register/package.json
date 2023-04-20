@@ -1,0 +1,41 @@
+{
+  "name": "@macro-plugin/register",
+  "version": "1.0.0",
+  "description": "macro-plugin integration for node",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "homepage": "https://github.com/macro-plugin/register",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "rollup -c ../rollup/rollup.config.mjs"
+  },
+  "keywords": [
+    "register",
+    "macro",
+    "macro-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macro-plugin/rollup.git"
+  },
+  "dependencies": {
+    "@macro-plugin/core": "1.0.0"
+  },
+  "devDependencies": {
+    "@macro-plugin/shared": "1.0.0"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}
