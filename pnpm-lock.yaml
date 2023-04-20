@@ -103,6 +103,19 @@ importers:
       webpack: 5.80.0_webpack-cli@5.0.1
       webpack-cli: 5.0.1_webpack@5.80.0
 
+  packages/cli:
+    specifiers:
+      '@macro-plugin/core': 1.0.0
+      '@macro-plugin/shared': 1.0.0
+      commander: ^10.0.1
+      node-watch: ^0.7.3
+    dependencies:
+      '@macro-plugin/core': link:../core
+    devDependencies:
+      '@macro-plugin/shared': link:../shared
+      commander: 10.0.1
+      node-watch: 0.7.3
+
   packages/core:
     specifiers:
       '@swc/core': ^1.3.40
@@ -161,10 +174,14 @@ importers:
   packages/shared:
     specifiers:
       '@macro-plugin/core': 1.0.0
+      '@types/picomatch': ^2.3.0
+      picomatch: ^2.3.1
       pirates: ^4.0.5
     dependencies:
       '@macro-plugin/core': link:../core
     devDependencies:
+      '@types/picomatch': 2.3.0
+      picomatch: 2.3.1
       pirates: 4.0.5
 
   packages/solid:
@@ -1729,6 +1746,10 @@ packages:
     resolution: {integrity: sha512-z6nr0TTEOBGkzLGmbypWOGnpSpSIBorEhC4L+4HeQ2iezKCi4f77kyslRwvHeNitymGQ+oFyIWGP96l/DPSV9w==}
     dev: true
 
+  /@types/picomatch/2.3.0:
+    resolution: {integrity: sha512-O397rnSS9iQI4OirieAtsDqvCj4+3eY1J+EPdNTKuHuRWIfUoGyzX294o8C4KJYaLqgSrd2o60c5EqCU8Zv02g==}
+    dev: true
+
   /@types/prettier/2.7.2:
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
     dev: true
@@ -2577,6 +2598,11 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       delayed-stream: 1.0.0
+    dev: true
+
+  /commander/10.0.1:
+    resolution: {integrity: sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==}
+    engines: {node: '>=14'}
     dev: true
 
   /commander/2.20.3:
@@ -5179,6 +5205,11 @@ packages:
 
   /node-releases/2.0.10:
     resolution: {integrity: sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==}
+    dev: true
+
+  /node-watch/0.7.3:
+    resolution: {integrity: sha512-3l4E8uMPY1HdMMryPRUAl+oIHtXtyiTlIiESNSVSNxcPfzAFzeTbXFQkZfAwBbo0B1qMSG8nUABx+Gd+YrbKrQ==}
+    engines: {node: '>=6'}
     dev: true
 
   /normalize-path/3.0.0:
