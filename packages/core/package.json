@@ -5,6 +5,9 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "macros": "dist/cli.js"
+  },
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -27,6 +30,12 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./cli": {
+      "require": "./dist/cli.js"
+    },
+    "./register": {
+      "require": "./dist/register.js"
     }
   },
   "author": "Raven Satir",
