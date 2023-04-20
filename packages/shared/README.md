@@ -2,6 +2,17 @@
 
 Shared utils for internel and plugin usage.
 
+## Installation
+
+```sh
+# if you use npm
+npm i -D @macro-plugin/shared
+# if you use pnpm
+pnpm i -D @macro-plugin/shared
+# if you use yarn
+yarn add -D @macro-plugin/shared
+```
+
 ## API
 
 ### `addHook`

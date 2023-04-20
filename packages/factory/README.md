@@ -2,7 +2,20 @@
 
 Macro factories for simplify the process of creating swc AST.
 
-Given an exmaple,
+## Installation
+
+```sh
+# if you use npm
+npm i -D @macro-plugin/factory
+# if you use pnpm
+pnpm i -D @macro-plugin/factory
+# if you use yarn
+yarn add -D @macro-plugin/factory
+```
+
+## Usage
+
+Given an exmaple.
 
 ```js
 import { createIdentifier } from "@macro-plugin/factory"
