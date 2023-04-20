@@ -1,0 +1,38 @@
+{
+  "name": "@macro-plugin/cli",
+  "private": true,
+  "description": "@macro-plugin/cli",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "cli",
+    "macro",
+    "macros"
+  ],
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "dependencies": {
+    "@macro-plugin/core": "1.0.0"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "author": "Raven Satir",
+  "license": "MIT",
+  "devDependencies": {
+    "@macro-plugin/shared": "1.0.0",
+    "commander": "^10.0.1",
+    "node-watch": "^0.7.3"
+  }
+}
