@@ -1,8 +1,9 @@
+import { readFileSync, rmSync, writeFileSync } from "fs"
+
 import commonjs from "@rollup/plugin-commonjs"
 import { defineConfig } from "rollup"
 import dts from "rollup-plugin-dts"
 import nodeResolve from "@rollup/plugin-node-resolve"
-import { rmSync } from "fs"
 import typescript from "rollup-plugin-typescript2"
 
 export default defineConfig([
@@ -44,12 +45,19 @@ export default defineConfig([
       file: "dist/index.d.ts",
       format: "es"
     }],
+    external: [
+      "@swc/core",
+      "@macro-plugin/core"
+    ],
     plugins: [
-      dts(),
+      dts({ respectExternal: true }),
       {
         name: "del",
         buildEnd () {
           rmSync("./dist/packages", { recursive: true, force: true })
+        },
+        closeBundle () {
+          writeFileSync("./dist/index.d.ts", readFileSync("./dist/index.d.ts").toString().replace("const scan: typeof scan;", "").replace("const constants: typeof constants;", ""))
         }
       }
     ]
