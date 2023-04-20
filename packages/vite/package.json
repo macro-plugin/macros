@@ -1,0 +1,44 @@
+{
+  "name": "@macro-plugin/vite",
+  "version": "1.0.0",
+  "description": "macro-plugin integration for vite",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "homepage": "https://github.com/macro-plugin/vite",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "rollup -c ../rollup/rollup.config.mjs"
+  },
+  "keywords": [
+    "vite",
+    "vitejs",
+    "vite-plugin",
+    "macro",
+    "macro-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macro-plugin/vite.git"
+  },
+  "dependencies": {
+    "@macro-plugin/core": "1.0.0"
+  },
+  "devDependencies": {
+    "@macro-plugin/shared": "1.0.0",
+    "vite": "^4.2.0"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}
