@@ -16,7 +16,9 @@
     "@macro-plugin/core": "1.0.0"
   },
   "devDependencies": {
-    "pirates": "^4.0.5"
+    "@types/picomatch": "^2.3.0",
+    "pirates": "^4.0.5",
+    "picomatch": "^2.3.1"
   },
   "exports": {
     "./package.json": "./package.json",
