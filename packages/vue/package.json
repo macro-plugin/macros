@@ -1,7 +1,8 @@
 {
   "name": "@macro-plugin/vue",
   "version": "1.0.0",
-  "description": "@macro-plugin/vue",
+  "private": true,
+  "description": "A simpler way of creating components for vue by using macros",
   "main": "dist/vue.js",
   "module": "dist/vue.mjs",
   "types": "./dist/vue.d.ts",
@@ -12,10 +13,9 @@
   "keywords": [
     "vue",
     "vuejs",
-    "state",
-    "label",
     "macro",
-    "macros"
+    "macros",
+    "macro-plugin"
   ],
   "exports": {
     "./package.json": "./package.json",

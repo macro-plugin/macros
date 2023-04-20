@@ -1,7 +1,7 @@
 {
   "name": "@macro-plugin/rollup",
   "version": "1.0.0",
-  "description": "macro-plugin integration for rollup",
+  "description": "Macro plugins integration for rollup",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -16,6 +16,7 @@
   "keywords": [
     "rollup",
     "macro",
+    "macros",
     "macro-plugin"
   ],
   "repository": {

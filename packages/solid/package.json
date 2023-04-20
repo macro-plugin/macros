@@ -1,7 +1,7 @@
 {
   "name": "@macro-plugin/solid",
   "version": "1.0.0",
-  "description": "@macro-plugin/solid",
+  "description": "A simpler way of creating components for solid by using macros",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -12,8 +12,6 @@
   "keywords": [
     "solid",
     "solidjs",
-    "state",
-    "label",
     "macro",
     "macros"
   ],

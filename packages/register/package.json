@@ -1,7 +1,7 @@
 {
   "name": "@macro-plugin/register",
   "version": "1.0.0",
-  "description": "macro-plugin integration for node",
+  "description": "Node register for macro plugins.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -15,7 +15,9 @@
   },
   "keywords": [
     "register",
+    "node-register",
     "macro",
+    "macros",
     "macro-plugin"
   ],
   "repository": {

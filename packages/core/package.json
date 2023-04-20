@@ -1,7 +1,7 @@
 {
   "name": "@macro-plugin/core",
   "version": "1.0.0",
-  "description": "@macro-plugin/core",
+  "description": "Macro system for JavaScript and TypeScript.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -13,9 +13,11 @@
     "CHANGELOG.md"
   ],
   "keywords": [
-    "label",
     "macro",
-    "macros"
+    "macros",
+    "cli",
+    "macro-plugin",
+    "macro-system"
   ],
   "scripts": {
     "build": "rollup -c ../../rollup.config.mjs"

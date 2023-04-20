@@ -1,7 +1,7 @@
 {
   "name": "@macro-plugin/vite",
   "version": "1.0.0",
-  "description": "macro-plugin integration for vite",
+  "description": "Macro plugins integration for vite",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

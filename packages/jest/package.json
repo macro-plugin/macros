@@ -1,7 +1,7 @@
 {
   "name": "@macro-plugin/jest",
   "version": "1.0.0",
-  "description": "macro-plugin integration for jest",
+  "description": "Macro Plugins integration for jest",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://github.com/macro-plugin/jest",
@@ -15,6 +15,7 @@
   "keywords": [
     "jest",
     "macro",
+    "macros",
     "macro-plugin"
   ],
   "repository": {

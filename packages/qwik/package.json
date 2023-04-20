@@ -1,7 +1,7 @@
 {
   "name": "@macro-plugin/qwik",
   "version": "1.0.0",
-  "description": "@macro-plugin/qwik",
+  "description": "A simpler way of creating components for qwik by using macros",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -12,10 +12,9 @@
   "keywords": [
     "qwik",
     "qwikjs",
-    "state",
-    "label",
     "macro",
-    "macros"
+    "macros",
+    "macro-plugin"
   ],
   "scripts": {
     "build": "rollup -c ../../rollup.config.mjs"

@@ -1,7 +1,7 @@
 {
   "name": "@macro-plugin/factory",
   "version": "1.0.0",
-  "description": "@macro-plugin/factory",
+  "description": "Macro factories for creating AST.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -11,9 +11,10 @@
     "CHANGELOG.md"
   ],
   "keywords": [
-    "label",
+    "factory",
     "macro",
-    "macros"
+    "macros",
+    "macro-plugin"
   ],
   "scripts": {
     "build": "rollup -c ./rollup.config.mjs"
