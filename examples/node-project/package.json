@@ -1,0 +1,14 @@
+{
+  "name": "node-project",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "node -r @macro-plugin/register ./src/index.ts"
+  },
+  "devDependencies": {
+    "@macro-plugin/core": "workspace:*",
+    "@macro-plugin/register": "workspace:*"
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}
