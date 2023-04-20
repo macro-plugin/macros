@@ -100,6 +100,26 @@ export async function loadConfigFile (): Promise<[string | undefined, Config]> {
   return [undefined, {}]
 }
 
+/**
+ * sync version of load config, not handing { type: "module" }
+ */
+export function loadConfigFileSync (): [string | undefined, Config] {
+  const cwd = process.cwd()
+
+  const jsConfigFile = path.join(cwd, "macros.config.js")
+  if (existsSync(jsConfigFile)) {
+    const config = require(jsConfigFile) as Config
+    return [jsConfigFile, config]
+  }
+
+  const tsConfigFile = path.join(cwd, "macros.config.ts")
+  if (existsSync(tsConfigFile)) {
+    const config = hookRequire<{ default: Config }>(tsConfigFile)
+    return [tsConfigFile, config?.default || {}]
+  }
+  return [undefined, {}]
+}
+
 export function writeDts (p: string, dts: string) {
   const emit = () => writeFile(p, dts, () => {})
 
@@ -146,11 +166,8 @@ export function extractSwcOptions<O extends object> (o: O): Options {
   return output
 }
 
-export async function buildTransformOptions (inputOptions: (Config & { experimental?: unknown }) | undefined): Promise<[Options, MacroOptions, string | undefined]> {
-  const [configPath, config] = await loadConfigFile()
-
-  const macroOptions = { ...(inputOptions || {}), ...config }
-  const swcOptions = extractSwcOptions(macroOptions)
+export function applySwcOptions (config: Config) {
+  const swcOptions = extractSwcOptions(config)
 
   if (!swcOptions.jsc?.target) {
     set(
@@ -167,9 +184,26 @@ export async function buildTransformOptions (inputOptions: (Config & { experimen
     set(swcOptions, "sourceMaps", "inline")
   }
 
-  if (macroOptions.emitDts && !macroOptions.onEmitDts) {
-    macroOptions.onEmitDts = (dts: string) => writeDts(path.resolve(macroOptions.dtsOutputPath || "./macros.d.ts"), dts)
-  }
+  return swcOptions
+}
 
-  return [swcOptions, macroOptions, configPath]
+export function applyMacroOptions (config: Config) {
+  if (config.emitDts && !config.onEmitDts) {
+    config.onEmitDts = (dts: string) => writeDts(path.resolve(config.dtsOutputPath || "./macros.d.ts"), dts)
+  }
+  return config
+}
+
+export async function buildTransformOptions (inputOptions: (Config & { experimental?: unknown }) | undefined): Promise<[Options, MacroOptions, string | undefined]> {
+  const [configPath, config] = await loadConfigFile()
+  const combinedOptions = { ...(inputOptions || {}), ...config }
+
+  return [applySwcOptions(combinedOptions), applyMacroOptions(combinedOptions), configPath]
+}
+
+export function buildTransformOptionsSync (inputOptions: (Config & { experimental?: unknown }) | undefined): [Options, MacroOptions, string | undefined] {
+  const [configPath, config] = loadConfigFileSync()
+  const combinedOptions = { ...(inputOptions || {}), ...config }
+
+  return [applySwcOptions(combinedOptions), applyMacroOptions(combinedOptions), configPath]
 }
