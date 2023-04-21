@@ -10,14 +10,16 @@
     "build": "nx run-many --target=build --exclude *-project",
     "build:force": "nx run-many --target=build --skip-nx-cache --exclude *-project",
     "build:affected": "nx affected --target=build --exclude *-project",
-    "version": "changeset version",
-    "publish": "changeset publish",
+    "changeset": "changeset",
+    "bump": "changeset version",
+    "release": "node ./scripts/release.js",
     "graph": "nx graph",
     "coverage": "jest --coverage"
   },
   "author": "Raven Satir",
   "license": "MIT",
   "devDependencies": {
+    "@actions/exec": "^1.1.1",
     "@jest/types": "^29.5.0",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",
