@@ -20,6 +20,8 @@
   "license": "MIT",
   "devDependencies": {
     "@actions/exec": "^1.1.1",
+    "@changesets/cli": "^2.26.1",
+    "@changesets/changelog-github": "^0.4.8",
     "@jest/types": "^29.5.0",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",
@@ -43,7 +45,6 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "@changesets/cli": "^2.26.1",
     "@swc/core": "^1.3.40"
   }
 }
