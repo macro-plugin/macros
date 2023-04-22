@@ -9,6 +9,8 @@ const name = path.basename(path.resolve("."))
 const pkg = JSON.parse(readFileSync("./package.json").toString())
 const external = [
   ...Object.keys(pkg.dependencies || {}),
+  "fs",
+  "path",
   "@swc/core",
   "@macro-plugin/core"
 ]
