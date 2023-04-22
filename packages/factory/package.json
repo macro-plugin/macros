@@ -1,6 +1,6 @@
 {
   "name": "@macro-plugin/factory",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Macro factories for creating AST.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
