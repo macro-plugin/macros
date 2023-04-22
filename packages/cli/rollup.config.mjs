@@ -15,7 +15,9 @@ const plugins = [
   },
   json(),
   commonjs(),
-  nodeResolve(),
+  nodeResolve({
+    preferBuiltins: true
+  }),
   typescript({
     tsconfigOverride: {
       include: ["packages/**/src"]
@@ -44,7 +46,11 @@ export default defineConfig([
       format: "cjs",
     },
     plugins,
-    external
+    external,
+    onwarn (warning, warn) {
+      if (warning.code === "EVAL" || warning.code === "SOURCEMAP_ERROR") return
+      warn(warning)
+    }
   },
   {
     input: "../register/src/index.ts",

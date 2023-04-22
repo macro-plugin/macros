@@ -2,13 +2,13 @@ import { copyFileSync, rmSync } from "fs"
 
 import { defineConfig } from "rollup"
 import dts from "rollup-plugin-dts"
-import path from "path"
-import terser from "@rollup/plugin-terser"
 import typescript from "rollup-plugin-typescript2"
 
 const external = [
   "@macro-plugin/core",
   "@swc/core",
+  "fs",
+  "path",
   "./runtime",
   "./macros"
 ]
@@ -31,28 +31,7 @@ function createOutput (index = "index") {
     {
       file: `dist/${index}.mjs`,
       format: "es",
-    },
-    {
-      file: `dist/${index}.min.js`,
-      format: "iife",
-      name: "MacroFactory",
-      plugins: [
-        terser({
-          module: true,
-          compress: {
-            ecma: 2015,
-            pure_getters: true,
-          },
-          safari10: true,
-        })
-      ],
-      globals: {
-        "@swc/core": "SwcCore",
-        "@macro-plugin/core": "MacroCore",
-        [path.resolve("./src/runtime")]: "FactoryRuntime",
-        [path.resolve("./src/macros")]: "FactoryMacros"
-      },
-    },
+    }
   ]
 }
 

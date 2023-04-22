@@ -5,22 +5,22 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "homepage": "https://github.com/macro-plugin/webpack",
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "rollup -c ../rollup/rollup.config.mjs"
+    "build": "rollup -c ../../rollup.config.mjs"
   },
   "keywords": [
     "webpack",
     "macro",
     "macro-plugin"
   ],
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/webpack",
   "repository": {
     "type": "git",
-    "url": "https://github.com/macro-plugin/webpack.git"
+    "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
     "@macro-plugin/core": "1.0.0"

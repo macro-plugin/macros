@@ -5,13 +5,12 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "homepage": "https://github.com/macro-plugin/vite",
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "rollup -c ../rollup/rollup.config.mjs"
+    "build": "rollup -c ../../rollup.config.mjs"
   },
   "keywords": [
     "vite",
@@ -20,9 +19,10 @@
     "macro",
     "macro-plugin"
   ],
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/vite",
   "repository": {
     "type": "git",
-    "url": "https://github.com/macro-plugin/vite.git"
+    "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
     "@macro-plugin/core": "1.0.0"

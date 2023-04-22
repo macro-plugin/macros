@@ -5,13 +5,12 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "homepage": "https://github.com/macro-plugin/rollup",
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c ../../rollup.config.mjs"
   },
   "keywords": [
     "rollup",
@@ -19,9 +18,10 @@
     "macros",
     "macro-plugin"
   ],
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/rollup",
   "repository": {
     "type": "git",
-    "url": "https://github.com/macro-plugin/rollup.git"
+    "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
     "@macro-plugin/core": "1.0.0"

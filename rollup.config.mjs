@@ -1,15 +1,21 @@
-import { readFileSync, rmSync } from "fs"
+import { readFileSync, rmSync, writeFileSync } from "fs"
 
+import commonjs from "@rollup/plugin-commonjs"
 import { defineConfig } from "rollup"
 import dts from "rollup-plugin-dts"
+import nodeResolve from "@rollup/plugin-node-resolve"
 import path from "path"
-import terser from "@rollup/plugin-terser"
 import typescript from "rollup-plugin-typescript2"
 
 const name = path.basename(path.resolve("."))
 const pkg = JSON.parse(readFileSync("./package.json").toString())
 const external = [
   ...Object.keys(pkg.dependencies || {}),
+  "fs",
+  "path",
+  "vite",
+  "rollup",
+  "webpack",
   "@swc/core",
   "@macro-plugin/core"
 ]
@@ -26,40 +32,7 @@ function createOutput () {
     {
       file: "dist/index.mjs",
       format: "es",
-    },
-    {
-      file: "dist/index.esm.js",
-      format: "esm",
-      plugins: [
-        terser({
-          module: true,
-          compress: {
-            ecma: 2015,
-            pure_getters: true,
-          },
-          safari10: true,
-        })
-      ]
-    },
-    {
-      file: "dist/index.iife.js",
-      format: "iife",
-      name: "Macro" + name[0].toUpperCase() + name.slice(1),
-      plugins: [
-        terser({
-          module: true,
-          compress: {
-            ecma: 2015,
-            pure_getters: true,
-          },
-          safari10: true,
-        })
-      ],
-      globals: {
-        "@swc/core": "SwcCore",
-        "@macro-plugin/core": "MacroCore"
-      }
-    },
+    }
   ]
 }
 
@@ -74,12 +47,18 @@ export default defineConfig([
           rmSync("./dist", { recursive: true, force: true })
         }
       },
+      nodeResolve(),
+      commonjs(),
       typescript({
         tsconfigOverride: {
           include: ["packages/**/src"]
         }
       }),
     ],
+    onwarn (warning, warn) {
+      if (warning.code === "CIRCULAR_DEPENDENCY") return
+      warn(warning)
+    },
     external
   },
   {
@@ -89,11 +68,16 @@ export default defineConfig([
       format: "es"
     }],
     plugins: [
-      dts(),
+      dts({ respectExternal: true }),
       {
         name: "del",
         buildEnd () {
           rmSync("./dist/packages", { recursive: true, force: true })
+        },
+        closeBundle () {
+          if (name === "shared") {
+            writeFileSync("./dist/index.d.ts", readFileSync("./dist/index.d.ts").toString().replace("const scan: typeof scan;", "").replace("const constants: typeof constants;", ""))
+          }
         }
       }
     ],

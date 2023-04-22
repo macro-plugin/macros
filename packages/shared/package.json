@@ -10,7 +10,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c ../../rollup.config.mjs"
   },
   "dependencies": {
     "@macro-plugin/core": "1.0.0"
@@ -19,6 +19,11 @@
     "@types/picomatch": "^2.3.0",
     "pirates": "^4.0.5",
     "picomatch": "^2.3.1"
+  },
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/shared",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macro-plugin/macros.git"
   },
   "exports": {
     "./package.json": "./package.json",

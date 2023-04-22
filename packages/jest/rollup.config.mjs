@@ -1,6 +1,5 @@
 import commonjs from "@rollup/plugin-commonjs"
 import { defineConfig } from "rollup"
-import dts from "rollup-plugin-dts"
 import json from "@rollup/plugin-json"
 import { nodeResolve } from "@rollup/plugin-node-resolve"
 import { rmSync } from "fs"
@@ -18,6 +17,9 @@ export default defineConfig([
         name: "del",
         buildStart () {
           rmSync("./dist", { recursive: true, force: true })
+        },
+        closeBundle () {
+          rmSync("./dist/packages", { recursive: true, force: true })
         }
       },
       json(),
@@ -32,22 +34,6 @@ export default defineConfig([
     external: [
       "@swc/core",
       "@macro-plugin/core"
-    ]
-  },
-  {
-    input: "./dist/packages/jest/src/index.d.ts",
-    output: [{
-      file: "dist/index.d.ts",
-      format: "es"
-    }],
-    plugins: [
-      dts(),
-      {
-        name: "del",
-        buildEnd () {
-          rmSync("./dist/packages", { recursive: true, force: true })
-        }
-      }
     ]
   }
 ])
