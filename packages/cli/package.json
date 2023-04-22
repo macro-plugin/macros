@@ -17,6 +17,11 @@
   "scripts": {
     "build": "rollup -c"
   },
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/cli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macro-plugin/macros.git"
+  },
   "dependencies": {
     "@macro-plugin/core": "1.0.0"
   },

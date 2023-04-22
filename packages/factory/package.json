@@ -5,7 +5,6 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "browser": "dist/runtime.min.js",
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -21,6 +20,11 @@
   },
   "dependencies": {
     "@macro-plugin/core": "1.0.0"
+  },
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/factory",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macro-plugin/macros.git"
   },
   "exports": {
     "./package.json": "./package.json",

@@ -17,6 +17,11 @@
     "macros",
     "macro-plugin"
   ],
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/vue",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macro-plugin/macros.git"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {

@@ -20,6 +20,11 @@
     "pirates": "^4.0.5",
     "picomatch": "^2.3.1"
   },
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/shared",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macro-plugin/macros.git"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {

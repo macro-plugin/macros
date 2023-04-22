@@ -4,7 +4,6 @@
   "description": "Macro Plugins integration for jest",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "homepage": "https://github.com/macro-plugin/jest",
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -18,9 +17,10 @@
     "macros",
     "macro-plugin"
   ],
+  "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/jest",
   "repository": {
     "type": "git",
-    "url": "https://github.com/macro-plugin/jest.git"
+    "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
     "@macro-plugin/core": "1.0.0"
