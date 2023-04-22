@@ -1,6 +1,7 @@
 {
   "name": "@macro-plugin/cli",
   "private": true,
+  "version": "0.0.0",
   "description": "@macro-plugin/cli",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -39,6 +40,5 @@
     "@macro-plugin/shared": "1.0.1",
     "commander": "^10.0.1",
     "node-watch": "^0.7.3"
-  },
-  "version": null
+  }
 }
