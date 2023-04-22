@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 const path = require("path")
+const { readdirSync, existsSync } = require("fs")
 const { exec, getExecOutput } = require("@actions/exec")
 
 const { version } = require("../packages/core/package.json")
 const tag = `v${version}`
 const releaseLine = `v${version.split(".")[0]}`
+const packages = readdirSync("packages")
 
 process.chdir(path.join(__dirname, ".."));
 
@@ -29,9 +31,15 @@ process.chdir(path.join(__dirname, ".."));
   // publish to npm
   await exec("changeset", ["publish"])
 
-  // release in github
+  // push to github
   await exec("git", ["checkout", "--detach"])
-  await exec("git", ["add", "--force", "dist"])
+
+  for (const pkg of packages) {
+    if (existsSync(path.resolve(`packages/${pkg}/dist`))) {
+      await exec("git", ["add", "--force", `packages/${pkg}/dist`])
+    }
+  }
+
   await exec("git", ["commit", "-m", tag])
 
   await exec("changeset", ["tag"])
