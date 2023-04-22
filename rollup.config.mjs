@@ -1,7 +1,9 @@
 import { readFileSync, rmSync } from "fs"
 
+import commonjs from "@rollup/plugin-commonjs"
 import { defineConfig } from "rollup"
 import dts from "rollup-plugin-dts"
+import nodeResolve from "@rollup/plugin-node-resolve"
 import path from "path"
 import typescript from "rollup-plugin-typescript2"
 
@@ -42,6 +44,8 @@ export default defineConfig([
           rmSync("./dist", { recursive: true, force: true })
         }
       },
+      nodeResolve(),
+      commonjs(),
       typescript({
         tsconfigOverride: {
           include: ["packages/**/src"]
