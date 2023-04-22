@@ -3,7 +3,6 @@ import { readFileSync, rmSync } from "fs"
 import { defineConfig } from "rollup"
 import dts from "rollup-plugin-dts"
 import path from "path"
-import terser from "@rollup/plugin-terser"
 import typescript from "rollup-plugin-typescript2"
 
 const name = path.basename(path.resolve("."))
@@ -26,40 +25,7 @@ function createOutput () {
     {
       file: "dist/index.mjs",
       format: "es",
-    },
-    {
-      file: "dist/index.esm.js",
-      format: "esm",
-      plugins: [
-        terser({
-          module: true,
-          compress: {
-            ecma: 2015,
-            pure_getters: true,
-          },
-          safari10: true,
-        })
-      ]
-    },
-    {
-      file: "dist/index.iife.js",
-      format: "iife",
-      name: "Macro" + name[0].toUpperCase() + name.slice(1),
-      plugins: [
-        terser({
-          module: true,
-          compress: {
-            ecma: 2015,
-            pure_getters: true,
-          },
-          safari10: true,
-        })
-      ],
-      globals: {
-        "@swc/core": "SwcCore",
-        "@macro-plugin/core": "MacroCore"
-      }
-    },
+    }
   ]
 }
 
