@@ -1,4 +1,4 @@
-import { readFileSync, rmSync } from "fs"
+import { readFileSync, rmSync, writeFileSync } from "fs"
 
 import commonjs from "@rollup/plugin-commonjs"
 import { defineConfig } from "rollup"
@@ -13,6 +13,9 @@ const external = [
   ...Object.keys(pkg.dependencies || {}),
   "fs",
   "path",
+  "vite",
+  "rollup",
+  "webpack",
   "@swc/core",
   "@macro-plugin/core"
 ]
@@ -65,11 +68,16 @@ export default defineConfig([
       format: "es"
     }],
     plugins: [
-      dts(),
+      dts({ respectExternal: true }),
       {
         name: "del",
         buildEnd () {
           rmSync("./dist/packages", { recursive: true, force: true })
+        },
+        closeBundle () {
+          if (name === "shared") {
+            writeFileSync("./dist/index.d.ts", readFileSync("./dist/index.d.ts").toString().replace("const scan: typeof scan;", "").replace("const constants: typeof constants;", ""))
+          }
         }
       }
     ],
