@@ -10,7 +10,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "rollup -c ../rollup/rollup.config.mjs"
+    "build": "rollup -c ../../rollup.config.mjs"
   },
   "keywords": [
     "vite",
