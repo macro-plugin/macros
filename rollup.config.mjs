@@ -48,6 +48,10 @@ export default defineConfig([
         }
       }),
     ],
+    onwarn (warning, warn) {
+      if (warning.code === "CIRCULAR_DEPENDENCY") return
+      warn(warning)
+    },
     external
   },
   {
