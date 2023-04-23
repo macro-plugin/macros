@@ -45,6 +45,6 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "@swc/core": "^1.3.40"
+    "@swc/core": "^1.3.53"
   }
 }

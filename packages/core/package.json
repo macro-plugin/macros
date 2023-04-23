@@ -23,7 +23,7 @@
     "build": "rollup -c ../../rollup.config.mjs"
   },
   "dependencies": {
-    "@swc/core": "^1.3.40"
+    "@swc/core": "^1.3.53"
   },
   "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/core",
   "repository": {
