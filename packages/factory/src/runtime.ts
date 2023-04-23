@@ -48,18 +48,18 @@ export const createRegExpLiteral = (pattern: string, flags: string) => ({
   span
 } satisfies RegExpLiteral)
 
-export const createArgument: (expression: Expression, spread?: boolean) => Argument = (expression, spread) => ({
+export const createArgument = (expression: Expression, spread = false) => ({
   spread: spread ? span : undefined,
   expression
-})
+} satisfies Argument)
 
-export const createCallExpression: (callee: Expression | Super | Import, args?: Argument[], typeArguments?: TsTypeParameterInstantiation) => CallExpression = (callee, args = [], typeArguments) => ({
+export const createCallExpression = (callee: Expression | Super | Import, args: Argument[] = [], typeArguments?: TsTypeParameterInstantiation) => ({
   type: "CallExpression",
   span,
   callee,
   arguments: args,
   typeArguments
-})
+} satisfies CallExpression)
 
 export const createClassProperty = (key: PropertyName, value?: Expression, accessibility?: Accessibility, typeAnnotation?: TsTypeAnnotation, decorators?: Decorator[], declare = false, definite = false, isAbstract = false, isOptional = false, isOverride = false, isStatic = false, readonly = false) => ({
   type: "ClassProperty",
@@ -176,7 +176,7 @@ export const createClassDeclaration = (identifier: Identifier, body: ClassMember
   implements: impls,
 } satisfies ClassDeclaration)
 
-export const createVariableDeclaration = (kind: VariableDeclarationKind, declare: boolean, declarations: VariableDeclarator[]) => ({
+export const createVariableDeclaration = (kind: VariableDeclarationKind, declarations: VariableDeclarator[] = [], declare = false) => ({
   type: "VariableDeclaration",
   kind,
   declare,
@@ -186,8 +186,8 @@ export const createVariableDeclaration = (kind: VariableDeclarationKind, declare
 
 export const createVariableDeclarator = (
   id: Pattern,
-  definite: boolean,
   init?: Expression,
+  definite = false,
 ) => ({
   type: "VariableDeclarator",
   id,
@@ -196,9 +196,9 @@ export const createVariableDeclarator = (
   span
 } satisfies VariableDeclarator)
 
-export const createOptionalChainingExpression = (base: MemberExpression | OptionalChainingCall, questionDotToken: Span) => ({
+export const createOptionalChainingExpression = (base: MemberExpression | OptionalChainingCall) => ({
   type: "OptionalChainingExpression",
-  questionDotToken,
+  questionDotToken: span,
   base,
   span
 } satisfies OptionalChainingExpression)
@@ -216,26 +216,26 @@ export const createThisExpression = () => ({
   span
 } satisfies ThisExpression)
 
-export const createArrayExpression = (elements: (ExprOrSpread | undefined)[]) => ({
+export const createArrayExpression = (elements: (ExprOrSpread | undefined)[] = []) => ({
   type: "ArrayExpression",
   elements,
   span
 } satisfies ArrayExpression)
 
-export const createExprOrSpread = (expression: Expression, spread?: Span) => ({
-  spread,
+export const createExprOrSpread = (expression: Expression, spread = false) => ({
+  spread: spread ? span : undefined,
   expression,
 } satisfies ExprOrSpread)
 
-export const createObjectExpression = (properties: (SpreadElement | Property)[]) => ({
+export const createObjectExpression = (properties: (SpreadElement | Property)[] = []) => ({
   type: "ObjectExpression",
   properties,
   span
 } satisfies ObjectExpression)
 
-export const createSpreadElement = (args: Expression, spread: Span) => ({
+export const createSpreadElement = (args: Expression) => ({
   type: "SpreadElement",
-  spread,
+  spread: span,
   arguments: args,
 } satisfies SpreadElement)
 
@@ -328,7 +328,7 @@ export const createImport = () => ({
   span
 } satisfies Import)
 
-export const createNewExpression = (callee: Expression, args?: Argument[], typeArguments?: TsTypeParameterInstantiation,) => ({
+export const createNewExpression = (callee: Expression, args?: Argument[], typeArguments?: TsTypeParameterInstantiation) => ({
   type: "NewExpression",
   callee,
   arguments: args,
@@ -436,7 +436,7 @@ export const createJSXSpreadChild = (expression: Expression) => ({
   span
 } satisfies JSXSpreadChild)
 
-export const createJSXOpeningElement = (name: JSXElementName, attributes: JSXAttributeOrSpread[], selfClosing = false, typeArguments?: TsTypeParameterInstantiation) => ({
+export const createJSXOpeningElement = (name: JSXElementName, attributes: JSXAttributeOrSpread[] = [], selfClosing = false, typeArguments?: TsTypeParameterInstantiation) => ({
   type: "JSXOpeningElement",
   name,
   attributes,
@@ -503,7 +503,7 @@ export const createExportDeclaration = (declaration: Declaration) => ({
   span
 } satisfies ExportDeclaration)
 
-export const createImportDeclaration = (specifiers: ImportSpecifier[], source: StringLiteral, typeOnly: boolean = false, asserts?: ObjectExpression,) => ({
+export const createImportDeclaration = (specifiers: ImportSpecifier[], source: StringLiteral, asserts?: ObjectExpression, typeOnly: boolean = false) => ({
   type: "ImportDeclaration",
   specifiers,
   source,
@@ -519,7 +519,7 @@ export const createExportAllDeclaration = (source: StringLiteral, asserts?: Obje
   span
 } satisfies ExportAllDeclaration)
 
-export const createExportNamedDeclaration = (specifiers: ExportSpecifier[], source?: StringLiteral, asserts?: ObjectExpression, typeOnly = false,) => ({
+export const createExportNamedDeclaration = (specifiers: ExportSpecifier[], source?: StringLiteral, asserts?: ObjectExpression, typeOnly = false) => ({
   type: "ExportNamedDeclaration",
   specifiers,
   source,
@@ -588,7 +588,7 @@ export const createScript = (body: Statement[] = [], interpreter?: string) => ({
   interpreter
 } as Script)
 
-export const createArrayPattern = (elements: (Pattern | undefined)[], optional: boolean = false, typeAnnotation?: TsTypeAnnotation,) => ({
+export const createArrayPattern = (elements: (Pattern | undefined)[], optional: boolean = false, typeAnnotation?: TsTypeAnnotation) => ({
   type: "ArrayPattern",
   elements,
   optional,
@@ -596,7 +596,7 @@ export const createArrayPattern = (elements: (Pattern | undefined)[], optional: 
   span
 } satisfies ArrayPattern)
 
-export const createObjectPattern = (properties: ObjectPatternProperty[], optional = false, typeAnnotation?: TsTypeAnnotation,) => ({
+export const createObjectPattern = (properties: ObjectPatternProperty[], optional = false, typeAnnotation?: TsTypeAnnotation) => ({
   type: "ObjectPattern",
   properties,
   optional,
@@ -612,7 +612,7 @@ export const createAssignmentPattern = (left: Pattern, right: Expression, typeAn
   span
 } satisfies AssignmentPattern)
 
-export const createRestElement = (argument: Pattern, rest: Span, typeAnnotation?: TsTypeAnnotation,) => ({
+export const createRestElement = (argument: Pattern, rest: Span, typeAnnotation?: TsTypeAnnotation) => ({
   type: "RestElement",
   rest,
   argument,
@@ -861,7 +861,7 @@ export const createTsQualifiedName = (left: TsEntityName, right: Identifier) => 
   right,
 } satisfies TsQualifiedName)
 
-export const createTsCallSignatureDeclaration = (params: TsFnParameter[], typeAnnotation?: TsTypeAnnotation, typeParams?: TsTypeParameterDeclaration) => ({
+export const createTsCallSignatureDeclaration = (params: TsFnParameter[] = [], typeAnnotation?: TsTypeAnnotation, typeParams?: TsTypeParameterDeclaration) => ({
   type: "TsCallSignatureDeclaration",
   params,
   typeAnnotation,
@@ -959,14 +959,14 @@ export const createTsConstructorType = (params: TsFnParameter[], typeAnnotation:
   span
 } satisfies TsConstructorType)
 
-export const createTsTypeReference = (typeName: TsEntityName, typeParams?: TsTypeParameterInstantiation,) => ({
+export const createTsTypeReference = (typeName: TsEntityName, typeParams?: TsTypeParameterInstantiation) => ({
   type: "TsTypeReference",
   typeName,
   typeParams,
   span
 } satisfies TsTypeReference)
 
-export const createTsTypePredicate = (paramName: TsThisTypeOrIdent, asserts = false, typeAnnotation?: TsTypeAnnotation,) => ({
+export const createTsTypePredicate = (paramName: TsThisTypeOrIdent, typeAnnotation?: TsTypeAnnotation, asserts = false) => ({
   type: "TsTypePredicate",
   asserts,
   paramName,
@@ -974,7 +974,7 @@ export const createTsTypePredicate = (paramName: TsThisTypeOrIdent, asserts = fa
   span
 } satisfies TsTypePredicate)
 
-export const createTsImportType = (argument: StringLiteral, qualifier?: TsEntityName, typeArguments?: TsTypeParameterInstantiation,) => ({
+export const createTsImportType = (argument: StringLiteral, qualifier?: TsEntityName, typeArguments?: TsTypeParameterInstantiation) => ({
   type: "TsImportType",
   argument,
   qualifier,
@@ -1138,7 +1138,7 @@ export const createTsEnumDeclaration = (id: Identifier, members: TsEnumMember[] 
   span
 } satisfies TsEnumDeclaration)
 
-export const createTsEnumMember = (id: TsEnumMemberId, init?: Expression,) => ({
+export const createTsEnumMember = (id: TsEnumMemberId, init?: Expression) => ({
   type: "TsEnumMember",
   id,
   init,
@@ -1203,6 +1203,14 @@ export const createTsAsExpression = (expression: Expression, typeAnnotation: TsT
   typeAnnotation,
   span,
 } satisfies TsAsExpression)
+
+// TODO: change type to TsSatisfiesExpression when swc support this
+export const createTsSatisfiesExpression = (expression: Expression, typeAnnotation: TsType) => ({
+  type: "TsSatisfiesExpression",
+  expression,
+  typeAnnotation,
+  span,
+} satisfies Omit<TsAsExpression, "type"> & { type: "TsSatisfiesExpression" })
 
 export const createTsInstantiation = (expression: Expression, typeArguments: TsTypeParameterInstantiation) => ({
   type: "TsInstantiation",

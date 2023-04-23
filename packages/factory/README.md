@@ -60,5 +60,3 @@ See [runtime](./src/runtime.ts)
 ### Macros
 
 See [macros](./src/macros.ts)
-
-> The workload of macros is a little heavy, and it has not been completed yet. It's recommended to use runtime for now, then switch to macros later.
