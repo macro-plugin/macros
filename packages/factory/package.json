@@ -1,6 +1,6 @@
 {
   "name": "@macro-plugin/factory",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Macro factories for creating AST.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -19,7 +19,7 @@
     "build": "rollup -c ./rollup.config.mjs"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.0.1"
+    "@macro-plugin/core": "1.0.2"
   },
   "homepage": "https://github.com/macro-plugin/macros/tree/main/packages/factory",
   "repository": {
