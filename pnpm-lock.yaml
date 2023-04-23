@@ -111,8 +111,8 @@ importers:
 
   packages/cli:
     specifiers:
-      '@macro-plugin/core': 1.0.1
-      '@macro-plugin/shared': 1.0.1
+      '@macro-plugin/core': 1.0.2
+      '@macro-plugin/shared': 1.0.2
       commander: ^10.0.1
       node-watch: ^0.7.3
     dependencies:
@@ -130,7 +130,7 @@ importers:
 
   packages/factory:
     specifiers:
-      '@macro-plugin/core': 1.0.1
+      '@macro-plugin/core': 1.0.2
     dependencies:
       '@macro-plugin/core': link:../core
 
@@ -138,8 +138,8 @@ importers:
     specifiers:
       '@jest/create-cache-key-function': ^27.4.2
       '@jest/transform': ^27.5.1
-      '@macro-plugin/core': 1.0.1
-      '@macro-plugin/shared': 1.0.1
+      '@macro-plugin/core': 1.0.2
+      '@macro-plugin/shared': 1.0.2
       jest: ^27.4.4
       pirates: ^4.0.5
     dependencies:
@@ -153,14 +153,14 @@ importers:
 
   packages/qwik:
     specifiers:
-      '@macro-plugin/core': 1.0.1
+      '@macro-plugin/core': 1.0.2
     dependencies:
       '@macro-plugin/core': link:../core
 
   packages/register:
     specifiers:
-      '@macro-plugin/core': 1.0.1
-      '@macro-plugin/shared': 1.0.1
+      '@macro-plugin/core': 1.0.2
+      '@macro-plugin/shared': 1.0.2
     dependencies:
       '@macro-plugin/core': link:../core
     devDependencies:
@@ -168,8 +168,8 @@ importers:
 
   packages/rollup:
     specifiers:
-      '@macro-plugin/core': 1.0.1
-      '@macro-plugin/shared': 1.0.1
+      '@macro-plugin/core': 1.0.2
+      '@macro-plugin/shared': 1.0.2
       rollup: ^3.20.0
     dependencies:
       '@macro-plugin/core': link:../core
@@ -179,7 +179,7 @@ importers:
 
   packages/shared:
     specifiers:
-      '@macro-plugin/core': 1.0.1
+      '@macro-plugin/core': 1.0.2
       '@types/picomatch': ^2.3.0
       picomatch: ^2.3.1
       pirates: ^4.0.5
@@ -192,14 +192,14 @@ importers:
 
   packages/solid:
     specifiers:
-      '@macro-plugin/core': 1.0.1
+      '@macro-plugin/core': 1.0.2
     dependencies:
       '@macro-plugin/core': link:../core
 
   packages/vite:
     specifiers:
-      '@macro-plugin/core': 1.0.1
-      '@macro-plugin/shared': 1.0.1
+      '@macro-plugin/core': 1.0.2
+      '@macro-plugin/shared': 1.0.2
       vite: ^4.2.0
     dependencies:
       '@macro-plugin/core': link:../core
@@ -212,8 +212,8 @@ importers:
 
   packages/webpack:
     specifiers:
-      '@macro-plugin/core': 1.0.1
-      '@macro-plugin/shared': 1.0.1
+      '@macro-plugin/core': 1.0.2
+      '@macro-plugin/shared': 1.0.2
       webpack: ^5.80.0
     dependencies:
       '@macro-plugin/core': link:../core
