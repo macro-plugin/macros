@@ -1,6 +1,6 @@
 {
   "name": "@macro-plugin/core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Macro system for JavaScript and TypeScript.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
