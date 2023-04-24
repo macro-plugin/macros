@@ -24,7 +24,7 @@
     "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.0.2"
+    "@macro-plugin/core": "1.0.3"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -37,7 +37,7 @@
   "author": "Raven Satir",
   "license": "MIT",
   "devDependencies": {
-    "@macro-plugin/shared": "1.0.2",
+    "@macro-plugin/shared": "1.0.3",
     "commander": "^10.0.1",
     "node-watch": "^0.7.3"
   }
