@@ -309,11 +309,11 @@ const handleDecoratorLabel = (parent: FunctionDeclaration | FunctionExpression, 
 }
 
 export const decorator = createMacro({
-  enter (ast) {
+  enter (ast, parent) {
     if (ast.type === "FunctionDeclaration" || ast.type === "FunctionExpression") {
       handleDecoratorLabel(ast, ast.body?.stmts)
     } else if (ast.type === "ArrowFunctionExpression" && ast.body.type === "BlockStatement") {
-      handleDecoratorLabel(ast as unknown as FunctionExpression, ast.body.stmts)
+      handleDecoratorLabel({ ...ast, identifier: parent?.type === "VariableDeclarator" && parent.id.type === "Identifier" ? parent.id : undefined } as unknown as FunctionExpression, ast.body.stmts)
     } else if (ast.type === "PrivateMethod" || ast.type === "ClassMethod") {
       if (ast.key.type !== "Identifier") return
       handleDecoratorLabel({ ...ast.function, type: "FunctionExpression", identifier: ast.key }, ast.function.body?.stmts)
