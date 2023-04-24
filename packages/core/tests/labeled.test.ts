@@ -1,4 +1,4 @@
-import { createLabeledMacro, transform } from "../src"
+import { createLabeledMacro, decorator, transform } from "../src"
 
 let DEBUG = false
 
@@ -105,4 +105,184 @@ test("transform in jsx", () => {
       }
     }
   }).code).toMatchSnapshot()
+})
+
+test("decorator macro with simple decorator", () => {
+  const code = `
+  function make_pretty(func) {
+    function inner() {
+      console.log("I got decorated")
+      func()
+    }
+    return inner
+  }
+
+  function ordinary() {
+    decorator: make_pretty
+    console.log("I am ordinary")
+  }
+
+  ordinary()
+`
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("decorator macro with empty array", () => {
+  const code = `
+  function ordinary() {
+    decorator: []
+    console.log("I am ordinary")
+  }
+
+  ordinary()
+`
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("decorator macro with single decorator in array", () => {
+  const code = `
+  function make_pretty(func) {
+    function inner() {
+      console.log("I got decorated")
+      func()
+    }
+    return inner
+  }
+
+  function ordinary() {
+    decorator: [make_pretty]
+    console.log("I am ordinary")
+  }
+
+  ordinary()
+`
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("decorator macro with multiple decorator in array", () => {
+  const code = `
+  function ordinary(a, b, c) {
+    decorator: [d, e, f]
+    console.log("I am ordinary")
+  }
+
+  ordinary(1, 2, 3)
+`
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("decorator with function expression", () => {
+  const code = `
+  function ordinary() {
+    decorator: (func) => {
+        return () => {
+            console.log("I got decorated")
+
+            // call original function
+            func()
+        }
+    }
+
+    console.log("I am ordinary")
+  }
+`
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("decorating functions with parameters", () => {
+  const code = `
+  function smart_divide(func) {
+    return function(a, b) {
+      console.log("I am going to divide", a, "and", b)
+      if (b === 0) {
+        throw new Error("Whoops! cannot divide")
+      }
+      return func(a, b)
+    }
+  }
+
+
+  function divide(a, b) {
+    decorator: smart_divide
+
+    return a / b
+  }
+
+  divide(2, 5) // number
+  divide(2, 0) // error
+`
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("chaining decorators", () => {
+  const code = `
+  function star(func) {
+    return (...args) => {
+      console.log("*".repeat(15))
+      func.apply(undefined, args)
+      console.log("*".repeat(15))
+    }
+  }
+
+  function percent(func) {
+    return (...args) => {
+      console.log("%".repeat(15))
+      func.apply(undefined, args)
+      console.log("%".repeat(15))
+    }
+  }
+
+  function printer(msg) {
+    decorator: [star, percent]
+
+    console.log(msg)
+  }
+
+  printer("Hello")
+`
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("decorator in arrow function", () => {
+  const code = `
+  function make_pretty(func) {
+    function inner() {
+      console.log("I got decorated")
+      func()
+    }
+    return inner
+  }
+
+  const ordinary = () => {
+    decorator: [make_pretty]
+    console.log("I am ordinary")
+  }
+
+  ordinary()
+  `
+
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("decorator in class method", () => {
+  const code = `
+  function make_pretty(func) {
+    function inner() {
+      console.log("I got decorated")
+      func()
+    }
+    return inner
+  }
+
+  class Test {
+    ordinary() {
+      decorator: [make_pretty]
+      console.log("I am ordinary")
+    }
+  }
+
+  new Test().ordinary()
+  `
+
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
 })

@@ -1,5 +1,151 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`chaining decorators 1`] = `
+"function star(func) {
+    return (...args)=>{
+        console.log("*".repeat(15));
+        func.apply(undefined, args);
+        console.log("*".repeat(15));
+    };
+}
+function percent(func) {
+    return (...args)=>{
+        console.log("%".repeat(15));
+        func.apply(undefined, args);
+        console.log("%".repeat(15));
+    };
+}
+function printer(msg) {
+    return star(percent(function printer(msg) {
+        console.log(msg);
+    }))(msg);
+}
+printer("Hello");
+"
+`;
+
+exports[`decorating functions with parameters 1`] = `
+"function smart_divide(func) {
+    return function(a, b) {
+        console.log("I am going to divide", a, "and", b);
+        if (b === 0) {
+            throw new Error("Whoops! cannot divide");
+        }
+        return func(a, b);
+    };
+}
+function divide(a, b) {
+    return smart_divide(function divide(a, b) {
+        return a / b;
+    })(a, b);
+}
+divide(2, 5);
+divide(2, 0);
+"
+`;
+
+exports[`decorator in arrow function 1`] = `
+"function make_pretty(func) {
+    function inner() {
+        console.log("I got decorated");
+        func();
+    }
+    return inner;
+}
+const ordinary = ()=>{
+    return make_pretty(function ordinary() {
+        console.log("I am ordinary");
+    })();
+};
+ordinary();
+"
+`;
+
+exports[`decorator in class method 1`] = `
+"function make_pretty(func) {
+    function inner() {
+        console.log("I got decorated");
+        func();
+    }
+    return inner;
+}
+class Test {
+    ordinary() {
+        return make_pretty(function ordinary() {
+            console.log("I am ordinary");
+        })();
+    }
+}
+new Test().ordinary();
+"
+`;
+
+exports[`decorator macro with empty array 1`] = `
+"function ordinary() {
+    console.log("I am ordinary");
+}
+ordinary();
+"
+`;
+
+exports[`decorator macro with multiple decorator in array 1`] = `
+"function ordinary(a, b, c) {
+    return d(e(f(function ordinary(a, b, c) {
+        console.log("I am ordinary");
+    })))(a, b, c);
+}
+ordinary(1, 2, 3);
+"
+`;
+
+exports[`decorator macro with simple decorator 1`] = `
+"function make_pretty(func) {
+    function inner() {
+        console.log("I got decorated");
+        func();
+    }
+    return inner;
+}
+function ordinary() {
+    return make_pretty(function ordinary() {
+        console.log("I am ordinary");
+    })();
+}
+ordinary();
+"
+`;
+
+exports[`decorator macro with single decorator in array 1`] = `
+"function make_pretty(func) {
+    function inner() {
+        console.log("I got decorated");
+        func();
+    }
+    return inner;
+}
+function ordinary() {
+    return make_pretty(function ordinary() {
+        console.log("I am ordinary");
+    })();
+}
+ordinary();
+"
+`;
+
+exports[`decorator with function expression 1`] = `
+"function ordinary() {
+    return ((func)=>{
+        return ()=>{
+            console.log("I got decorated");
+            func();
+        };
+    })(function ordinary() {
+        console.log("I am ordinary");
+    })();
+}
+"
+`;
+
 exports[`transform codeblock to call 1`] = `
 "(()=>{
     let a = 3;
