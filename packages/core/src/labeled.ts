@@ -1,7 +1,46 @@
-import { ArrowFunctionExpression, ExpressionStatement } from "@swc/core"
+import { ArrowFunctionExpression, ExpressionStatement, CallExpression } from "@swc/core"
+import { createLabeledMacro, createMacro } from "./api"
 
 import { MacroPlugin } from "./types"
-import { createLabeledMacro } from "./api"
+
+export const createLabeledExpr: ((label: string, specifier: string, source: string) => MacroPlugin) = (label, specifier, source) => {
+  return createMacro({
+    LabeledStatement (ast) {
+      if (ast.label.value !== label) return
+      if (ast.body.type === "ExpressionStatement") {
+        this.import(specifier, source)
+
+        ast.body.expression = {
+          type: "CallExpression",
+          span: {
+            start: 109,
+            end: 119,
+            ctxt: 0
+          },
+          callee: {
+            type: "Identifier",
+            span: {
+              start: 109,
+              end: 112,
+              ctxt: 1
+            },
+            value: specifier,
+            optional: false
+          },
+          arguments: [
+            {
+              expression: ast.body.expression
+            }
+          ],
+        } as CallExpression
+
+        return ast.body
+      } else {
+        throw new Error("this macro only accept an Expression")
+      }
+    }
+  })
+}
 
 /**
  * Create a macro plugin that converts `labeled: {}` or `labeled: (...args) => {}` to `$specifier((...args) => {})`,
