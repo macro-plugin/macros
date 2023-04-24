@@ -242,3 +242,47 @@ test("chaining decorators", () => {
 `
   expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
 })
+
+test("decorator in arrow function", () => {
+  const code = `
+  function make_pretty(func) {
+    function inner() {
+      console.log("I got decorated")
+      func()
+    }
+    return inner
+  }
+
+  const ordinary = () => {
+    decorator: [make_pretty]
+    console.log("I am ordinary")
+  }
+
+  ordinary()
+  `
+
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
+
+test("decorator in class method", () => {
+  const code = `
+  function make_pretty(func) {
+    function inner() {
+      console.log("I got decorated")
+      func()
+    }
+    return inner
+  }
+
+  class Test {
+    ordinary() {
+      decorator: [make_pretty]
+      console.log("I am ordinary")
+    }
+  }
+
+  new Test().ordinary()
+  `
+
+  expect(transform(code, { macros: [decorator] }).code).toMatchSnapshot()
+})
