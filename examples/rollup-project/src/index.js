@@ -1,4 +1,4 @@
-import { $ExprMacro, $Quote } from "@macro-plugin/core"
+import { $Identifier } from "@macro-plugin/factory"
 
 macro: {
   var __ABC__ = "abc"
@@ -7,7 +7,6 @@ macro: {
     const a = this.printExpr(a0)
     const b = this.printExpr(a1)
 
-    // console.log($Quote)
     if (+a < 0) return a1
     return this.parseExpr(`(() => {return ${a} + ${b}})()`)
   })
@@ -16,12 +15,18 @@ macro: {
 export function hello () {
   const a = $Eval(1 + 2)
   const result = []
+  const c = $Add(1, 3)
+  result.push(c)
 
   result.push($Quote`1 + ${a}`)
 
   if (__DEV__) {
     result.push(a)
   }
+
+  result.push($Identifier("hello"))
+
+  result.push(__ABC__)
 
   result.push(add(1, 2))
 
