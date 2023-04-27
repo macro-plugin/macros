@@ -1,15 +1,15 @@
 import type { ArrayExpression, BooleanLiteral, CallExpression, Expression, NullLiteral } from "@swc/core"
+import { BaseNode, createExprMacro, parseExpr, printExpr, span } from "@macro-plugin/core"
 import { createArgument, createArrayExpression, createArrayPattern, createArrowFunctionExpression, createAssignmentExpression, createAssignmentPattern, createAssignmentPatternProperty, createAssignmentProperty, createAwaitExpression, createBigIntLiteral, createBinaryExpression, createBlockStatement, createBooleanLiteral, createBreakStatement, createCallExpression, createCatchClause, createClassDeclaration, createClassExpression, createClassMethod, createClassProperty, createComputedPropName, createConditionalExpression, createConstructor, createContinueStatement, createDebuggerStatement, createDecorator, createDoWhileStatement, createEmptyStatement, createExportAllDeclaration, createExportDeclaration, createExportDefaultDeclaration, createExportDefaultExpression, createExportDefaultSpecifier, createExportNamedDeclaration, createExportNamespaceSpecifier, createExprOrSpread, createExpressionStatement, createForInStatement, createForOfStatement, createForStatement, createFunctionDeclaration, createFunctionExpression, createGetterProperty, createIdentifier, createIfStatement, createImport, createImportDeclaration, createImportDefaultSpecifier, createImportNamespaceSpecifier, createInvalid, createJSXAttribute, createJSXClosingElement, createJSXClosingFragment, createJSXElement, createJSXEmptyExpression, createJSXExpressionContainer, createJSXFragment, createJSXMemberExpression, createJSXNamespacedName, createJSXOpeningElement, createJSXOpeningFragment, createJSXSpreadChild, createJSXText, createKeyValuePatternProperty, createKeyValueProperty, createLabeledStatement, createMemberExpression, createMetaProperty, createMethodProperty, createModule, createNamedExportSpecifier, createNamedImportSpecifier, createNewExpression, createNullLiteral, createNumericLiteral, createObjectExpression, createObjectPattern, createOptionalChainingCall, createOptionalChainingExpression, createParam, createParenthesisExpression, createPrivateMethod, createPrivateName, createPrivateProperty, createRegExpLiteral, createRestElement, createReturnStatement, createScript, createSequenceExpression, createSetterProperty, createSpreadElement, createStaticBlock, createStringLiteral, createSuper, createSuperPropExpression, createSwitchCase, createSwitchStatement, createTaggedTemplateExpression, createTemplateElement, createTemplateLiteral, createThisExpression, createThrowStatement, createTryStatement, createTsArrayType, createTsAsExpression, createTsCallSignatureDeclaration, createTsConditionalType, createTsConstAssertion, createTsConstructSignatureDeclaration, createTsConstructorType, createTsEnumDeclaration, createTsEnumMember, createTsExportAssignment, createTsExpressionWithTypeArguments, createTsExternalModuleReference, createTsFunctionType, createTsGetterSignature, createTsImportEqualsDeclaration, createTsImportType, createTsIndexSignature, createTsIndexedAccessType, createTsInferType, createTsInstantiation, createTsInterfaceBody, createTsInterfaceDeclaration, createTsIntersectionType, createTsKeywordType, createTsLiteralType, createTsMappedType, createTsMethodSignature, createTsModuleBlock, createTsModuleDeclaration, createTsNamespaceDeclaration, createTsNamespaceExportDeclaration, createTsNonNullExpression, createTsOptionalType, createTsParameterProperty, createTsParenthesizedType, createTsPropertySignature, createTsQualifiedName, createTsRestType, createTsSatisfiesExpression, createTsSetterSignature, createTsTemplateLiteralType, createTsThisType, createTsTupleElement, createTsTupleType, createTsTypeAliasDeclaration, createTsTypeAnnotation, createTsTypeAssertion, createTsTypeLiteral, createTsTypeOperator, createTsTypeParameter, createTsTypeParameterDeclaration, createTsTypeParameterInstantiation, createTsTypePredicate, createTsTypeQuery, createTsTypeReference, createTsUnionType, createUnaryExpression, createUpdateExpression, createVariableDeclaration, createVariableDeclarator, createWhileStatement, createWithStatement, createYieldExpression } from "./runtime"
-import { createExprMacro, parseExpr, printExpr, span } from "@macro-plugin/core"
 
 const spanStr = JSON.stringify(span)
 
 export const createAst = (type: string, props: Record<string, Expression | string> = {}) => {
   return parseExpr(`{
     "type": "${type}",
-    ${Object.entries(props).map(([k, v]) => '"' + k + '": ' + (v ? (typeof v === "string" ? v : printExpr(v).code) : undefined)) + ","}
+    ${Object.entries(props).map(([k, v]) => '"' + k + '": ' + (v ? (typeof v === "string" ? v : printExpr(v as BaseNode).code) : undefined)) + ","}
     "span": ${spanStr},
-  }`)
+  }`) as Expression
 }
 
 export const $True: BooleanLiteral = {
@@ -713,10 +713,9 @@ export const $TsAsExpression = createExprMacro("$TsAsExpression", function ([exp
   return createAst("TsAsExpression", { expression, typeAnnotation })
 }, "(expression: import(\"@swc/core\").Expression, typeAnnotation: import(\"@swc/core\").TsType) => import(\"@swc/core\").TsAsExpression").proxy(createTsAsExpression)
 
-// TODO: change type to TsSatisfiesExpression when swc support this
 export const $TsSatisfiesExpression = createExprMacro("$TsSatisfiesExpression", function ([expression, typeAnnotation]) {
   return createAst("TsSatisfiesExpression", { expression, typeAnnotation })
-}, "(expression: import(\"@swc/core\").Expression, typeAnnotation: import(\"@swc/core\").TsType) => Omit<import(\"@swc/core\").TsAsExpression, \"type\"> & { type: \"TsSatisfiesExpression\" }").proxy(createTsSatisfiesExpression)
+}, "(expression: import(\"@swc/core\").Expression, typeAnnotation: import(\"@swc/core\").TsType) => import(\"@swc/core\").TsSatisfiesExpression").proxy(createTsSatisfiesExpression)
 
 export const $TsInstantiation = createExprMacro("$TsInstantiation", function ([expression, typeArguments]) {
   return createAst("TsInstantiation", { expression, typeArguments })
