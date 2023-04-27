@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
+const fs = require("fs")
 const path = require("path")
 const { exec, getExecOutput } = require("@actions/exec")
 
 const { version } = require("../packages/core/package.json")
 const tag = `v${version}`
 const releaseLine = `v${version.split(".")[0]}`
+const packages = fs.readdirSync("../packages")
 
 process.chdir(path.join(__dirname, ".."));
 
@@ -32,11 +34,11 @@ process.chdir(path.join(__dirname, ".."));
   // push to github
   await exec("git", ["checkout", "--detach"])
 
-  // for (const pkg of packages) {
-  //   if (existsSync(path.resolve(`packages/${pkg}/dist`))) {
-  //     await exec("git", ["add", "--force", `packages/${pkg}/dist`])
-  //   }
-  // }
+  for (const pkg of packages) {
+    if (fs.existsSync(path.resolve(`packages/${pkg}/dist`))) {
+      await exec("git", ["add", "--force", `packages/${pkg}/dist`])
+    }
+  }
 
   await exec("git", ["commit", "-m", tag])
 
