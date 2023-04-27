@@ -1,5 +1,14 @@
 # @macro-plugin/factory
 
+## 1.0.5
+
+### Patch Changes
+
+- [#16](https://github.com/macro-plugin/macros/pull/16) [`a4515e3`](https://github.com/macro-plugin/macros/commit/a4515e3f5b0a645cdf233a20b0982ba244710d19) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: type for $Constructor macro
+
+- Updated dependencies [[`4155bb4`](https://github.com/macro-plugin/macros/commit/4155bb4de7968a83e62203411bceae6b0602637f), [`6b25910`](https://github.com/macro-plugin/macros/commit/6b25910567e910b7c71c79646f8569a2f3927be6), [`8dd4939`](https://github.com/macro-plugin/macros/commit/8dd493997931d8d91a82ffb1785927d425c17c61), [`14efcb2`](https://github.com/macro-plugin/macros/commit/14efcb2c6461ab3f5d78e0599ec74b422085ce1d), [`7787022`](https://github.com/macro-plugin/macros/commit/7787022f657b7a79cb18a1e8ba947ae2eaeb682e), [`a17b055`](https://github.com/macro-plugin/macros/commit/a17b055d356c285b394add56192c80077ebde2c2)]:
+  - @macro-plugin/core@1.1.0
+
 ## 1.0.4
 
 ### Patch Changes
