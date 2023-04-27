@@ -1,5 +1,16 @@
 # @macro-plugin/factory
 
+## 1.0.6
+
+### Patch Changes
+
+- [#21](https://github.com/macro-plugin/macros/pull/21) [`396472e`](https://github.com/macro-plugin/macros/commit/396472edb4520b33044e9f628807af01e2e5aa35) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: support TsSatisfiesExpression
+
+- [#21](https://github.com/macro-plugin/macros/pull/21) [`b865dd4`](https://github.com/macro-plugin/macros/commit/b865dd493a38c60c9e8f102f7a2373a4bd44b4aa) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: type exports for swc expression
+
+- Updated dependencies [[`b4be79b`](https://github.com/macro-plugin/macros/commit/b4be79be09e8790b95c6a2e9b07dde4ba3822f39), [`df8dcc0`](https://github.com/macro-plugin/macros/commit/df8dcc0ab7f3e09f1157c5c2a7cda4a7f5367991)]:
+  - @macro-plugin/core@1.1.1
+
 ## 1.0.5
 
 ### Patch Changes

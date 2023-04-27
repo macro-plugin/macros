@@ -1,6 +1,6 @@
 {
   "name": "@macro-plugin/register",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Node register for macro plugins.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -25,10 +25,10 @@
     "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.1.0"
+    "@macro-plugin/core": "1.1.1"
   },
   "devDependencies": {
-    "@macro-plugin/shared": "1.0.4"
+    "@macro-plugin/shared": "1.0.5"
   },
   "exports": {
     "./package.json": "./package.json",

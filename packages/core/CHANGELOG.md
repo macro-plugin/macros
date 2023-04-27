@@ -1,5 +1,13 @@
 # @macro-plugin/core
 
+## 1.1.1
+
+### Patch Changes
+
+- [#21](https://github.com/macro-plugin/macros/pull/21) [`b4be79b`](https://github.com/macro-plugin/macros/commit/b4be79be09e8790b95c6a2e9b07dde4ba3822f39) Thanks [@voorjaar](https://github.com/voorjaar)! - chore: update to swc 1.3.55
+
+- [#21](https://github.com/macro-plugin/macros/pull/21) [`df8dcc0`](https://github.com/macro-plugin/macros/commit/df8dcc0ab7f3e09f1157c5c2a7cda4a7f5367991) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: use swc Plugin type exports
+
 ## 1.1.0
 
 ### Minor Changes
