@@ -11,7 +11,7 @@ test("isMacroProxy", () => {
   expect(isMacroProxy($Ast)).toBeFalsy()
   expect(isMacroProxy($Column)).toBeFalsy()
   expect(isMacroProxy($Eval)).toBeFalsy()
-  expect(isMacroProxy($Quote)).toBeFalsy()
+  expect(isMacroProxy($Quote)).toBeTruthy()
 
   expect($Ast.proxy(() => {})).toBeTruthy()
 })
