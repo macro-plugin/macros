@@ -11,6 +11,8 @@ export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration
 export type WalkContext = {
   /** Get current script source code */
   src: string | undefined,
+  /** Get global config */
+  config: Config,
   /** Get current walking node's span */
   span(): [number, number];
   /** Save data to current plugin cache */
@@ -122,7 +124,7 @@ export type MacroOptions = {
    * **Note**: All macros from these packages are lazy loading, they are only enabled when you imported them.
    * If you want include all macros globally from some package, please put them in `depends` options.
    */
-  externals?: string[];
+  externals?: string[] | Record<string, Record<string, MacroPlugin>>;
   /** emit dts file, default is false */
   emitDts?: boolean;
   /** the dts output path, default is `./macros.d.ts` */

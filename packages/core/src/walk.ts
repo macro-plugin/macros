@@ -1,13 +1,15 @@
-import { BaseNode, MacroPlugin, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
+import { BaseNode, Config, MacroPlugin, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
 import { ExportNamedDeclaration, HasSpan, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration, TsType } from "@swc/core"
 import { createWalkPlugin, genConstType, genExportSpecifier, genImportSpecifier, hashMap, span } from "./utils"
 import { parse, parseExpr, parseType } from "./parse"
 import { print, printExpr, printType } from "./print"
 
+import externalsPlugin from "./external"
 import trackPlugin from "./track"
 
 export class Walker {
   src: string | undefined
+  config: Config
   node = { type: "Invalid", span } as Node
   data: Record<string, unknown> = {}
   imports: ImportDeclaration[] = []
@@ -178,10 +180,11 @@ export class Walker {
     declareGlobalConst: this.declareGlobalConst
   }
 
-  constructor ({ enter, leave }: WalkPlugin, src?: string, enableTracker = false) {
+  constructor ({ enter, leave }: WalkPlugin, src?: string, config: Config = {}, enableTracker = false) {
     enter && this.enters.push(enter)
     leave && this.leaves.push(leave)
     this.src = src
+    this.config = config
     this.enableTracker = enableTracker
   }
 
@@ -191,6 +194,7 @@ export class Walker {
 
     const ctx: WalkContext = {
       src: this.src,
+      config: this.config,
       ...this.defaultContext,
       skip: () => {
         _skipped = true
@@ -225,6 +229,7 @@ export class Walker {
       },
     }
 
+    this.config.externals && externalsPlugin.enter.apply(ctx, [n as BaseNode, parent as BaseNode, prop, index])
     this.enableTracker && trackPlugin.enter.apply(ctx, [n as BaseNode, parent as BaseNode, prop, index])
     this.enters.forEach(f => f.apply(ctx, [n, parent, prop, index]))
 
