@@ -24,7 +24,7 @@ export function createProxyMacro (macro: MacroPlugin) {
             return Reflect.has(macro, p) || Reflect.has(target, p)
           },
           get (target, p) {
-            return p === "__macro_proxy__" || Reflect.get(macro, p) || Reflect.get(target, p)
+            return p === "__macro_proxy__" || p === "__macro_plugin__" || Reflect.get(macro, p) || Reflect.get(target, p)
           },
         })
       }
