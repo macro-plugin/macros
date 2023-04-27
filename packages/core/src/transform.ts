@@ -11,7 +11,7 @@ import { Walker } from "./walk"
 
 export function createSwcPlugin (config: Config, src?: string, spanOffset = 0) {
   return (program: Program) => {
-    const walker = new Walker(createWalkPlugin(config.macros || []), src, true)
+    const walker = new Walker(createWalkPlugin(config.macros || []), src, config, true)
 
     program = walker.walk(program, spanOffset) as Program
     if (config.emitDts) {

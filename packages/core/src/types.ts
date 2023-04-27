@@ -1,6 +1,6 @@
 import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, Param, ParseOptions, PrivateMethod, Statement, TsType, VariableDeclarator } from "@swc/core"
 
-import type { Visitor } from "@swc/core/Visitor"
+import type { AST } from "./ast"
 
 export type { Node } from "@swc/core"
 
@@ -11,6 +11,8 @@ export type BaseNode = Declaration | Expression | CatchClause | ClassDeclaration
 export type WalkContext = {
   /** Get current script source code */
   src: string | undefined,
+  /** Get global config */
+  config: Config,
   /** Get current walking node's span */
   span(): [number, number];
   /** Save data to current plugin cache */
@@ -81,17 +83,15 @@ export type TmplMacro = (this: WalkContext, strings: string[], ...expressions: E
 export type LabeledMacro = (this: WalkContext, stmt: Statement, parent?: BaseNode, prop?: string, index?: number) => BaseNode | BaseNode[] | void | undefined
 export type GlobalMacro<T = BaseNode> = (this: WalkContext, ast: T, parent?: BaseNode, prop?: string, index?: number) => void | undefined | BaseNode | BaseNode[]
 
-type SliceVisit<T> = T extends `visit${infer R}` ? R : never;
-
 export type GlobalMacroPlugin = {
   enter?: GlobalMacro,
   leave?: GlobalMacro,
 }
 
 export type MacroPlugin = (GlobalMacro | (GlobalMacroPlugin & {
-  [k in keyof Visitor & string as SliceVisit<k>]?: GlobalMacro<Parameters<Visitor[k]>[0]> | {
-    enter?: GlobalMacro<Parameters<Visitor[k]>[0]>,
-    leave?: GlobalMacro<Parameters<Visitor[k]>[0]>,
+  [k in keyof AST]?: GlobalMacro<AST[k]> | {
+    enter?: GlobalMacro<AST[k]>,
+    leave?: GlobalMacro<AST[k]>,
   }
 }))
 
@@ -124,7 +124,7 @@ export type MacroOptions = {
    * **Note**: All macros from these packages are lazy loading, they are only enabled when you imported them.
    * If you want include all macros globally from some package, please put them in `depends` options.
    */
-  externals?: string[];
+  externals?: string[] | Record<string, Record<string, MacroPlugin>>;
   /** emit dts file, default is false */
   emitDts?: boolean;
   /** the dts output path, default is `./macros.d.ts` */

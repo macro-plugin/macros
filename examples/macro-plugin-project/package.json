@@ -1,0 +1,23 @@
+{
+  "name": "macro-plugin-project",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -cw"
+  },
+  "exports": {
+    "package.json": "./package.json",
+    "require": "./dist/index.js",
+    "import": "./dist/index.mjs"
+  },
+  "devDependencies": {
+    "rollup": "^3.20.0",
+    "@macro-plugin/core": "workspace:*",
+    "@macro-plugin/rollup": "workspace:*"
+  },
+  "author": "Raven Satir",
+  "license": "MIT"
+}

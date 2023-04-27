@@ -24,7 +24,7 @@ export function createProxyMacro (macro: MacroPlugin) {
             return Reflect.has(macro, p) || Reflect.has(target, p)
           },
           get (target, p) {
-            return p === "__macro_proxy__" || Reflect.get(macro, p) || Reflect.get(target, p)
+            return p === "__macro_proxy__" || p === "__macro_plugin__" || Reflect.get(macro, p) || Reflect.get(target, p)
           },
         })
       }
@@ -77,12 +77,12 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
       },
       CallExpression: {
         enter (ast) {
-          if (f.enter && ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
+          if (f.enter && ast.callee.type === "Identifier" && ast.callee.value === name) { // && !this.track(ast.callee.value)) {
             return f.enter.apply(this, [ast.arguments.map(i => i.expression), ast.typeArguments?.params, ast.callee.optional])
           }
         },
         leave (ast) {
-          if (f.leave && ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
+          if (f.leave && ast.callee.type === "Identifier" && ast.callee.value === name) { // && !this.track(ast.callee.value)) {
             return f.leave.apply(this, [ast.arguments.map(i => i.expression), ast.typeArguments?.params, ast.callee.optional])
           }
         }
@@ -94,7 +94,7 @@ export function createExprMacro (name: string, f: Function | ExprMacro | { enter
       this.declareGlobalConst(name, fnType)
     },
     CallExpression (ast) {
-      if (ast.callee.type === "Identifier" && ast.callee.value === name && !this.track(ast.callee.value)) {
+      if (ast.callee.type === "Identifier" && ast.callee.value === name) { // && !this.track(ast.callee.value)) {
         const args = ast.arguments.map(i => i.expression)
         const tys = ast.typeArguments?.params
         return f.toString().startsWith("function") ? (f as ExprMacro).apply(this, [args, tys, ast.callee.optional]) : flatExpr(f, args, tys, ast.callee.optional)
@@ -144,7 +144,7 @@ export function createTmplMacro (tag: string, f: TmplMacro | {
   enter?: TmplMacro,
   leave?: TmplMacro
 }, returnType: string | TsType = defaultGlobalTmpl) {
-  return createMacro({
+  return createProxyMacro({
     Module () {
       this.declareGlobalConst(tag, {
         type: "TsFunctionType",

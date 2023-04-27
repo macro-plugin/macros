@@ -1,13 +1,17 @@
-import { $Ast, $Eval, $Quote, createLitMacro, defineConfig, macro } from "@macro-plugin/core"
+import { createLitMacro, defineConfig } from "@macro-plugin/core"
 
 export default defineConfig({
+  emitDts: true,
   macros: [
-    macro,
-    $Eval,
-    $Ast,
-    $Quote,
     createLitMacro({
       __DEV__: false
     })
+  ],
+  depends: [
+    "@macro-plugin/core",
+    "macro-plugin-project"
+  ],
+  externals: [
+    "@macro-plugin/factory",
   ]
 })

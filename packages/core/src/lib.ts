@@ -1,10 +1,10 @@
 import { CallExpression, Expression, Identifier, transformFileSync } from "@swc/core"
 import { createExprMacro, createTmplMacro } from "./api"
 import { evalAst, evalExpr, hash, span } from "./utils"
+import { parse, parseExpr } from "./parse"
 import { readFileSync, writeFileSync } from "fs"
 
 import { createSwcPlugin } from "./transform"
-import { parse } from "./parse"
 import { printExpr } from "./print"
 import { walk } from "./walk"
 
@@ -293,7 +293,7 @@ export const printTmpl = (strings: string[], exprs: Expression[]) => strings.red
   return valueExists ? text + printExpr(exprs[i]).code : text
 }, "")
 
-export const printRawTmpl = (strings: string[], exprs: unknown[]) => strings.reduce((query, queryPart, i) => {
+export const printRawTmpl = (strings: string[] | TemplateStringsArray, exprs: unknown[]) => strings.reduce((query, queryPart, i) => {
   const valueExists = i < exprs.length
   const text = query + queryPart
 
@@ -343,10 +343,10 @@ export var $Expr = createTmplMacro("$Expr", function (strings, ...exprs) {
   return this.parseExpr(expr)
 }, "import(\"@swc/core\").Expression")
 
-export var $Quote = createTmplMacro("$Quote", function (strings, ...exprs) {
+function _Quote (strings: TemplateStringsArray | string[], ...exprs: unknown[]) {
   const exprMarkers: string[] = exprs.map((_, i) => "_macro_marker_" + i + "_")
   const options = { syntax: "typescript", tsx: true } as const
-  const ast = this.parse(printRawTmpl(strings, exprMarkers), options)
+  const ast = parse(printRawTmpl(strings, exprMarkers), options).body
 
   walkObject(ast, (k, v, parent) => {
     if (k === "span") {
@@ -356,11 +356,13 @@ export var $Quote = createTmplMacro("$Quote", function (strings, ...exprs) {
 
     if (typeof v === "string") {
       const i = exprMarkers.findIndex((m) => m === v)
-      if (i !== -1) return "__macro$$Start__" + this.printExpr(exprs[i]) + "__macro$$End__"
+      if (i !== -1) return "__macro$$Start__" + printExpr(exprs[i] as Expression).code + "__macro$$End__"
     }
   })
 
   const expr = JSON.stringify(ast, undefined, 2).replace(/("__macro\$\$Start__)|(__macro\$\$End__")/g, "").replace(/\\"/g, '"')
 
-  return this.parseExpr(expr)
-}, "(import(\"@swc/core\").Expression)[]")
+  return parseExpr(expr)
+}
+
+export var $Quote = createTmplMacro("$Quote", _Quote, "(import(\"@swc/core\").Expression)[]").proxy(_Quote)

@@ -120,7 +120,7 @@ export const $Param = createExprMacro("$Param", function ([pat, decorators]) {
 
 export const $Constructor = createExprMacro("$Constructor", function ([key, params, body, accessibility, isOptional = $False]) {
   return createAst("Constructor", { key, params, body, accessibility, isOptional })
-}, "(key: import(\"@swc/core\").PropertyName, params: import(\"@swc/core\").(TsParameterProperty | Param)[], body?: import(\"@swc/core\").BlockStatement, accessibility?: import(\"@swc/core\").Accessibility, isOptional?: boolean) => import(\"@swc/core\").Constructor").proxy(createConstructor)
+}, "(key: import(\"@swc/core\").PropertyName, params: (import(\"@swc/core\").TsParameterProperty | import(\"@swc/core\").Param)[], body?: import(\"@swc/core\").BlockStatement, accessibility?: import(\"@swc/core\").Accessibility, isOptional?: boolean) => import(\"@swc/core\").Constructor").proxy(createConstructor)
 
 export const $ClassMethod = createExprMacro("$ClassMethod", function ([kind, key, fn, accessibility, isAbstract = $False, isOptional = $False, isOverride = $False, isStatic = $False]) {
   return createAst("ClassMethod", { kind, key, function: fn, accessibility, isAbstract, isOptional, isOverride, isStatic })
