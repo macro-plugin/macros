@@ -713,10 +713,9 @@ export const $TsAsExpression = createExprMacro("$TsAsExpression", function ([exp
   return createAst("TsAsExpression", { expression, typeAnnotation })
 }, "(expression: import(\"@swc/core\").Expression, typeAnnotation: import(\"@swc/core\").TsType) => import(\"@swc/core\").TsAsExpression").proxy(createTsAsExpression)
 
-// TODO: change type to TsSatisfiesExpression when swc support this
 export const $TsSatisfiesExpression = createExprMacro("$TsSatisfiesExpression", function ([expression, typeAnnotation]) {
   return createAst("TsSatisfiesExpression", { expression, typeAnnotation })
-}, "(expression: import(\"@swc/core\").Expression, typeAnnotation: import(\"@swc/core\").TsType) => Omit<import(\"@swc/core\").TsAsExpression, \"type\"> & { type: \"TsSatisfiesExpression\" }").proxy(createTsSatisfiesExpression)
+}, "(expression: import(\"@swc/core\").Expression, typeAnnotation: import(\"@swc/core\").TsType) => import(\"@swc/core\").TsSatisfiesExpression").proxy(createTsSatisfiesExpression)
 
 export const $TsInstantiation = createExprMacro("$TsInstantiation", function ([expression, typeArguments]) {
   return createAst("TsInstantiation", { expression, typeArguments })
