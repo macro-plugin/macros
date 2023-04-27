@@ -1,4 +1,5 @@
 import {
+  Plugin,
   Program,
   print,
   printSync,
@@ -9,7 +10,7 @@ import { parse, parseAsync } from "./parse"
 import type { Config } from "./types"
 import { Walker } from "./walk"
 
-export function createSwcPlugin (config: Config, src?: string, spanOffset = 0) {
+export function createSwcPlugin (config: Config, src?: string, spanOffset = 0): Plugin {
   return (program: Program) => {
     const walker = new Walker(createWalkPlugin(config.macros || []), src, config, true)
 
