@@ -27,13 +27,12 @@ async function viteMacroPlugin (config?: Config): Promise<Plugin> {
       // use macro as swc plugin when using typescript or jsx
       if (isTypeScript || isJsx) {
         const plugin = createSwcPlugin(macroOptions, code, getSpanOffset())
-        const tsOptions = resolveTsOptions(dirname(id), macroOptions.tsconfig)
         const swcOptions = patchTsOptions({
           ...basicSwcOptions,
           plugin,
           filename: id,
           minify: false
-        }, tsOptions, isTypeScript, isTsx, isJsx)
+        }, macroOptions.tsconfig === false ? undefined : resolveTsOptions(dirname(id), macroOptions.tsconfig), isTypeScript, isTsx, isJsx)
 
         return await swcTransform(code, swcOptions)
       }
