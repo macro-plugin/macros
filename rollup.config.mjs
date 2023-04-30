@@ -16,6 +16,7 @@ const external = [
   "vite",
   "rollup",
   "webpack",
+  "typescript",
   "@swc/core",
   "@macro-plugin/core"
 ]
@@ -43,6 +44,9 @@ export default defineConfig([
     plugins: [
       {
         name: "del",
+        transform (code, id) {
+          if (id.endsWith(".cts") || id.endsWith(".mts")) return ""
+        },
         buildStart () {
           rmSync("./dist", { recursive: true, force: true })
         }
@@ -53,7 +57,7 @@ export default defineConfig([
         tsconfigOverride: {
           include: ["packages/**/src"]
         }
-      }),
+      })
     ],
     onwarn (warning, warn) {
       if (warning.code === "CIRCULAR_DEPENDENCY") return
