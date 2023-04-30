@@ -1,4 +1,5 @@
 import { $Identifier } from "@macro-plugin/factory"
+import { bye } from "./second"
 
 macro: {
   var __ABC__ = "abc"
@@ -19,6 +20,8 @@ export function hello () {
   result.push(c)
 
   result.push($Quote`1 + ${a}`)
+
+  result.push(bye())
 
   if (__DEV__) {
     result.push(a)
