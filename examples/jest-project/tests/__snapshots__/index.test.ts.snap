@@ -2,9 +2,27 @@
 
 exports[`ast macro 1`] = `
 {
-  "left": 2,
+  "left": {
+    "raw": "2",
+    "span": {
+      "ctxt": 0,
+      "end": 0,
+      "start": 0,
+    },
+    "type": "NumericLiteral",
+    "value": 2,
+  },
   "operator": "*",
-  "right": 3,
+  "right": {
+    "raw": "3",
+    "span": {
+      "ctxt": 0,
+      "end": 0,
+      "start": 0,
+    },
+    "type": "NumericLiteral",
+    "value": 3,
+  },
   "span": {
     "ctxt": 0,
     "end": 0,
@@ -29,7 +47,42 @@ exports[`ast macro 2`] = `
 exports[`ast macro 3`] = `
 {
   "arguments": [],
-  "callee": [Function],
+  "callee": {
+    "object": {
+      "expression": {
+        "raw": "3",
+        "span": {
+          "ctxt": 0,
+          "end": 0,
+          "start": 0,
+        },
+        "type": "NumericLiteral",
+        "value": 3,
+      },
+      "span": {
+        "ctxt": 0,
+        "end": 0,
+        "start": 0,
+      },
+      "type": "ParenthesisExpression",
+    },
+    "property": {
+      "optional": false,
+      "span": {
+        "ctxt": 0,
+        "end": 0,
+        "start": 0,
+      },
+      "type": "Identifier",
+      "value": "toFixed",
+    },
+    "span": {
+      "ctxt": 0,
+      "end": 0,
+      "start": 0,
+    },
+    "type": "MemberExpression",
+  },
   "span": {
     "ctxt": 0,
     "end": 0,
