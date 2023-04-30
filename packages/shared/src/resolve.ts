@@ -90,11 +90,7 @@ export function extractSwcOptions<O extends object> (o: O): Options {
 /**
  * resolve typescript compiler options, for support `paths`, `target`...
  */
-export const resolveTsOptions = (
-  cwd: string,
-  tsconfig?: string | false
-) => {
-  if (tsconfig === false) return {}
+export const resolveTsOptions = (cwd: string, tsconfig?: string) => {
   const cacheKey = `${cwd}:${tsconfig ?? "undefined"}`
 
   if (TS_CACHE.has(cacheKey)) {
@@ -135,10 +131,24 @@ export function resolveSwcOptions (config: Config) {
   return swcOptions
 }
 
-export function patchTsOptions (options: Options, tsOptions: CompilerOptions, isTypeScript: boolean, isTsx: boolean, isJsx: boolean) {
+export function patchTsOptions (options: Options, tsOptions: CompilerOptions | undefined, isTypeScript: boolean, isTsx: boolean, isJsx: boolean) {
   if (!options.jsc) options.jsc = {}
 
   options.jsc.minify = undefined
+  options.jsc.parser = isTypeScript
+    ? {
+      syntax: "typescript",
+      tsx: isTsx,
+      decorators: tsOptions?.experimentalDecorators
+    }
+    : {
+      syntax: "ecmascript",
+      jsx: isJsx,
+      decorators: tsOptions?.experimentalDecorators
+    }
+
+  if (!tsOptions) return options
+
   options.jsc.transform = {
     ...options.jsc.transform || {},
     decoratorMetadata: tsOptions.emitDecoratorMetadata,
@@ -155,17 +165,6 @@ export function patchTsOptions (options: Options, tsOptions: CompilerOptions, is
   options.jsc.target = (tsOptions.target as string | undefined)?.toLowerCase() as JscTarget
   options.jsc.baseUrl = tsOptions.baseUrl
   options.jsc.paths = tsOptions.paths
-  options.jsc.parser = isTypeScript
-    ? {
-      syntax: "typescript",
-      tsx: isTsx,
-      decorators: tsOptions.experimentalDecorators
-    }
-    : {
-      syntax: "ecmascript",
-      jsx: isJsx,
-      decorators: tsOptions.experimentalDecorators
-    }
 
   return options
 }
