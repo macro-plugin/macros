@@ -125,6 +125,26 @@ export type MacroOptions = {
    * If you want include all macros globally from some package, please put them in `depends` options.
    */
   externals?: string[] | Record<string, Record<string, MacroPlugin>>;
+  /**
+   * FileNames or Glob Patterns to include, Glob pattern is supported by [picomatch](https://www.npmjs.com/package/picomatch#basic-globbing).
+   *
+   * **Note**: When array item is a string, the plugin will treat it as glob pattern, and use `picomatch.makeRe` turn the string into a RegExp, or you can use RegExp directly.
+   *
+   * Default value is `[/\.[mc]?[jt]sx?$/]`
+   */
+  include?: (string | RegExp)[];
+  /**
+   * Filenames or Glob Patterns to exclude, Glob pattern is supported by [picomatch](https://www.npmjs.com/package/picomatch#basic-globbing).
+   *
+   * **Note**: When array item is a string, the plugin will treat it as glob pattern, and use `picomatch.makeRe` turn the string into a RegExp, or you can use RegExp directly.
+   *
+   * Default value is `[/node_modules/]`
+   */
+  exclude?: (string | RegExp)[];
+  /** file extensions to be matched, default is ['.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs'] */
+  extensions?: string[];
+  /** Use given tsconfig file instead. By default it will find `tsconfig.json` automictly. Disable it by setting to `false` */
+  tsconfig?: string | false | undefined
   /** emit dts file, default is false */
   emitDts?: boolean;
   /** the dts output path, default is `./macros.d.ts` */
@@ -133,4 +153,4 @@ export type MacroOptions = {
   onEmitDts?: (dts: string) => void;
 }
 
-export type Config = Omit<Options, "plugin"> & MacroOptions
+export type Config = Omit<Options, "plugin" | "test" | "exclude" | "configFile" | "swcrc" | "swcrcRoots" | "filename"> & MacroOptions
