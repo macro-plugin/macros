@@ -23,10 +23,10 @@
     "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.1.1"
+    "@macro-plugin/core": "1.1.1",
+    "@macro-plugin/shared": "1.0.5"
   },
   "devDependencies": {
-    "@macro-plugin/shared": "1.0.5",
     "@jest/create-cache-key-function": "^27.4.2",
     "@jest/transform": "^27.5.1",
     "jest": "^27.4.4",
