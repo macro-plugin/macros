@@ -1,5 +1,11 @@
 # @macro-plugin/core
 
+## 1.1.2
+
+### Patch Changes
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`294f675`](https://github.com/macro-plugin/macros/commit/294f67574c5ff168bdeb0a499ea4ab2fd57579cf) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: support include, exclude, exclude, extensions, tsconfig options
+
 ## 1.1.1
 
 ### Patch Changes

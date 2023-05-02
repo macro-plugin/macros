@@ -1,5 +1,25 @@
 # @macro-plugin/shared
 
+## 1.1.0
+
+### Minor Changes
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`0813759`](https://github.com/macro-plugin/macros/commit/081375946893092cdd9280aa5c20333a722e5683) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: add rollup/vite file resolver
+  feat: add tsconfig compiler options resolver
+  feat: add patchTsOptions helper for patching tsconfig to swc Options
+  feat: support loading tsconfig
+
+### Patch Changes
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`4bd75d8`](https://github.com/macro-plugin/macros/commit/4bd75d8f5f59bc3c7befcc7178a9ba87ac9fad8a) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: when tsOptions is undefined, not transform jsc
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`2dd180d`](https://github.com/macro-plugin/macros/commit/2dd180d67643a63dd3abe706fe393f8da431a5f5) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: add getIdMatcher for config.external in rollup/vite plugin
+  feat: add getHasModuleSideEffects for config.external in rollup/vite plugin
+  feat: add createFilter for filtering files in rollup/vite plugin
+  feat: add matchScriptType for checking typescript and tsx
+- Updated dependencies [[`294f675`](https://github.com/macro-plugin/macros/commit/294f67574c5ff168bdeb0a499ea4ab2fd57579cf)]:
+  - @macro-plugin/core@1.1.2
+
 ## 1.0.5
 
 ### Patch Changes

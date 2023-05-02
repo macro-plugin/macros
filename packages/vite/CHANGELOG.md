@@ -1,5 +1,24 @@
 # @macro-plugin/vite
 
+## 1.1.0
+
+### Minor Changes
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`2f4428c`](https://github.com/macro-plugin/macros/commit/2f4428cd160e6cd508da1230723b1e82d3c96a29) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: resolve ts file
+  feat: support minimize script that using renderChunk
+  feat: support laoding tsconfig.json by default
+  refactor: modify externals and sideeffects
+
+### Patch Changes
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`e9b008c`](https://github.com/macro-plugin/macros/commit/e9b008c5089fcdf453cd16e7037fea9432a1f187) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: move shared to dependencies
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`94993cd`](https://github.com/macro-plugin/macros/commit/94993cdcaaf9c638f5f3b36d418d0062bfe4151f) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: when tsconfig is false, crashed swc
+
+- Updated dependencies [[`4bd75d8`](https://github.com/macro-plugin/macros/commit/4bd75d8f5f59bc3c7befcc7178a9ba87ac9fad8a), [`2dd180d`](https://github.com/macro-plugin/macros/commit/2dd180d67643a63dd3abe706fe393f8da431a5f5), [`0813759`](https://github.com/macro-plugin/macros/commit/081375946893092cdd9280aa5c20333a722e5683), [`294f675`](https://github.com/macro-plugin/macros/commit/294f67574c5ff168bdeb0a499ea4ab2fd57579cf)]:
+  - @macro-plugin/shared@1.1.0
+  - @macro-plugin/core@1.1.2
+
 ## 1.0.5
 
 ### Patch Changes
