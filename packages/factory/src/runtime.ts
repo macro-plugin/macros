@@ -680,6 +680,12 @@ export const createComputedPropName = (expression: Expression) => ({
   span
 } satisfies ComputedPropName)
 
+export const createComputed = (expression: Expression) => ({
+  type: "Computed",
+  expression,
+  span
+} satisfies ComputedPropName)
+
 export const createBlockStatement = (stmts: Statement[] = []) => ({
   type: "BlockStatement",
   stmts,
