@@ -1,5 +1,15 @@
 # @macro-plugin/factory
 
+## 1.0.8
+
+### Patch Changes
+
+- [#25](https://github.com/macro-plugin/macros/pull/25) [`c92295a`](https://github.com/macro-plugin/macros/commit/c92295a35d8d607df9965954bab3d510bff0d63d) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: new $Computed factory macro
+
+- [#25](https://github.com/macro-plugin/macros/pull/25) [`f2235ed`](https://github.com/macro-plugin/macros/commit/f2235ede72a783c33faaa0c3cf56d3a7ce2c8bc9) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: computed prop name type is computed
+
+- [#25](https://github.com/macro-plugin/macros/pull/25) [`2011422`](https://github.com/macro-plugin/macros/commit/2011422e79e9d941d6991e7177d75c186e658626) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: new createComputed factory
+
 ## 1.0.7
 
 ### Patch Changes
