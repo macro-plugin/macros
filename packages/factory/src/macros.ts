@@ -426,7 +426,7 @@ export const $MethodProperty = createExprMacro("$MethodProperty", function ([key
 }, "(key: import(\"@swc/core\").PropertyName, params: import(\"@swc/core\").Param[], body?: import(\"@swc/core\").BlockStatement, async?: boolean, generator?: boolean, decorators?: import(\"@swc/core\").Decorator[], typeParameters?: import(\"@swc/core\").TsTypeParameterDeclaration, returnType?: import(\"@swc/core\").TsTypeAnnotation) => import(\"@swc/core\").MethodProperty").proxy(createMethodProperty)
 
 export const $ComputedPropName = createExprMacro("$ComputedPropName", function ([expression]) {
-  return createAst("ComputedPropName", { expression })
+  return createAst("Computed", { expression })
 }, "(expression: import(\"@swc/core\").Expression) => import(\"@swc/core\").ComputedPropName").proxy(createComputedPropName)
 
 export const $BlockStatement = createExprMacro("$BlockStatement", function ([stmts = $Void]) {
