@@ -15,6 +15,9 @@ export default defineConfig([
     plugins: [
       {
         name: "del",
+        transform (code, id) {
+          if (id.endsWith(".cts") || id.endsWith(".mts")) return ""
+        },
         buildStart () {
           rmSync("./dist", { recursive: true, force: true })
         },
@@ -33,7 +36,8 @@ export default defineConfig([
     ],
     external: [
       "@swc/core",
-      "@macro-plugin/core"
+      "@macro-plugin/core",
+      "@macro-plugin/shared"
     ]
   }
 ])

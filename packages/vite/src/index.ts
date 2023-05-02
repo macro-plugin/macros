@@ -1,122 +1,75 @@
 import { Config, createSwcPlugin, getSpanOffset, transformAsync } from "@macro-plugin/core"
-import { Options, ParserConfig, transform } from "@swc/core"
+import { SCRIPT_EXTENSIONS, buildTransformOptions, createFilter, createResolver, getHasModuleSideEffects, getIdMatcher, matchScriptType, patchTsOptions, resolveTsOptions } from "@macro-plugin/shared"
+import { minify as swcMinify, transform as swcTransform } from "@swc/core"
 
 import type { Plugin } from "vite"
-import { buildTransformOptions } from "@macro-plugin/shared"
+import type { TreeshakingOptions } from "rollup"
+import { dirname } from "path"
 
-const isExternal = (id: string) => /(@macro-plugin)|@swc/.test(id)
+const isMacroExternal = (id: string) => /(@macro-plugin)|@swc/.test(id)
 
 async function viteMacroPlugin (config?: Config): Promise<Plugin> {
-  const [computedSwcOptions, macroOptions] = await buildTransformOptions(config)
+  const [basicSwcOptions, macroOptions] = await buildTransformOptions(config)
+  const filter = createFilter(macroOptions.include, macroOptions.exclude)
+  const extensions = macroOptions.extensions || SCRIPT_EXTENSIONS
 
   const plugin: Plugin = {
     name: "viteMacroPlugin",
+    resolveId: createResolver(extensions),
     async transform (code, id) {
-      // native macro transform without swc
-      if (id.endsWith(".js")) {
-        const result = await transformAsync(code, macroOptions)
-        return {
-          code: result.code,
-          map: result.map
-        }
-      }
+      if (!filter(id)) return null
 
-      const isTs = /\.tsx?$/.test(id)
-      const isJsx = /\.(js|ts)x$/.test(id)
+      const target = matchScriptType(id, extensions)
+      if (!target) return null
+
+      const { isTypeScript, isJsx, isTsx } = target
 
       // use macro as swc plugin when using typescript or jsx
-      if (isTs || isJsx) {
+      if (isTypeScript || isJsx) {
         const plugin = createSwcPlugin(macroOptions, code, getSpanOffset())
-        const options: Options = {
-          ...computedSwcOptions,
-          module: {
-            ...computedSwcOptions.module,
-            // async transform is always ESM
-            type: ("es6" as any)
-          },
+        const swcOptions = patchTsOptions({
+          ...basicSwcOptions,
           plugin,
-          filename: id
-        }
-        const parser: ParserConfig = isTs
-          ? {
-            syntax: "typescript",
-            tsx: isJsx,
-          }
-          : {
-            syntax: "ecmascript",
-            jsx: isJsx
-          }
+          filename: id,
+          minify: false
+        }, macroOptions.tsconfig === false ? undefined : resolveTsOptions(dirname(id), macroOptions.tsconfig), isTypeScript, isTsx, isJsx)
 
-        if (options.jsc) {
-          options.jsc.parser = parser
-        } else {
-          options.jsc = {
-            parser
-          }
-        }
-        const result = await transform(code, options)
-        return {
-          code: result.code,
-          map: result.map
-        }
+        return await swcTransform(code, swcOptions)
       }
+
+      // native macro transform without swc
+      return await transformAsync(code, macroOptions)
     },
     options (options) {
       // ignore warning on @macro-plugin
       const oldWarn = options.onwarn
       options.onwarn = (warning, warn) => {
-        if (warning.exporter && isExternal(warning.exporter) && ["UNRESOLVED_IMPORT", "UNUSED_EXTERNAL_IMPORT"].includes(warning.code || "")) return
+        if (warning.exporter && isMacroExternal(warning.exporter) && ["UNRESOLVED_IMPORT", "UNUSED_EXTERNAL_IMPORT"].includes(warning.code || "")) return
         oldWarn ? oldWarn(warning, warn) : warn(warning)
       }
 
       // add @macro-plugin to external
-      const oldExternal = options.external
-      options.external = (source, importer, isResolved) => {
-        if (isExternal(source)) return true
-        switch (typeof oldExternal) {
-          case "string": return source === oldExternal
-          case "function": return oldExternal(source, importer, isResolved)
-          case "object":
-            if (Array.isArray(oldExternal)) {
-              for (const p of oldExternal) {
-                if (new RegExp(p).test(source)) return true
-              }
-              return false
-            }
-            return oldExternal.test(source)
-        }
-        return false
-      }
+      const matchExternal = getIdMatcher(options.external)
+      options.external = (source, importer, isResolved) => isMacroExternal(source) || matchExternal(source, importer, isResolved)
 
       // add no-side-effects support for @macro-plugin
       const oldTreeshake = options.treeshake
-      if (typeof oldTreeshake === "object") {
-        options.treeshake = {
-          ...oldTreeshake,
-          moduleSideEffects (id, external) {
-            if (isExternal(id)) return false
-            switch (typeof oldTreeshake.moduleSideEffects) {
-              case "function": return oldTreeshake.moduleSideEffects ? oldTreeshake.moduleSideEffects(id, external) : true
-              case "boolean": return oldTreeshake.moduleSideEffects
-              case "object": return oldTreeshake.moduleSideEffects.includes(id)
-              case "string": return !external
-            }
-
-            return true
-          }
-        }
-      } else {
-        options.treeshake = {
-          moduleSideEffects (id) {
-            if (isExternal(id)) return false
-            if (typeof oldTreeshake === "boolean") return oldTreeshake
-            return true
-          },
-          preset: typeof oldTreeshake === "string" ? oldTreeshake : undefined
-        }
+      const getSideEffects = getHasModuleSideEffects(typeof oldTreeshake === "object" ? oldTreeshake.moduleSideEffects : undefined)
+      options.treeshake = {
+        ...(typeof oldTreeshake === "object" ? oldTreeshake : {}),
+        moduleSideEffects: (id, external) => isMacroExternal(id) ? false : getSideEffects(id, external),
+        preset: typeof oldTreeshake === "string" ? oldTreeshake : (oldTreeshake as TreeshakingOptions | undefined)?.preset
       }
     },
+    renderChunk (code) {
+      if (basicSwcOptions.minify || basicSwcOptions.jsc?.minify?.mangle || basicSwcOptions.jsc?.minify?.compress) {
+        return swcMinify(code, basicSwcOptions.jsc?.minify)
+      }
+
+      return null
+    }
   }
+
   return plugin
 }
 

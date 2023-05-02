@@ -6,12 +6,16 @@ import { rmSync } from "fs"
 import terser from "@rollup/plugin-terser"
 import typescript from "rollup-plugin-typescript2"
 
+/** @type { import("rollup").Plugin[] } */
 const plugins = [
   {
     name: "del",
     buildStart () {
       rmSync("./dist", { recursive: true, force: true })
-    }
+    },
+    transform (code, id) {
+      if (id.endsWith(".cts") || id.endsWith(".mts")) return ""
+    },
   },
   json(),
   commonjs(),

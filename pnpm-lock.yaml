@@ -125,14 +125,14 @@ importers:
 
   packages/cli:
     specifiers:
-      '@macro-plugin/core': 1.1.0
-      '@macro-plugin/shared': 1.0.4
+      '@macro-plugin/core': 1.1.1
+      '@macro-plugin/shared': 1.0.5
       commander: ^10.0.1
       node-watch: ^0.7.3
     dependencies:
       '@macro-plugin/core': link:../core
-    devDependencies:
       '@macro-plugin/shared': link:../shared
+    devDependencies:
       commander: 10.0.1
       node-watch: 0.7.3
 
@@ -144,7 +144,7 @@ importers:
 
   packages/factory:
     specifiers:
-      '@macro-plugin/core': 1.1.0
+      '@macro-plugin/core': 1.1.1
     dependencies:
       '@macro-plugin/core': link:../core
 
@@ -152,73 +152,74 @@ importers:
     specifiers:
       '@jest/create-cache-key-function': ^27.4.2
       '@jest/transform': ^27.5.1
-      '@macro-plugin/core': 1.1.0
-      '@macro-plugin/shared': 1.0.4
+      '@macro-plugin/core': 1.1.1
+      '@macro-plugin/shared': 1.0.5
       jest: ^27.4.4
       pirates: ^4.0.5
     dependencies:
       '@macro-plugin/core': link:../core
+      '@macro-plugin/shared': link:../shared
     devDependencies:
       '@jest/create-cache-key-function': 27.5.1
       '@jest/transform': 27.5.1
-      '@macro-plugin/shared': link:../shared
       jest: 27.5.1
       pirates: 4.0.5
 
   packages/qwik:
     specifiers:
-      '@macro-plugin/core': 1.1.0
+      '@macro-plugin/core': 1.1.1
     dependencies:
       '@macro-plugin/core': link:../core
 
   packages/register:
     specifiers:
-      '@macro-plugin/core': 1.1.0
-      '@macro-plugin/shared': 1.0.4
+      '@macro-plugin/core': 1.1.1
+      '@macro-plugin/shared': 1.0.5
     dependencies:
       '@macro-plugin/core': link:../core
-    devDependencies:
       '@macro-plugin/shared': link:../shared
 
   packages/rollup:
     specifiers:
-      '@macro-plugin/core': 1.1.0
-      '@macro-plugin/shared': 1.0.4
+      '@macro-plugin/core': 1.1.1
+      '@macro-plugin/shared': 1.0.5
       rollup: ^3.20.0
     dependencies:
       '@macro-plugin/core': link:../core
-    devDependencies:
       '@macro-plugin/shared': link:../shared
+    devDependencies:
       rollup: 3.20.0
 
   packages/shared:
     specifiers:
-      '@macro-plugin/core': 1.1.0
+      '@macro-plugin/core': 1.1.1
       '@types/picomatch': ^2.3.0
+      get-tsconfig: ^4.5.0
       picomatch: ^2.3.1
       pirates: ^4.0.5
     dependencies:
       '@macro-plugin/core': link:../core
     devDependencies:
       '@types/picomatch': 2.3.0
+      get-tsconfig: 4.5.0
       picomatch: 2.3.1
       pirates: 4.0.5
 
   packages/solid:
     specifiers:
-      '@macro-plugin/core': 1.1.0
+      '@macro-plugin/core': 1.1.1
     dependencies:
       '@macro-plugin/core': link:../core
 
   packages/vite:
     specifiers:
-      '@macro-plugin/core': 1.1.0
-      '@macro-plugin/shared': 1.0.4
+      '@macro-plugin/core': 1.1.1
+      '@macro-plugin/shared': 1.0.5
       vite: ^4.2.0
     dependencies:
       '@macro-plugin/core': link:../core
-    devDependencies:
       '@macro-plugin/shared': link:../shared
+    devDependencies:
       vite: 4.2.2
 
   packages/vue:
@@ -226,8 +227,8 @@ importers:
 
   packages/webpack:
     specifiers:
-      '@macro-plugin/core': 1.1.0
-      '@macro-plugin/shared': 1.0.4
+      '@macro-plugin/core': 1.1.1
+      '@macro-plugin/shared': 1.0.5
       webpack: ^5.80.0
     dependencies:
       '@macro-plugin/core': link:../core
@@ -4208,6 +4209,10 @@ packages:
     dependencies:
       call-bind: 1.0.2
       get-intrinsic: 1.2.0
+    dev: true
+
+  /get-tsconfig/4.5.0:
+    resolution: {integrity: sha512-MjhiaIWCJ1sAU4pIQ5i5OfOuHHxVo1oYeNsWTON7jxYkod8pHocXeh+SSbmu5OZZZK73B6cbJ2XADzXehLyovQ==}
     dev: true
 
   /glob-parent/5.1.2:

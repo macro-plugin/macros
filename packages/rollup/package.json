@@ -24,10 +24,10 @@
     "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.1.1"
+    "@macro-plugin/core": "1.1.1",
+    "@macro-plugin/shared": "1.0.5"
   },
   "devDependencies": {
-    "@macro-plugin/shared": "1.0.5",
     "rollup": "^3.20.0"
   },
   "exports": {

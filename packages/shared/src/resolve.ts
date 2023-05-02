@@ -1,9 +1,11 @@
 import { Config, MacroPlugin, isMacroPlugin } from "@macro-plugin/core"
-import { existsSync, readFile, writeFile } from "fs"
+import type { JscTarget, Options } from "@swc/core"
+import { constants, existsSync, promises, readFile, writeFile } from "fs"
+import { dirname, isAbsolute, join, resolve } from "path"
+import { getTsconfig, parseTsconfig } from "get-tsconfig"
 
-import type { Options } from "@swc/core"
+import type { CompilerOptions } from "typescript"
 import { createRequire } from "module"
-import path from "path"
 
 const nodeTargetDefaults = new Map([
   ["12", "es2018"],
@@ -14,22 +16,9 @@ const nodeTargetDefaults = new Map([
   ["17", "es2022"],
 ])
 
-function set (obj: any, path: string, value: any) {
-  let o = obj
-  const parents = path.split(".")
-  const key = parents.pop() as string
-
-  for (const prop of parents) {
-    if (o[prop] == null) o[prop] = {}
-    o = o[prop]
-  }
-
-  o[key] = value
-}
-
 const SWC_OPTION_KEYS: (keyof Options)[] = [
-  "test",
-  "exclude",
+  // "test",
+  // "exclude",
   "env",
   "jsc",
   "module",
@@ -39,23 +28,34 @@ const SWC_OPTION_KEYS: (keyof Options)[] = [
   "script",
   "cwd",
   "caller",
-  "filename",
+  // "filename",
   "root",
   "rootMode",
   "envName",
-  "configFile",
-  "swcrc",
-  "swcrcRoots",
+  // "configFile",
+  // "swcrc",
+  // "swcrcRoots",
   "inputSourceMap",
   "sourceFileName",
   "sourceRoot",
-  "plugin",
+  // "plugin",
   "isModule",
   "outputPath"
 ]
 
-const CWD = process.cwd()
-export const importLib = <T extends object>(moduleId: string, dir: string = CWD) => createRequire(path.resolve(dir, "noop.js"))(moduleId) as T
+const TS_CACHE = new Map<string, CompilerOptions>()
+
+export const CWD = process.cwd()
+
+export const SCRIPT_EXTENSIONS = [".js", ".ts", ".jsx", ".tsx", ".mjs", ".cjs"]
+
+export const fileExists = (path: string) => {
+  return promises.access(path, constants.F_OK)
+    .then(() => true)
+    .catch(() => false)
+}
+
+export const importLib = <T extends object>(moduleId: string, dir: string = CWD) => createRequire(resolve(dir, "noop.js"))(moduleId) as T
 
 export async function autoRequire<T> (id: string, defaultExport = false): Promise<Awaited<T>> {
   try {
@@ -87,25 +87,86 @@ export function extractSwcOptions<O extends object> (o: O): Options {
   return output
 }
 
+/**
+ * resolve typescript compiler options, for support `paths`, `target`...
+ */
+export const resolveTsOptions = (cwd: string, tsconfig?: string) => {
+  const cacheKey = `${cwd}:${tsconfig ?? "undefined"}`
+
+  if (TS_CACHE.has(cacheKey)) {
+    return TS_CACHE.get(cacheKey) ?? {}
+  }
+
+  if (tsconfig && isAbsolute(tsconfig)) {
+    const compilerOptions = parseTsconfig(tsconfig).compilerOptions ?? {}
+    TS_CACHE.set(cacheKey, compilerOptions as CompilerOptions)
+    return compilerOptions as CompilerOptions
+  }
+
+  let result = getTsconfig(cwd, tsconfig || "tsconfig.json")
+  // Only fallback to `jsconfig.json` when tsconfig can not be resolved AND custom tsconfig filename is not provided
+  if (!result && !tsconfig) {
+    result = getTsconfig(cwd, "jsconfig.json")
+  }
+
+  const compilerOptions = result?.config.compilerOptions ?? {}
+  TS_CACHE.set(cacheKey, compilerOptions as CompilerOptions)
+  return compilerOptions as CompilerOptions
+}
+
 export function resolveSwcOptions (config: Config) {
   const swcOptions = extractSwcOptions(config)
 
-  if (!swcOptions.jsc?.target) {
-    set(
-      swcOptions,
-      "jsc.target",
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      nodeTargetDefaults.get(process.version.match(/v(\d+)/)![1]) || "es2018"
-    )
+  swcOptions.swcrc = false
+  swcOptions.configFile = false
+
+  if (!swcOptions.jsc) swcOptions.jsc = {}
+
+  if (!swcOptions.jsc.target) {
+    swcOptions.jsc.target = nodeTargetDefaults.get(process.version.match(/v(\d+)/)![1]) as JscTarget || "es2018"
   }
 
-  set(swcOptions, "jsc.transform.hidden.jest", true)
-
-  if (!swcOptions.sourceMaps) {
-    set(swcOptions, "sourceMaps", "inline")
-  }
+  if (!swcOptions.sourceMaps) swcOptions.sourceMaps = "inline"
 
   return swcOptions
+}
+
+export function patchTsOptions (options: Options, tsOptions: CompilerOptions | undefined, isTypeScript: boolean, isTsx: boolean, isJsx: boolean) {
+  if (!options.jsc) options.jsc = {}
+
+  options.jsc.minify = undefined
+  options.jsc.parser = isTypeScript
+    ? {
+      syntax: "typescript",
+      tsx: isTsx,
+      decorators: tsOptions?.experimentalDecorators
+    }
+    : {
+      syntax: "ecmascript",
+      jsx: isJsx,
+      decorators: tsOptions?.experimentalDecorators
+    }
+
+  if (!tsOptions) return options
+
+  options.jsc.transform = {
+    ...options.jsc.transform || {},
+    decoratorMetadata: tsOptions.emitDecoratorMetadata,
+    react: {
+      ...options.jsc.transform?.react || {},
+      runtime: "automatic",
+      importSource: tsOptions.jsxImportSource,
+      pragma: tsOptions.jsxFactory,
+      pragmaFrag: tsOptions.jsxFragmentFactory,
+      development: tsOptions.jsx as string | undefined === "react-jsxdev" ? true : undefined
+    }
+  }
+  options.jsc.externalHelpers = tsOptions.importHelpers
+  options.jsc.target = (tsOptions.target as string | undefined)?.toLowerCase() as JscTarget
+  options.jsc.baseUrl = tsOptions.baseUrl
+  options.jsc.paths = tsOptions.paths
+
+  return options
 }
 
 export function resolveDepends (depends: string[]): MacroPlugin[] {
@@ -131,7 +192,7 @@ export function resolveExternals (externals: string[]): Record<string, Record<st
 
 export function resolveMacroOptions (config: Config) {
   if (config.emitDts && !config.onEmitDts) {
-    config.onEmitDts = (dts: string) => writeDts(path.resolve(config.dtsOutputPath || "./macros.d.ts"), dts)
+    config.onEmitDts = (dts: string) => writeDts(resolve(config.dtsOutputPath || "./macros.d.ts"), dts)
   }
 
   if (config.depends) {
@@ -144,4 +205,40 @@ export function resolveMacroOptions (config: Config) {
   }
 
   return config
+}
+
+/** create a rollup/vite file resolver */
+export function createResolver (extensions: string[]) {
+  const resolveFile = async (resolved: string, index = false) => {
+    const fileWithoutExt = resolved.replace(/\.\w+$/, "")
+
+    for (const ext of extensions) {
+      const file = index ? join(resolved, `index${ext}`) : `${fileWithoutExt}${ext}`
+      // We only check one file at a time, and we can return early
+      // eslint-disable-next-line no-await-in-loop
+      if (await fileExists(file)) return file
+    }
+    return null
+  }
+
+  return async (importee: string, importer: string | undefined) => {
+    // ignore IDs with null character, these belong to other plugins
+    if (importee.startsWith("\0")) {
+      return null
+    }
+
+    if (importer && importee[0] === ".") {
+      const resolved = resolve(
+        importer ? dirname(importer) : process.cwd(),
+        importee
+      )
+
+      let file = await resolveFile(resolved)
+      if (file) return file
+      if (!file && await fileExists(resolved) && (await promises.stat(resolved)).isDirectory()) {
+        file = await resolveFile(resolved, true)
+        if (file) return file
+      }
+    }
+  }
 }

@@ -37,6 +37,7 @@ export function hookRequire<T> (id: string): T {
   return r
 }
 
+// TODO: maybe change module import to createRequire
 export async function loadConfigFile (): Promise<[string | undefined, Config]> {
   const cwd = process.cwd()
 
