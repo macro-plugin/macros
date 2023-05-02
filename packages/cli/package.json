@@ -24,8 +24,8 @@
     "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.1.1",
-    "@macro-plugin/shared": "1.0.5"
+    "@macro-plugin/core": "1.1.2",
+    "@macro-plugin/shared": "1.1.0"
   },
   "exports": {
     "./package.json": "./package.json",

@@ -1,5 +1,12 @@
 # @macro-plugin/factory
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`294f675`](https://github.com/macro-plugin/macros/commit/294f67574c5ff168bdeb0a499ea4ab2fd57579cf)]:
+  - @macro-plugin/core@1.1.2
+
 ## 1.0.6
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@macro-plugin/vite",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Macro plugins integration for vite",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -25,8 +25,8 @@
     "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.1.1",
-    "@macro-plugin/shared": "1.0.5"
+    "@macro-plugin/core": "1.1.2",
+    "@macro-plugin/shared": "1.1.0"
   },
   "devDependencies": {
     "vite": "^4.2.0"

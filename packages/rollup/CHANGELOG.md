@@ -1,5 +1,24 @@
 # @macro-plugin/rollup
 
+## 1.1.0
+
+### Minor Changes
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`ecd916a`](https://github.com/macro-plugin/macros/commit/ecd916ae6b69a48a72887d543189399243affe53) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: resolve ts file
+  feat: support minimize script that using renderChunk
+  feat: support laoding tsconfig.json by default
+  refactor: modify externals and sideeffects
+
+### Patch Changes
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`e9b008c`](https://github.com/macro-plugin/macros/commit/e9b008c5089fcdf453cd16e7037fea9432a1f187) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: move shared to dependencies
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`c654347`](https://github.com/macro-plugin/macros/commit/c654347311617d7baf726015fb9a92cdf36f8bf7) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: when tsconfig is false, crashed swc
+
+- Updated dependencies [[`4bd75d8`](https://github.com/macro-plugin/macros/commit/4bd75d8f5f59bc3c7befcc7178a9ba87ac9fad8a), [`2dd180d`](https://github.com/macro-plugin/macros/commit/2dd180d67643a63dd3abe706fe393f8da431a5f5), [`0813759`](https://github.com/macro-plugin/macros/commit/081375946893092cdd9280aa5c20333a722e5683), [`294f675`](https://github.com/macro-plugin/macros/commit/294f67574c5ff168bdeb0a499ea4ab2fd57579cf)]:
+  - @macro-plugin/shared@1.1.0
+  - @macro-plugin/core@1.1.2
+
 ## 1.0.5
 
 ### Patch Changes

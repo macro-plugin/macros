@@ -1,5 +1,15 @@
 # @macro-plugin/register
 
+## 1.1.2
+
+### Patch Changes
+
+- [#23](https://github.com/macro-plugin/macros/pull/23) [`e9b008c`](https://github.com/macro-plugin/macros/commit/e9b008c5089fcdf453cd16e7037fea9432a1f187) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: move shared to dependencies
+
+- Updated dependencies [[`4bd75d8`](https://github.com/macro-plugin/macros/commit/4bd75d8f5f59bc3c7befcc7178a9ba87ac9fad8a), [`2dd180d`](https://github.com/macro-plugin/macros/commit/2dd180d67643a63dd3abe706fe393f8da431a5f5), [`0813759`](https://github.com/macro-plugin/macros/commit/081375946893092cdd9280aa5c20333a722e5683), [`294f675`](https://github.com/macro-plugin/macros/commit/294f67574c5ff168bdeb0a499ea4ab2fd57579cf)]:
+  - @macro-plugin/shared@1.1.0
+  - @macro-plugin/core@1.1.2
+
 ## 1.1.1
 
 ### Patch Changes
