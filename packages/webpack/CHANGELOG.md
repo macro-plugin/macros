@@ -1,5 +1,16 @@
 # @macro-plugin/webpack
 
+## 1.1.0
+
+### Minor Changes
+
+- [#27](https://github.com/macro-plugin/macros/pull/27) [`6bd5f72`](https://github.com/macro-plugin/macros/commit/6bd5f72fcb89ae988e218a447cbc3d56298174f7) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: use plugin with swc parse api
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @macro-plugin/core@1.1.3
+
 ## 1.0.6
 
 ### Patch Changes

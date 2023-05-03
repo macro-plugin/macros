@@ -1,5 +1,12 @@
 # @macro-plugin/shared
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @macro-plugin/core@1.1.3
+
 ## 1.1.0
 
 ### Minor Changes

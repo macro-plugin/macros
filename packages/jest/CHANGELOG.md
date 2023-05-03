@@ -1,5 +1,17 @@
 # @macro-plugin/jest
 
+## 1.1.0
+
+### Minor Changes
+
+- [#27](https://github.com/macro-plugin/macros/pull/27) [`8b1c4ad`](https://github.com/macro-plugin/macros/commit/8b1c4adc1a5512d74eaf268d7f8c1ab46f772930) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: use plugin with swc parse api
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @macro-plugin/core@1.1.3
+  - @macro-plugin/shared@1.1.1
+
 ## 1.0.6
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @macro-plugin/qwik
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @macro-plugin/core@1.1.3
+
 ## 1.0.6
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @macro-plugin/vite
 
+## 1.2.0
+
+### Minor Changes
+
+- [#27](https://github.com/macro-plugin/macros/pull/27) [`9967b95`](https://github.com/macro-plugin/macros/commit/9967b95877a06744ba7af3855d387e20ffa9a960) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: use plugin with swc parse api
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @macro-plugin/core@1.1.3
+  - @macro-plugin/shared@1.1.1
+
 ## 1.1.0
 
 ### Minor Changes

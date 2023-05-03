@@ -1,5 +1,17 @@
 # @macro-plugin/rollup
 
+## 1.2.0
+
+### Minor Changes
+
+- [#27](https://github.com/macro-plugin/macros/pull/27) [`c300dc2`](https://github.com/macro-plugin/macros/commit/c300dc264b2af8a86aa1ea31df4d95c658134deb) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: use plugin with swc parse api
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @macro-plugin/core@1.1.3
+  - @macro-plugin/shared@1.1.1
+
 ## 1.1.0
 
 ### Minor Changes
