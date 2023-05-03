@@ -1,5 +1,5 @@
 import { MacroOptions, createSwcPlugin, getSpanOffset, transformAsync } from "@macro-plugin/core"
-import { Options, transform } from "@swc/core"
+import { Options, parse, transform } from "@swc/core"
 import { buildTransformOptions, hasProp } from "@macro-plugin/shared"
 
 import type { LoaderDefinitionFunction } from "webpack"
@@ -66,14 +66,16 @@ function createLoader () {
         }, callback)
       } else {
         const offset = getSpanOffset()
-        swcOptions.plugin = createSwcPlugin(macroOptions, source, offset)
+        const plugin = createSwcPlugin(macroOptions, source, offset)
         // using swc transform ts/js/tsx
-        transform(source, swcOptions).then(output => {
-          callback(
-            null,
-            output.code,
-            output.map
-          )
+        parse(source, swcOptions.jsc?.parser || { syntax: "typescript", tsx: true }).then(program => {
+          transform(plugin(program), swcOptions).then(output => {
+            callback(
+              null,
+              output.code,
+              output.map
+            )
+          }, callback)
         }, callback)
       }
     }
