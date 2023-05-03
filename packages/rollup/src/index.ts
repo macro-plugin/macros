@@ -1,6 +1,6 @@
 import { Config, createSwcPlugin, getSpanOffset, transformAsync } from "@macro-plugin/core"
 import { SCRIPT_EXTENSIONS, buildTransformOptions, createFilter, createResolver, getHasModuleSideEffects, getIdMatcher, matchScriptType, patchTsOptions, resolveTsOptions } from "@macro-plugin/shared"
-import { minify as swcMinify, transform as swcTransform } from "@swc/core"
+import { minify as swcMinify, parse as swcParse, transform as swcTransform } from "@swc/core"
 
 import type { Plugin } from "rollup"
 import { TreeshakingOptions } from "rollup"
@@ -24,17 +24,16 @@ async function rollupMacroPlugin (config?: Config): Promise<Plugin> {
 
       const { isTypeScript, isJsx, isTsx } = target
 
-      // use macro as swc plugin when using typescript or jsx
+      // use swc transform typescript and jsx
       if (isTypeScript || isJsx) {
-        const plugin = createSwcPlugin(macroOptions, code, getSpanOffset())
+        const macroPlugin = createSwcPlugin(macroOptions, code, getSpanOffset())
         const swcOptions = patchTsOptions({
           ...basicSwcOptions,
-          plugin,
           filename: id,
           minify: false
         }, macroOptions.tsconfig === false ? undefined : resolveTsOptions(dirname(id), macroOptions.tsconfig), isTypeScript, isTsx, isJsx)
-
-        return await swcTransform(code, swcOptions)
+        const program = await swcParse(code, swcOptions.jsc?.parser || { syntax: "typescript" })
+        return await swcTransform(macroPlugin(program), swcOptions)
       }
 
       // native macro transform without swc
