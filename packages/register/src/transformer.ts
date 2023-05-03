@@ -1,5 +1,5 @@
 import { MacroOptions, createSwcPlugin, getSpanOffset, transform } from "@macro-plugin/core"
-import { ParserConfig, transformSync as swcTransform } from "@swc/core"
+import { ParserConfig, parseSync as swcParse, transformSync as swcTransform } from "@swc/core"
 
 import type { Options } from "@swc/core"
 import { buildTransformOptionsSync } from "@macro-plugin/shared"
@@ -18,17 +18,8 @@ export function transformJS (src: string) {
 
 export function transformTS (src: string, filename: string) {
   const [swcOptions, macroOptions] = getConfig()
-  const plugin = createSwcPlugin(macroOptions, src, getSpanOffset())
-  const options: Options = {
-    ...swcOptions,
-    module: {
-      ...swcOptions.module,
-      // async transform is always ESM
-      type: ("es6" as any)
-    },
-    plugin,
-    filename
-  }
+  const macroPlugin = createSwcPlugin(macroOptions, src, getSpanOffset())
+
   const isJsx = /\.(js|ts)x$/.test(filename)
   const parser: ParserConfig = /\.tsx?$/.test(filename)
     ? {
@@ -40,12 +31,15 @@ export function transformTS (src: string, filename: string) {
       jsx: isJsx
     }
 
-  if (options.jsc) {
-    options.jsc.parser = parser
+  swcOptions.filename = filename
+  if (swcOptions.jsc) {
+    swcOptions.jsc.parser = parser
   } else {
-    options.jsc = {
+    swcOptions.jsc = {
       parser
     }
   }
-  return swcTransform(src, options).code
+
+  const program = swcParse(src, parser)
+  return swcTransform(macroPlugin(program), swcOptions).code
 }
