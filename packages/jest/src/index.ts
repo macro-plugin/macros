@@ -1,5 +1,5 @@
 import { Config, createSwcPlugin, getSpanOffset } from "@macro-plugin/core"
-import { Options, version as swcVersion, transform, transformSync } from "@swc/core"
+import { Options, parse, parseSync, version as swcVersion, transform, transformSync } from "@swc/core"
 import type { TransformOptions, Transformer } from "@jest/transform"
 
 import { buildTransformOptions } from "@macro-plugin/shared"
@@ -56,29 +56,31 @@ async function createTransformer (inputOptions: Config & {
       // Determine if we actually instrument codes if jest runs with --coverage
       insertInstrumentOptions(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
       const offset = getSpanOffset()
+      const plugin = createSwcPlugin(macroOptions, src, offset)
+      const program = parseSync(src, computedSwcOptions.jsc?.parser || { syntax: "typescript", tsx: true })
 
-      return transformSync(src, {
+      return transformSync(plugin(program), {
         ...computedSwcOptions,
         module: {
           ...computedSwcOptions.module,
           type: (jestOptions.supportsStaticESM ? "es6" : "commonjs" as any)
         },
-        plugin: createSwcPlugin(macroOptions, src, offset),
         filename
       })
     },
     async processAsync (src, filename, jestOptions) {
       insertInstrumentOptions(jestOptions, !!canInstrument, computedSwcOptions, instrumentOptions)
       const offset = getSpanOffset()
+      const plugin = createSwcPlugin(macroOptions, src, offset)
+      const program = await parse(src, computedSwcOptions.jsc?.parser || { syntax: "typescript", tsx: true })
 
-      return await transform(src, {
+      return await transform(plugin(program), {
         ...computedSwcOptions,
         module: {
           ...computedSwcOptions.module,
           // async transform is always ESM
           type: ("es6" as any)
         },
-        plugin: createSwcPlugin(macroOptions, src, offset),
         filename
       })
     },

@@ -103,3 +103,11 @@ exports[`use as swc plugin 1`] = `
 }
 "
 `;
+
+exports[`use with swc transform ast 1`] = `
+"var a = "Hello";
+if (true) {
+    console.log("development");
+}
+"
+`;
