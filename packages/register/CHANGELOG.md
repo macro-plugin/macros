@@ -1,5 +1,15 @@
 # @macro-plugin/register
 
+## 1.1.3
+
+### Patch Changes
+
+- [#27](https://github.com/macro-plugin/macros/pull/27) [`95e0d68`](https://github.com/macro-plugin/macros/commit/95e0d686e5056356e5c33a9f1201b667dbc1771e) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: use plugin with swc parse api
+
+- Updated dependencies []:
+  - @macro-plugin/core@1.1.3
+  - @macro-plugin/shared@1.1.1
+
 ## 1.1.2
 
 ### Patch Changes

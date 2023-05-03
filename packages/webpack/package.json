@@ -1,6 +1,6 @@
 {
   "name": "@macro-plugin/webpack",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Macro plugins integration for webpack",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -23,10 +23,10 @@
     "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.1.2"
+    "@macro-plugin/core": "1.1.3"
   },
   "devDependencies": {
-    "@macro-plugin/shared": "1.1.0",
+    "@macro-plugin/shared": "1.1.1",
     "webpack": "^5.80.0"
   },
   "exports": {
