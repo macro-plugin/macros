@@ -1,10 +1,11 @@
+import type { CompilerOptions, ResolutionMode, ResolvedProjectReference } from "typescript"
 import { Config, MacroPlugin, isMacroPlugin } from "@macro-plugin/core"
+import { Filter, FormattingHost, TsLib } from "./types"
 import type { JscTarget, Options } from "@swc/core"
-import { constants, existsSync, promises, readFile, writeFile } from "fs"
-import { dirname, isAbsolute, join, resolve } from "path"
+import { constants, existsSync, promises, readFile, readFileSync, writeFile } from "fs"
+import { dirname, isAbsolute, join, normalize, posix, resolve, win32 } from "path"
 import { getTsconfig, parseTsconfig } from "get-tsconfig"
 
-import type { CompilerOptions } from "typescript"
 import { createRequire } from "module"
 
 const nodeTargetDefaults = new Map([
@@ -205,6 +206,112 @@ export function resolveMacroOptions (config: Config) {
   }
 
   return config
+}
+
+export function createTsLib (): TsLib {
+  let source: string
+  let version: string
+  try {
+    const require = createRequire(resolve(process.cwd(), "noop.js"))
+    const tslibPackage = require("tslib/package.json")
+    const tslibPath = require.resolve("tslib/" + tslibPackage.module)
+    source = readFileSync(tslibPath, "utf8")
+    version = tslibPackage.version
+    return { lib: "tslib", virtual: "\0tslib.js", source, version }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn("macros: Error loading `tslib` helper library.")
+    throw e
+  }
+}
+
+export function normalizePath (filename: string) {
+  return filename.split(win32.sep).join(posix.sep)
+}
+
+export function createModuleResolver (ts: typeof import("typescript"), host: FormattingHost) {
+  const compilerOptions = host.getCompilationSettings()
+  const cache = ts.createModuleResolutionCache(
+    process.cwd(),
+    host.getCanonicalFileName,
+    compilerOptions
+  )
+  const moduleHost = { ...ts.sys, ...host }
+
+  return (moduleName: string, containingFile: string, redirectedReference?: ResolvedProjectReference, mode?: ResolutionMode) => {
+    const resolved = ts.resolveModuleName(
+      moduleName,
+      containingFile,
+      compilerOptions,
+      moduleHost,
+      cache,
+      redirectedReference,
+      mode
+    )
+    return resolved.resolvedModule
+  }
+}
+
+export function createFormattingHost (ts: typeof import("typescript"), compilerOptions: CompilerOptions): FormattingHost {
+  return {
+    /** Returns the compiler options for the project. */
+    getCompilationSettings: () => compilerOptions,
+    /** Returns the current working directory. */
+    getCurrentDirectory: () => process.cwd(),
+    /** Returns the string that corresponds with the selected `NewLineKind`. */
+    getNewLine () {
+      switch (compilerOptions.newLine) {
+        case ts.NewLineKind.CarriageReturnLineFeed:
+          return "\r\n"
+        case ts.NewLineKind.LineFeed:
+          return "\n"
+        default:
+          return ts.sys.newLine
+      }
+    },
+    /** Returns a lower case name on case insensitive systems, otherwise the original name. */
+    getCanonicalFileName: (fileName: string) =>
+      ts.sys.useCaseSensitiveFileNames ? fileName : fileName.toLowerCase(),
+  }
+}
+
+/** create a rollup/vite typescript file resolver */
+export function createTsResolver (tslib: TsLib, compilerOptions: CompilerOptions, filter: Filter) {
+  const ts = importLib<typeof import("typescript")>("typescript")
+  const formatHost = createFormattingHost(ts, {})
+  const resolveModule = createModuleResolver(ts, formatHost)
+
+  return (importee: string, importer: string | undefined) => {
+    if (importee === tslib.lib) return tslib.virtual
+    if (!importer) return null
+
+    // Convert path from windows separators to posix separators
+    const containingFile = normalizePath(importer)
+
+    // when using node16 or nodenext module resolution, we need to tell ts if
+    // we are resolving to a commonjs or esnext module
+    const mode =
+      typeof ts.getImpliedNodeFormatForFile === "function"
+        ? ts.getImpliedNodeFormatForFile(
+          // @ts-expect-error
+          containingFile,
+          undefined, // eslint-disable-line no-undefined
+          { ...ts.sys, ...formatHost },
+          compilerOptions
+        )
+        : undefined // eslint-disable-line no-undefined
+
+    // eslint-disable-next-line no-undefined
+    const resolved = resolveModule(importee, containingFile, undefined, mode)
+
+    if (resolved) {
+      if (/\.d\.[cm]?ts/.test(resolved.extension)) return null
+      if (!filter(resolved.resolvedFileName)) return null
+      return normalize(resolved.resolvedFileName)
+    }
+
+    return null
+  }
 }
 
 /** create a rollup/vite file resolver */
