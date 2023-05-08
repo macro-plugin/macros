@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "eval": "macros run ./src/index.ts",
-    "build": "macros build ./src/index.ts",
-    "dev": "macros dev ./src/index.ts",
+    "build": "macros build ./src/*.ts -o ./dist",
+    "dev": "macros dev ./src/*.ts -o ./dist",
     "emit": "macros emit",
     "shell": "macros shell",
     "shell:swc": "macros shell --transform --swc",
