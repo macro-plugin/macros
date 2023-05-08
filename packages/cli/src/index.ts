@@ -189,7 +189,7 @@ function watchFiles (input: string[], options: MainOptions) {
 }
 
 function nodeval (file: string, options: MainOptions = {}) {
-  const macrosOutputFile = options.output || file.replace(/\.\w+$/, ".output.js")
+  const macrosOutputFile = options.output ? /\.[cm]?js$/.test(options.output) ? options.output : path.join(options.output, path.basename(file.replace(/\.\w+$/, ".js"))) : file.replace(/\.\w+$/, ".output.js")
 
   if (!options.run) {
     const src = readFileSync(file).toString()
@@ -198,8 +198,10 @@ function nodeval (file: string, options: MainOptions = {}) {
     if (!existsSync(dir)) mkdirSync(dir)
 
     writeFile(macrosOutputFile, file.endsWith(".js") ? transformJS(src) : transformTS(src, file), (err) => {
-      if (err !== null) {
-        console.log(`${file} → ${macrosOutputFile}`)
+      if (err == null) {
+        console.log(`${path.relative(".", file)} → ${path.relative(".", macrosOutputFile)}`)
+      } else {
+        console.error(err.message)
       }
     })
 
