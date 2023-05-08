@@ -1,5 +1,6 @@
 import commonjs from "@rollup/plugin-commonjs"
 import { defineConfig } from "rollup"
+import json from "@rollup/plugin-json"
 import { nodeResolve } from "@rollup/plugin-node-resolve"
 import { rmSync } from "fs"
 import terser from "@rollup/plugin-terser"
@@ -19,6 +20,7 @@ const plugins = [
       rmSync("./dist/packages", { recursive: true, force: true })
     }
   },
+  json(),
   commonjs(),
   nodeResolve(),
   typescript({
