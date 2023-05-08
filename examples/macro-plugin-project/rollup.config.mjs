@@ -14,6 +14,8 @@ export default defineConfig({
     }
   ],
   plugins: [
-    macroPlugin()
+    macroPlugin({
+      tsconfig: false
+    })
   ]
 })
