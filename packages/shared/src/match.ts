@@ -1,3 +1,4 @@
+import { HasModuleSideEffects, MatchOptions } from "./types"
 import { existsSync, readdirSync, statSync } from "fs"
 import { extname, resolve } from "path"
 
@@ -5,11 +6,6 @@ import type { Matcher } from "picomatch"
 import picomatch from "picomatch"
 
 export { picomatch }
-
-export interface MatchOptions {
-  cwd: string;
-  ignore?: string[];
-}
 
 export const DEFAULT_INCLUDE = [/\.[cm]?[jt]sx?$/]
 
@@ -138,8 +134,6 @@ export const getIdMatcher = <T extends Array<any>>(
   }
   return () => false
 }
-
-export type HasModuleSideEffects = (id: string, external: boolean) => boolean;
 
 export const getHasModuleSideEffects = (
   moduleSideEffectsOption: boolean | "no-external" | string[] | HasModuleSideEffects | undefined

@@ -100,7 +100,7 @@ export type MacroPluginWithProxy = MacroPlugin & {
 }
 
 export type MacroOptions = {
-  /** global macros to be used */
+  /** Global macros to be used */
   macros?: MacroPlugin[];
   /**
    * Packages that includes macros.
@@ -141,16 +141,20 @@ export type MacroOptions = {
    * Default value is `[/node_modules/]`
    */
   exclude?: (string | RegExp)[];
-  /** file extensions to be matched, default is ['.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs'] */
+  /** File extensions to be matched. This option is only avaliable for vite/rollup/webpack plugin. Default is ['.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs'] */
   extensions?: string[];
-  /** Use given tsconfig file instead. By default it will find `tsconfig.json` automictly. Disable it by setting to `false` */
-  tsconfig?: string | false | undefined
-  /** emit dts file, default is false */
+  /** Emit macro's dts file, default is false */
   emitDts?: boolean;
-  /** the dts output path, default is `./macros.d.ts` */
+  /** The macro's dts output path, default is `./macros.d.ts` */
   dtsOutputPath?: string;
-  /** hook when emit dts, we use this hook for emitting dts file */
+  /** Hook when emit macro's dts, we use this hook for emitting dts file */
   onEmitDts?: (dts: string) => void;
+  /** Use given tsconfig file instead. This option is only avaliable for vite/rollup/webpack plugin. By default it will find `tsconfig.json` automictly. Disable it by setting to `false`. */
+  tsconfig?: string | false | undefined
+  /** Use Typescript File Resolver, default is `false`. This option is only avaliable for vite/rollup plugin. When using vite/rollup in monorepo typescript project, this option may useful. */
+  resolveTs?: boolean;
+  /** Transform Typescript syntax with swc, default is `true`. This option is only avaliable for vite/rollup/webpack plugin. By disabling this option, you can use macro plugin with other typescript plugin together. */
+  swcTransform?: boolean;
 }
 
 export type Config = Omit<Options, "plugin" | "test" | "exclude" | "configFile" | "swcrc" | "swcrcRoots" | "filename"> & MacroOptions

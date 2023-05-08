@@ -5,8 +5,8 @@
 import { MacroOptions, parse, transform } from "@macro-plugin/core"
 import type { MainOptions, ShellOptions } from "./types"
 import { buildTransformOptionsSync, extractFiles, extractInput, matchPattern, picomatch, writeDts } from "@macro-plugin/shared"
-import { existsSync, readFileSync, rmSync, writeFile, writeFileSync } from "fs"
-import path, { resolve } from "path"
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFile, writeFileSync } from "fs"
+import path, { dirname, resolve } from "path"
 import { stderr, stdin } from "process"
 import { transformJS, transformTS } from "../../register/src/transformer"
 
@@ -42,7 +42,7 @@ program
   .option("-e, --eval <script>", "evaluate script")
   .option("-i, --interactive", "run an interactive Macros shell")
   .option("-m, --minify", "enable/disable minification")
-  .option("-o, --output", "output file name or directory")
+  .option("-o, --output <path>", "output file name or directory")
   .option("-p, --print", "print generated code")
   .action(((files: string[], options: MainOptions & { init?: boolean | string }) => {
     if (options.init) return initialize(typeof options.init === "boolean" ? "js" : options.init)
@@ -78,7 +78,7 @@ program
   .argument("[files...]", "input (.js | .ts | .jsx | .tsx) files or glob patterns", [])
   .option("-r, --run", "use node run the files")
   .option("-m, --minify", "enable/disable minification")
-  .option("-o, --output", "output file name or directory")
+  .option("-o, --output <path>", "output file name or directory")
   .action((files: string[], options: MainOptions) => watchFiles(files, options))
 
 program
@@ -95,7 +95,7 @@ program
   // .option("--sourcemap", "output source maps for build (default: false)")
   .option("-m, --minify", "enable/disable minification")
   .option("-r, --run", "use node run the files")
-  .option("-o, --output <file>", "output file name or directory")
+  .option("-o, --output <path>", "output file name or directory")
   .option("-w, --watch", "rebuilds when modules have changed on disk")
   .action((files: string[], options: MainOptions & { watch?: boolean }) => {
     if (options.watch) return watchFiles(files, options as MainOptions)
@@ -189,14 +189,19 @@ function watchFiles (input: string[], options: MainOptions) {
 }
 
 function nodeval (file: string, options: MainOptions = {}) {
-  const macrosOutputFile = options.output || file.replace(/\.\w+$/, ".output.js")
+  const macrosOutputFile = options.output ? /\.[cm]?js$/.test(options.output) ? options.output : path.join(options.output, path.basename(file.replace(/\.\w+$/, ".js"))) : file.replace(/\.\w+$/, ".output.js")
 
   if (!options.run) {
     const src = readFileSync(file).toString()
 
+    const dir = dirname(macrosOutputFile)
+    if (!existsSync(dir)) mkdirSync(dir)
+
     writeFile(macrosOutputFile, file.endsWith(".js") ? transformJS(src) : transformTS(src, file), (err) => {
-      if (err !== null) {
-        console.log(`${file} → ${macrosOutputFile}`)
+      if (err == null) {
+        console.log(`${path.relative(".", file)} → ${path.relative(".", macrosOutputFile)}`)
+      } else {
+        console.error(err.message)
       }
     })
 

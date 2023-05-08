@@ -1,9 +1,10 @@
 import { MacroOptions, createSwcPlugin, getSpanOffset, transformAsync } from "@macro-plugin/core"
 import { Options, parse, transform } from "@swc/core"
-import { buildTransformOptions, hasProp } from "@macro-plugin/shared"
+import { SCRIPT_EXTENSIONS, buildTransformOptions, createFilter, hasProp, matchScriptType, patchTsOptions, resolveTsOptions } from "@macro-plugin/shared"
 
 import type { LoaderDefinitionFunction } from "webpack"
 import type { LoaderOptions } from "./types"
+import { dirname } from "path"
 
 var CURRENT_OPTIONS: [Options, MacroOptions, string | undefined] | undefined
 
@@ -54,30 +55,47 @@ function createLoader () {
     }
 
     const compile = () => {
-      const [swcOptions, macroOptions] = CURRENT_OPTIONS!
-      if (filename.endsWith(".js")) {
-        // using macro-plugin native transform without swc
-        transformAsync(source, macroOptions).then(output => {
-          callback(
-            null,
-            output.code,
-            output.map
-          )
-        }, callback)
-      } else {
-        const offset = getSpanOffset()
-        const plugin = createSwcPlugin(macroOptions, source, offset)
-        // using swc transform ts/js/tsx
-        parse(source, swcOptions.jsc?.parser || { syntax: "typescript", tsx: true }).then(program => {
-          transform(plugin(program), swcOptions).then(output => {
-            callback(
-              null,
-              output.code,
-              output.map
-            )
+      const [basicSwcOptions, macroOptions] = CURRENT_OPTIONS!
+      const extensions = macroOptions.extensions || SCRIPT_EXTENSIONS
+      const filter = createFilter(macroOptions.include, macroOptions.exclude)
+
+      if (!filter(filename)) return
+
+      const target = matchScriptType(filename, extensions)
+      if (!target) return
+
+      if (macroOptions.swcTransform == null || macroOptions.swcTransform === true) {
+        const { isTypeScript, isJsx, isTsx } = target
+
+        if (isTypeScript || isJsx) {
+          const plugin = createSwcPlugin(macroOptions, source, getSpanOffset())
+          // using swc transform ts/js/tsx
+
+          const swcOptions = patchTsOptions({
+            ...basicSwcOptions,
+            filename,
+            minify: false
+          }, macroOptions.tsconfig === false ? undefined : resolveTsOptions(dirname(filename), macroOptions.tsconfig), isTypeScript, isTsx, isJsx)
+
+          return parse(source, swcOptions.jsc?.parser || { syntax: "typescript", tsx: true }).then(program => {
+            transform(plugin(program), swcOptions).then(output => {
+              callback(
+                null,
+                output.code,
+                output.map
+              )
+            }, callback)
           }, callback)
-        }, callback)
+        }
       }
+
+      transformAsync(source, macroOptions).then(output => {
+        callback(
+          null,
+          output.code,
+          output.map
+        )
+      }, callback)
     }
 
     try {

@@ -3,6 +3,7 @@ import { readFileSync, rmSync, writeFileSync } from "fs"
 import commonjs from "@rollup/plugin-commonjs"
 import { defineConfig } from "rollup"
 import dts from "rollup-plugin-dts"
+import json from "@rollup/plugin-json"
 import nodeResolve from "@rollup/plugin-node-resolve"
 import path from "path"
 import typescript from "rollup-plugin-typescript2"
@@ -51,6 +52,7 @@ export default defineConfig([
           rmSync("./dist", { recursive: true, force: true })
         }
       },
+      json(),
       nodeResolve(),
       commonjs(),
       typescript({
