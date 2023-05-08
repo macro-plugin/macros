@@ -232,8 +232,8 @@ importers:
       webpack: ^5.80.0
     dependencies:
       '@macro-plugin/core': link:../core
-    devDependencies:
       '@macro-plugin/shared': link:../shared
+    devDependencies:
       webpack: 5.80.0
 
 packages:
