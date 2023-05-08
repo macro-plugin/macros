@@ -1,5 +1,13 @@
 # @macro-plugin/jest
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`c398ad6`](https://github.com/macro-plugin/macros/commit/c398ad61bd1aa9b79c1a98f7e811323f996f5658), [`e3ce376`](https://github.com/macro-plugin/macros/commit/e3ce37696e0a21bdddb56804f7dbcfa904f5fd35), [`b1d3bff`](https://github.com/macro-plugin/macros/commit/b1d3bffcac4ef25930bd7ee4409664f6fb00fb06)]:
+  - @macro-plugin/shared@1.2.0
+  - @macro-plugin/core@1.1.4
+
 ## 1.1.0
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @macro-plugin/vite
 
+## 1.2.1
+
+### Patch Changes
+
+- [#29](https://github.com/macro-plugin/macros/pull/29) [`e2fdb86`](https://github.com/macro-plugin/macros/commit/e2fdb8660d2507a20aa19e0e21402149280e9ae2) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: support turn swcTransform off
+  feat: support enable typescript resolver
+- Updated dependencies [[`c398ad6`](https://github.com/macro-plugin/macros/commit/c398ad61bd1aa9b79c1a98f7e811323f996f5658), [`e3ce376`](https://github.com/macro-plugin/macros/commit/e3ce37696e0a21bdddb56804f7dbcfa904f5fd35), [`b1d3bff`](https://github.com/macro-plugin/macros/commit/b1d3bffcac4ef25930bd7ee4409664f6fb00fb06)]:
+  - @macro-plugin/shared@1.2.0
+  - @macro-plugin/core@1.1.4
+
 ## 1.2.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @macro-plugin/core
 
+## 1.1.4
+
+### Patch Changes
+
+- [#29](https://github.com/macro-plugin/macros/pull/29) [`e3ce376`](https://github.com/macro-plugin/macros/commit/e3ce37696e0a21bdddb56804f7dbcfa904f5fd35) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: support resolveTs and swcTransform options
+
 ## 1.1.3
 
 ## 1.1.2

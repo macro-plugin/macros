@@ -1,5 +1,15 @@
 # @macro-plugin/rollup
 
+## 1.2.1
+
+### Patch Changes
+
+- [#29](https://github.com/macro-plugin/macros/pull/29) [`12cb6f2`](https://github.com/macro-plugin/macros/commit/12cb6f230c39b767a564cf02146eb395ab2f512d) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: support turn swcTransform off
+  feat: support enable typescript resolver
+- Updated dependencies [[`c398ad6`](https://github.com/macro-plugin/macros/commit/c398ad61bd1aa9b79c1a98f7e811323f996f5658), [`e3ce376`](https://github.com/macro-plugin/macros/commit/e3ce37696e0a21bdddb56804f7dbcfa904f5fd35), [`b1d3bff`](https://github.com/macro-plugin/macros/commit/b1d3bffcac4ef25930bd7ee4409664f6fb00fb06)]:
+  - @macro-plugin/shared@1.2.0
+  - @macro-plugin/core@1.1.4
+
 ## 1.2.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @macro-plugin/shared
 
+## 1.2.0
+
+### Minor Changes
+
+- [#29](https://github.com/macro-plugin/macros/pull/29) [`c398ad6`](https://github.com/macro-plugin/macros/commit/c398ad61bd1aa9b79c1a98f7e811323f996f5658) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: add moduleResolver and tsResolver
+
+### Patch Changes
+
+- [#29](https://github.com/macro-plugin/macros/pull/29) [`b1d3bff`](https://github.com/macro-plugin/macros/commit/b1d3bffcac4ef25930bd7ee4409664f6fb00fb06) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: extract types
+
+- Updated dependencies [[`e3ce376`](https://github.com/macro-plugin/macros/commit/e3ce37696e0a21bdddb56804f7dbcfa904f5fd35)]:
+  - @macro-plugin/core@1.1.4
+
 ## 1.1.1
 
 ### Patch Changes
