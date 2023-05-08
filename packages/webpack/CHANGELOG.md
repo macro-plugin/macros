@@ -1,5 +1,18 @@
 # @macro-plugin/webpack
 
+## 1.2.0
+
+### Minor Changes
+
+- [#29](https://github.com/macro-plugin/macros/pull/29) [`34175b3`](https://github.com/macro-plugin/macros/commit/34175b39dad726b139f32c8ded15cce10b68db85) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: support filename filter with include and exclude options
+  feat: support resolve tsconfig
+
+### Patch Changes
+
+- Updated dependencies [[`c398ad6`](https://github.com/macro-plugin/macros/commit/c398ad61bd1aa9b79c1a98f7e811323f996f5658), [`e3ce376`](https://github.com/macro-plugin/macros/commit/e3ce37696e0a21bdddb56804f7dbcfa904f5fd35), [`b1d3bff`](https://github.com/macro-plugin/macros/commit/b1d3bffcac4ef25930bd7ee4409664f6fb00fb06)]:
+  - @macro-plugin/shared@1.2.0
+  - @macro-plugin/core@1.1.4
+
 ## 1.1.0
 
 ### Minor Changes
