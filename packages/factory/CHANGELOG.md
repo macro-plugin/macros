@@ -1,5 +1,15 @@
 # @macro-plugin/factory
 
+## 1.0.11
+
+### Patch Changes
+
+- [#31](https://github.com/macro-plugin/macros/pull/31) [`cf954f1`](https://github.com/macro-plugin/macros/commit/cf954f176cec1acb2e23a3e0786d76c77d06d635) Thanks [@voorjaar](https://github.com/voorjaar)! - perf: omit undefined prop when generating ast
+
+- [#31](https://github.com/macro-plugin/macros/pull/31) [`cf954f1`](https://github.com/macro-plugin/macros/commit/cf954f176cec1acb2e23a3e0786d76c77d06d635) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: ctxt of parsed expression causing variable name changed
+
+- [#31](https://github.com/macro-plugin/macros/pull/31) [`cf954f1`](https://github.com/macro-plugin/macros/commit/cf954f176cec1acb2e23a3e0786d76c77d06d635) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: parse ts expression in factory macro
+
 ## 1.0.10
 
 ### Patch Changes
