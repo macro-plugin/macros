@@ -47,7 +47,6 @@ exports[`$CallExpression macro transform 1`] = `
         }
     },
     "arguments": [],
-    "typeArguments": undefined,
     "span": {
         "start": 0,
         "end": 0,
@@ -71,7 +70,6 @@ const b = {
             "expression": {
                 "type": "StringLiteral",
                 "value": "hello",
-                "raw": undefined,
                 "span": {
                     "start": 0,
                     "end": 0,
@@ -80,7 +78,6 @@ const b = {
             }
         }
     ],
-    "typeArguments": undefined,
     "span": {
         "start": 0,
         "end": 0,
@@ -141,7 +138,6 @@ exports[`$StringLiteral macro transform 1`] = `
 "const a = {
     "type": "StringLiteral",
     "value": "hello",
-    "raw": undefined,
     "span": {
         "start": 0,
         "end": 0,
@@ -152,12 +148,44 @@ const v = "world";
 const b = {
     "type": "StringLiteral",
     "value": v,
-    "raw": undefined,
     "span": {
         "start": 0,
         "end": 0,
         "ctxt": 0
     }
 };
+"
+`;
+
+exports[`ctxt shouldn't rename variable name 1`] = `
+"createMacro({
+    MemberExpression: function MemberExpression(ast) {
+        if (ast.object.type === "Identifier") {
+            ast.object = {
+                "type": "CallExpression",
+                "callee": {
+                    "type": "Identifier",
+                    "value": "$$ptagWrap",
+                    "optional": false,
+                    "span": {
+                        "start": 0,
+                        "end": 0,
+                        "ctxt": 0
+                    }
+                },
+                "arguments": [
+                    {
+                        "expression": ast.object
+                    }
+                ],
+                "span": {
+                    "start": 0,
+                    "end": 0,
+                    "ctxt": 0
+                }
+            };
+        }
+    }
+});
 "
 `;
