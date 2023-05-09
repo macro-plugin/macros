@@ -1,6 +1,6 @@
 import { $Argument, $CallExpression, $Identifier, $StringLiteral } from "../src"
-
-import { transform } from "@macro-plugin/core"
+import { createSwcPlugin, transform } from "@macro-plugin/core"
+import { parseSync, transformSync as swcTransform } from "@swc/core"
 
 test("$Identifier macro transform", () => {
   const code = `
@@ -44,4 +44,22 @@ test("$CallExpression macro transform", () => {
 `
 
   expect(transform(code, { macros: [$Identifier, $CallExpression, $Argument, $StringLiteral] }).code).toMatchSnapshot()
+})
+
+test("ctxt shouldn't rename variable name", () => {
+  const code = `
+   createMacro({
+     MemberExpression(ast) {
+      if (ast.object.type === "Identifier") {
+        ast.object = $CallExpression($Identifier("$$ptagWrap"), [
+          $Argument(ast.object),
+        ])
+      }
+    }
+  })
+  `
+  const plugin = createSwcPlugin({ macros: [$Identifier, $CallExpression, $Argument] })
+  const program = plugin(parseSync(code, { syntax: "typescript", tsx: true }))
+
+  expect(swcTransform(program, { jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
 })
