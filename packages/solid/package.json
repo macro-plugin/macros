@@ -1,6 +1,6 @@
 {
   "name": "@macro-plugin/solid",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "A simpler way of creating components for solid by using macros",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -32,7 +32,7 @@
     "url": "https://github.com/macro-plugin/macros.git"
   },
   "dependencies": {
-    "@macro-plugin/core": "1.1.4"
+    "@macro-plugin/core": "1.2.0"
   },
   "author": "Raven Satir",
   "license": "MIT"
