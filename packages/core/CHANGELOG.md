@@ -1,5 +1,13 @@
 # @macro-plugin/core
 
+## 1.2.0
+
+### Minor Changes
+
+- [#33](https://github.com/macro-plugin/macros/pull/33) [`8c94045`](https://github.com/macro-plugin/macros/commit/8c9404545d207b708ed433328bd383488a3ed0d4) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: new cursor context method
+
+- [#33](https://github.com/macro-plugin/macros/pull/33) [`b45063f`](https://github.com/macro-plugin/macros/commit/b45063ff784e513380f43bf8425c4f72eaa5c0b4) Thanks [@voorjaar](https://github.com/voorjaar)! - refactor: rename span to dummySpan
+
 ## 1.1.4
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @macro-plugin/rollup
 
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies [[`8c94045`](https://github.com/macro-plugin/macros/commit/8c9404545d207b708ed433328bd383488a3ed0d4), [`b45063f`](https://github.com/macro-plugin/macros/commit/b45063ff784e513380f43bf8425c4f72eaa5c0b4)]:
+  - @macro-plugin/core@1.2.0
+  - @macro-plugin/shared@1.2.1
+
 ## 1.2.1
 
 ### Patch Changes
