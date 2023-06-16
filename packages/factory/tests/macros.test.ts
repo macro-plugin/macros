@@ -2,6 +2,8 @@ import { $Argument, $CallExpression, $Identifier, $StringLiteral } from "../src"
 import { createSwcPlugin, transform } from "@macro-plugin/core"
 import { parseSync, transformSync as swcTransform } from "@swc/core"
 
+const spanRegex = /(?<="(start|end)":)\s*\d+/g
+
 test("$Identifier macro transform", () => {
   const code = `
     function id() {
@@ -61,5 +63,30 @@ test("ctxt shouldn't rename variable name", () => {
   const plugin = createSwcPlugin({ macros: [$Identifier, $CallExpression, $Argument] })
   const program = plugin(parseSync(code, { syntax: "typescript", tsx: true }))
 
-  expect(swcTransform(program, { jsc: { parser: { syntax: "typescript", tsx: true } } }).code).toMatchSnapshot()
+  expect(swcTransform(program, { jsc: { parser: { syntax: "typescript", tsx: true } } }).code.replace(spanRegex, "0")).toMatchSnapshot()
+})
+
+test("ctxt shouldn't rename variable name in multiple block", () => {
+  const code = `
+    createMacro({
+      MemberExpression(ast) {
+      if (ast.object.type === "Identifier") {
+        ast.object = $CallExpression($Identifier("$$ptagWrap"), [
+          $Argument(ast.object),
+        ])
+      }
+    },
+    CallExpression(ast) {
+      if (ast.callee.type === "Identifier") {
+        ast.object = $CallExpression($Identifier("$$ptagWrap"), [
+          $Argument(ast.callee),
+        ])
+      }
+    }
+  })
+  `
+  const plugin = createSwcPlugin({ macros: [$Identifier, $CallExpression, $Argument] })
+  const program = plugin(parseSync(code, { syntax: "typescript", tsx: true }))
+
+  expect(swcTransform(program, { jsc: { parser: { syntax: "typescript", tsx: true } } }).code.replace(spanRegex, "0")).toMatchSnapshot()
 })

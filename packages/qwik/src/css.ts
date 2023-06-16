@@ -1,6 +1,5 @@
 import { CallExpression, ExpressionStatement } from "@swc/core"
-
-import { createLabeledMacro } from "@macro-plugin/core"
+import { createLabeledMacro, dummySpan } from "@macro-plugin/core"
 
 export const css = createLabeledMacro("css", function (stmt) {
   if (stmt.type === "ExpressionStatement") {
@@ -10,18 +9,10 @@ export const css = createLabeledMacro("css", function (stmt) {
 
     stmt.expression = {
       type: "CallExpression",
-      span: {
-        start: 109,
-        end: 119,
-        ctxt: 0
-      },
+      span: dummySpan,
       callee: {
         type: "Identifier",
-        span: {
-          start: 109,
-          end: 112,
-          ctxt: 1
-        },
+        span: dummySpan,
         value: specifier,
         optional: false
       },
@@ -68,25 +59,13 @@ export const link = createLabeledMacro("link", function (stmt) {
   this.import(specifier, "@builder.io/qwik")
   return links.map(i => ({
     type: "ExpressionStatement",
-    span: {
-      start: 109,
-      end: 119,
-      ctxt: 0
-    },
+    span: dummySpan,
     expression: {
       type: "CallExpression",
-      span: {
-        start: 109,
-        end: 119,
-        ctxt: 0
-      },
+      span: dummySpan,
       callee: {
         type: "Identifier",
-        span: {
-          start: 109,
-          end: 112,
-          ctxt: 1
-        },
+        span: dummySpan,
         value: specifier,
         optional: false
       },
@@ -94,11 +73,7 @@ export const link = createLabeledMacro("link", function (stmt) {
         {
           expression: {
             type: "Identifier",
-            span: {
-              start: 113,
-              end: 118,
-              ctxt: 1
-            },
+            span: dummySpan,
             value: i,
             optional: false
           }

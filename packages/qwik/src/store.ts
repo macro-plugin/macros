@@ -1,5 +1,5 @@
 import { Node, VariableDeclaration } from "@swc/core"
-import { createLabeledMacro, markedNode } from "@macro-plugin/core"
+import { createLabeledMacro, dummySpan, markedNode } from "@macro-plugin/core"
 
 export const store = createLabeledMacro("store", function (stmt) {
   if (stmt.type !== "BlockStatement") return
@@ -35,11 +35,7 @@ export const store = createLabeledMacro("store", function (stmt) {
             type: "Identifier",
             value: k,
             optional: false,
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 1
-            }
+            span: dummySpan
           }),
           init: {
             type: "CallExpression",
@@ -47,36 +43,20 @@ export const store = createLabeledMacro("store", function (stmt) {
               type: "Identifier",
               value: "useStore",
               optional: false,
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              }
+              span: dummySpan
             },
             arguments: [
               {
                 expression: v.value
               }
             ],
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0
-            }
+            span: dummySpan
           },
           definite: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         }
       ],
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      }
+      span: dummySpan
     } as VariableDeclaration))
   }
 })

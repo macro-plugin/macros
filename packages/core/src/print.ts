@@ -1,7 +1,7 @@
 import { Expression, ModuleItem, Options, Program, TsType, print as _printAsync, printSync } from "@swc/core"
 
 import { BaseNode } from "./types"
-import { span } from "./utils"
+import { dummySpan } from "./defaults"
 
 /**
  * Turns an AST into code, maintaining sourcemaps, user preferences, and valid output.
@@ -15,7 +15,7 @@ export function print (
 ) {
   const { code, map } = printSync({
     type: "Script",
-    span,
+    span: dummySpan,
     body: Array.isArray(ast) ? ast as unknown as ModuleItem[] : [ast as unknown as ModuleItem],
   } as Program, options)
 
@@ -28,7 +28,7 @@ export async function printAsync (
 ) {
   const { code, map } = await _printAsync({
     type: "Script",
-    span,
+    span: dummySpan,
     body: Array.isArray(ast) ? ast as unknown as ModuleItem[] : [ast as unknown as ModuleItem],
   } as Program, options)
 
@@ -38,7 +38,7 @@ export async function printAsync (
 export function printExpr (expr: BaseNode, options?: Options) {
   const { code, map } = print({
     type: "ExpressionStatement",
-    span,
+    span: dummySpan,
     expression: expr as Expression
   }, options)
 
@@ -48,7 +48,7 @@ export function printExpr (expr: BaseNode, options?: Options) {
 export async function printExprAsync (expr: BaseNode, options?: Options) {
   const { code, map } = await printAsync({
     type: "ExpressionStatement",
-    span,
+    span: dummySpan,
     expression: expr as Expression
   }, options)
 
@@ -58,11 +58,11 @@ export async function printExprAsync (expr: BaseNode, options?: Options) {
 export function printType (ty: TsType, options?: Options) {
   const { code, map } = print({
     type: "TsTypeAliasDeclaration",
-    span,
+    span: dummySpan,
     declare: false,
     id: {
       type: "Identifier",
-      span,
+      span: dummySpan,
       value: "__PrintType__",
       optional: false
     },
@@ -75,11 +75,11 @@ export function printType (ty: TsType, options?: Options) {
 export async function printTypeAsync (ty: TsType, options?: Options) {
   const { code, map } = await printAsync({
     type: "TsTypeAliasDeclaration",
-    span,
+    span: dummySpan,
     declare: false,
     id: {
       type: "Identifier",
-      span,
+      span: dummySpan,
       value: "__PrintType__",
       optional: false
     },

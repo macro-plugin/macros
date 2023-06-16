@@ -1,4 +1,4 @@
-import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, Param, ParseOptions, PrivateMethod, Statement, TsType, VariableDeclarator } from "@swc/core"
+import type { CatchClause, ClassDeclaration, ClassMethod, Declaration, Expression, ImportDeclaration, ModuleItem, Node, Options, Param, ParseOptions, PrivateMethod, Span, Statement, TsType, VariableDeclarator } from "@swc/core"
 
 import type { AST } from "./ast"
 
@@ -13,8 +13,10 @@ export type WalkContext = {
   src: string | undefined,
   /** Get global config */
   config: Config,
+  /** Get current walking cursor */
+  cursor(): [number, number];
   /** Get current walking node's span */
-  span(): [number, number];
+  span(ctxt?: number): Span;
   /** Save data to current plugin cache */
   set<T>(key: string, data: T): void;
   /** Get data from current plugin cache */

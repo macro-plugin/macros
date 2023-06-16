@@ -7,16 +7,16 @@ exports[`$Argument macro transform 1`] = `
         "value": "ref",
         "optional": false,
         "span": {
-            "start": 0,
-            "end": 0,
+            "start": 23,
+            "end": 41,
             "ctxt": 0
         }
     }
 };
 const b = {
     "spread": {
-        "start": 0,
-        "end": 0,
+        "start": 55,
+        "end": 91,
         "ctxt": 0
     },
     "expression": {
@@ -24,8 +24,8 @@ const b = {
         "value": "list",
         "optional": false,
         "span": {
-            "start": 0,
-            "end": 0,
+            "start": 65,
+            "end": 84,
             "ctxt": 0
         }
     }
@@ -41,15 +41,15 @@ exports[`$CallExpression macro transform 1`] = `
         "value": "ref",
         "optional": false,
         "span": {
-            "start": 0,
-            "end": 0,
+            "start": 29,
+            "end": 47,
             "ctxt": 0
         }
     },
     "arguments": [],
     "span": {
-        "start": 0,
-        "end": 0,
+        "start": 13,
+        "end": 48,
         "ctxt": 0
     }
 };
@@ -60,8 +60,8 @@ const b = {
         "value": "ref",
         "optional": false,
         "span": {
-            "start": 0,
-            "end": 0,
+            "start": 77,
+            "end": 95,
             "ctxt": 0
         }
     },
@@ -71,16 +71,16 @@ const b = {
                 "type": "StringLiteral",
                 "value": "hello",
                 "span": {
-                    "start": 0,
-                    "end": 0,
+                    "start": 113,
+                    "end": 136,
                     "ctxt": 0
                 }
             }
         }
     ],
     "span": {
-        "start": 0,
-        "end": 0,
+        "start": 61,
+        "end": 143,
         "ctxt": 0
     }
 };
@@ -94,8 +94,8 @@ exports[`$Identifier macro transform 1`] = `
         "value": "value",
         "optional": false,
         "span": {
-            "start": 0,
-            "end": 0,
+            "start": 37,
+            "end": 57,
             "ctxt": 0
         }
     };
@@ -104,8 +104,8 @@ exports[`$Identifier macro transform 1`] = `
         "value": "value",
         "optional": false,
         "span": {
-            "start": 0,
-            "end": 0,
+            "start": 74,
+            "end": 101,
             "ctxt": 0
         }
     };
@@ -114,8 +114,8 @@ exports[`$Identifier macro transform 1`] = `
         "value": "value",
         "optional": true,
         "span": {
-            "start": 0,
-            "end": 0,
+            "start": 118,
+            "end": 144,
             "ctxt": 0
         }
     };
@@ -125,8 +125,8 @@ exports[`$Identifier macro transform 1`] = `
         "value": d,
         "optional": true,
         "span": {
-            "start": 0,
-            "end": 0,
+            "start": 185,
+            "end": 205,
             "ctxt": 0
         }
     };
@@ -139,8 +139,8 @@ exports[`$StringLiteral macro transform 1`] = `
     "type": "StringLiteral",
     "value": "hello",
     "span": {
-        "start": 0,
-        "end": 0,
+        "start": 13,
+        "end": 36,
         "ctxt": 0
     }
 };
@@ -149,8 +149,8 @@ const b = {
     "type": "StringLiteral",
     "value": v,
     "span": {
-        "start": 0,
-        "end": 0,
+        "start": 69,
+        "end": 86,
         "ctxt": 0
     }
 };
@@ -168,8 +168,8 @@ exports[`ctxt shouldn't rename variable name 1`] = `
                     "value": "$$ptagWrap",
                     "optional": false,
                     "span": {
-                        "start": 0,
-                        "end": 0,
+                        "start":0,
+                        "end":0,
                         "ctxt": 0
                     }
                 },
@@ -179,8 +179,68 @@ exports[`ctxt shouldn't rename variable name 1`] = `
                     }
                 ],
                 "span": {
-                    "start": 0,
-                    "end": 0,
+                    "start":0,
+                    "end":0,
+                    "ctxt": 0
+                }
+            };
+        }
+    }
+});
+"
+`;
+
+exports[`ctxt shouldn't rename variable name in multiple block 1`] = `
+"createMacro({
+    MemberExpression: function MemberExpression(ast) {
+        if (ast.object.type === "Identifier") {
+            ast.object = {
+                "type": "CallExpression",
+                "callee": {
+                    "type": "Identifier",
+                    "value": "$$ptagWrap",
+                    "optional": false,
+                    "span": {
+                        "start":0,
+                        "end":0,
+                        "ctxt": 0
+                    }
+                },
+                "arguments": [
+                    {
+                        "expression": ast.object
+                    }
+                ],
+                "span": {
+                    "start":0,
+                    "end":0,
+                    "ctxt": 0
+                }
+            };
+        }
+    },
+    CallExpression: function CallExpression(ast) {
+        if (ast.callee.type === "Identifier") {
+            ast.object = {
+                "type": "CallExpression",
+                "callee": {
+                    "type": "Identifier",
+                    "value": "$$ptagWrap",
+                    "optional": false,
+                    "span": {
+                        "start":0,
+                        "end":0,
+                        "ctxt": 0
+                    }
+                },
+                "arguments": [
+                    {
+                        "expression": ast.callee
+                    }
+                ],
+                "span": {
+                    "start":0,
+                    "end":0,
                     "ctxt": 0
                 }
             };

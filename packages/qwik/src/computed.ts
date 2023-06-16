@@ -1,5 +1,5 @@
 import { ArrowFunctionExpression, Expression, ExpressionStatement, Identifier, VariableDeclaration } from "@swc/core"
-import { BaseNode, createLabeledMacro, markedNode, unMarkNode, walk } from "@macro-plugin/core"
+import { BaseNode, createLabeledMacro, dummySpan, markedNode, unMarkNode, walk } from "@macro-plugin/core"
 
 export const computed = createLabeledMacro("computed", function (stmt) {
   if (stmt.type !== "BlockStatement") return
@@ -51,11 +51,7 @@ export const computed = createLabeledMacro("computed", function (stmt) {
           id: markedNode("qwikSignal", {
             type: "Identifier",
             value: k,
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0
-            },
+            span: dummySpan,
             optional: false
           }),
           init: {
@@ -63,11 +59,7 @@ export const computed = createLabeledMacro("computed", function (stmt) {
             callee: {
               type: "Identifier",
               value: "useSignal",
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              },
+              span: dummySpan,
               optional: false
             },
             arguments: [
@@ -75,49 +67,25 @@ export const computed = createLabeledMacro("computed", function (stmt) {
                 expression: v.value
               }
             ],
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0
-            }
+            span: dummySpan
           },
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         }
       ],
       declare: false,
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      }
+      span: dummySpan
     } as VariableDeclaration)), {
       type: "ExpressionStatement",
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      },
+      span: dummySpan,
       expression: {
         type: "CallExpression",
         callee: {
           type: "Identifier",
           value: "useTask$",
           optional: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         },
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        },
+        span: dummySpan,
         arguments: [
           {
             expression: {
@@ -128,28 +96,16 @@ export const computed = createLabeledMacro("computed", function (stmt) {
                 {
                   type: "ObjectPattern",
                   optional: false,
-                  span: {
-                    start: 0,
-                    end: 0,
-                    ctxt: 0
-                  },
+                  span: dummySpan,
                   properties: [
                     {
                       type: "AssignmentPatternProperty",
-                      span: {
-                        start: 0,
-                        end: 0,
-                        ctxt: 0
-                      },
+                      span: dummySpan,
                       key: {
                         type: "Identifier",
                         value: "track",
                         optional: false,
-                        span: {
-                          start: 0,
-                          end: 0,
-                          ctxt: 1
-                        },
+                        span: dummySpan,
                       },
                     }
                   ]
@@ -157,11 +113,7 @@ export const computed = createLabeledMacro("computed", function (stmt) {
               ],
               body: {
                 type: "BlockStatement",
-                span: {
-                  start: 0,
-                  end: 0,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 stmts: [
                   ...signals.map(name => ({
                     type: "VariableDeclaration",
@@ -170,19 +122,11 @@ export const computed = createLabeledMacro("computed", function (stmt) {
                       {
                         type: "VariableDeclarator",
                         definite: false,
-                        span: {
-                          start: 0,
-                          end: 0,
-                          ctxt: 0
-                        },
+                        span: dummySpan,
                         id: {
                           type: "Identifier",
                           value: "__" + name,
-                          span: {
-                            start: 0,
-                            end: 0,
-                            ctxt: 0
-                          },
+                          span: dummySpan,
                           optional: false
                         },
                         init: {
@@ -190,18 +134,10 @@ export const computed = createLabeledMacro("computed", function (stmt) {
                           callee: {
                             type: "Identifier",
                             value: "track",
-                            span: {
-                              start: 0,
-                              end: 0,
-                              ctxt: 0
-                            },
+                            span: dummySpan,
                             optional: false
                           },
-                          span: {
-                            start: 0,
-                            end: 0,
-                            ctxt: 0
-                          },
+                          span: dummySpan,
                           arguments: [
                             {
                               expression: {
@@ -213,17 +149,9 @@ export const computed = createLabeledMacro("computed", function (stmt) {
                                   type: "Identifier",
                                   value: name,
                                   optional: false,
-                                  span: {
-                                    start: 0,
-                                    end: 0,
-                                    ctxt: 0
-                                  }
+                                  span: dummySpan
                                 },
-                                span: {
-                                  start: 0,
-                                  end: 0,
-                                  ctxt: 0
-                                }
+                                span: dummySpan
                               }
                             }
                           ]
@@ -231,11 +159,7 @@ export const computed = createLabeledMacro("computed", function (stmt) {
                       }
                     ],
                     declare: false,
-                    span: {
-                      start: 0,
-                      end: 0,
-                      ctxt: 0
-                    }
+                    span: dummySpan
                   } as VariableDeclaration)),
                   ...Object.entries(computeds).map(([k, v]) => ({
                     type: "ExpressionStatement",
@@ -246,32 +170,16 @@ export const computed = createLabeledMacro("computed", function (stmt) {
                         type: "Identifier",
                         value: k,
                         optional: false,
-                        span: {
-                          start: 0,
-                          end: 0,
-                          ctxt: 0
-                        }
+                        span: dummySpan
                       }),
                       right: v.computed,
-                      span: {
-                        start: 0,
-                        end: 0,
-                        ctxt: 0
-                      }
+                      span: dummySpan
                     },
-                    span: {
-                      start: 0,
-                      end: 0,
-                      ctxt: 0
-                    }
+                    span: dummySpan
                   } as ExpressionStatement))
                 ]
               },
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              }
+              span: dummySpan
             } as ArrowFunctionExpression
           }
         ]

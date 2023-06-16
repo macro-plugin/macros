@@ -1,63 +1,37 @@
 import { TsFunctionType, TsType } from "@swc/core"
 
+export const dummySpan = {
+  start: 0,
+  end: 0,
+  ctxt: 0,
+}
+
 export const defaultGlobalExpr = {
   type: "TsFunctionType",
-  span: {
-    start: 199,
-    end: 221,
-    ctxt: 0
-  },
+  span: dummySpan,
   params: [
     {
       type: "RestElement",
-      span: {
-        start: 203,
-        end: 215,
-        ctxt: 0
-      },
-      rest: {
-        start: 5691,
-        end: 5694,
-        ctxt: 0
-      },
+      span: dummySpan,
+      rest: dummySpan,
       argument: {
         type: "Identifier",
-        span: {
-          start: 206,
-          end: 210,
-          ctxt: 4
-        },
+        span: dummySpan,
         value: "args",
         optional: false,
       },
       typeAnnotation: {
         type: "TsTypeAnnotation",
-        span: {
-          start: 210,
-          end: 215,
-          ctxt: 0
-        },
+        span: dummySpan,
         typeAnnotation: {
           type: "TsArrayType",
-          span: {
-            start: 212,
-            end: 215,
-            ctxt: 0
-          },
+          span: dummySpan,
           elemType: {
             type: "TsTypeReference",
-            span: {
-              start: 212,
-              end: 213,
-              ctxt: 0
-            },
+            span: dummySpan,
             typeName: {
               type: "Identifier",
-              span: {
-                start: 212,
-                end: 213,
-                ctxt: 4
-              },
+              span: dummySpan,
               value: "T",
               optional: false
             },
@@ -68,26 +42,14 @@ export const defaultGlobalExpr = {
   ],
   typeParams: {
     type: "TsTypeParameterDeclaration",
-    span: {
-      start: 199,
-      end: 202,
-      ctxt: 0
-    },
+    span: dummySpan,
     parameters: [
       {
         type: "TsTypeParameter",
-        span: {
-          start: 200,
-          end: 201,
-          ctxt: 0
-        },
+        span: dummySpan,
         name: {
           type: "Identifier",
-          span: {
-            start: 200,
-            end: 201,
-            ctxt: 4
-          },
+          span: dummySpan,
           value: "T",
           optional: false
         },
@@ -98,25 +60,13 @@ export const defaultGlobalExpr = {
   },
   typeAnnotation: {
     type: "TsTypeAnnotation",
-    span: {
-      start: 217,
-      end: 221,
-      ctxt: 0
-    },
+    span: dummySpan,
     typeAnnotation: {
       type: "TsTypeReference",
-      span: {
-        start: 220,
-        end: 221,
-        ctxt: 0
-      },
+      span: dummySpan,
       typeName: {
         type: "Identifier",
-        span: {
-          start: 220,
-          end: 221,
-          ctxt: 4
-        },
+        span: dummySpan,
         value: "T",
         optional: false
       },
@@ -126,34 +76,18 @@ export const defaultGlobalExpr = {
 
 export const defaultGlobalType = {
   type: "TsFunctionType",
-  span: {
-    start: 182,
-    end: 192,
-    ctxt: 0
-  },
+  span: dummySpan,
   params: [],
   typeParams: {
     type: "TsTypeParameterDeclaration",
-    span: {
-      start: 182,
-      end: 185,
-      ctxt: 0
-    },
+    span: dummySpan,
     parameters: [
       {
         type: "TsTypeParameter",
-        span: {
-          start: 183,
-          end: 184,
-          ctxt: 0
-        },
+        span: dummySpan,
         name: {
           type: "Identifier",
-          span: {
-            start: 183,
-            end: 184,
-            ctxt: 4
-          },
+          span: dummySpan,
           value: "T",
           optional: false
         },
@@ -164,25 +98,13 @@ export const defaultGlobalType = {
   },
   typeAnnotation: {
     type: "TsTypeAnnotation",
-    span: {
-      start: 188,
-      end: 192,
-      ctxt: 0
-    },
+    span: dummySpan,
     typeAnnotation: {
       type: "TsTypeReference",
-      span: {
-        start: 191,
-        end: 192,
-        ctxt: 0
-      },
+      span: dummySpan,
       typeName: {
         type: "Identifier",
-        span: {
-          start: 191,
-          end: 192,
-          ctxt: 4
-        },
+        span: dummySpan,
         value: "T",
         optional: false
       },
@@ -192,10 +114,6 @@ export const defaultGlobalType = {
 
 export const defaultGlobalTmpl = {
   type: "TsKeywordType",
-  span: {
-    start: 236,
-    end: 242,
-    ctxt: 0
-  },
+  span: dummySpan,
   kind: "string"
 } as TsType

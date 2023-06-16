@@ -5,6 +5,8 @@ import { ExprMacro, LabeledMacro, MacroPlugin, TmplMacro, TypeMacro } from "./ty
 import { createExprMacro, createLabeledMacro, createLitMacro, createMacro, createTmplMacro, createTypeMacro } from "./api"
 import { evalAst, flatExpr, genTypeImport, noop } from "./utils"
 
+import { dummySpan } from "./defaults"
+
 export var $Macro: (f: MacroPlugin) => void = noop
 
 export var $LitMacro = <LitType>(i: LitType) => i
@@ -39,26 +41,14 @@ export const macro = createMacro({
             item && handleDecl(item, init
               ? {
                 type: "MemberExpression",
-                span: {
-                  start: 342,
-                  end: 348,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 object: init,
                 property: {
                   type: "Computed",
-                  span: {
-                    start: 345,
-                    end: 348,
-                    ctxt: 0
-                  },
+                  span: dummySpan,
                   expression: {
                     type: "NumericLiteral",
-                    span: {
-                      start: 346,
-                      end: 347,
-                      ctxt: 0
-                    },
+                    span: dummySpan,
                     value: index,
                   }
                 }
@@ -71,34 +61,18 @@ export const macro = createMacro({
               handleDecl(item.key, init
                 ? {
                   type: "MemberExpression",
-                  span: {
-                    start: 342,
-                    end: 353,
-                    ctxt: 0
-                  },
+                  span: dummySpan,
                   object: {
                     type: "ParenthesisExpression",
-                    span: {
-                      start: 342,
-                      end: 353,
-                      ctxt: 0
-                    },
+                    span: dummySpan,
                     expression: init
                   },
                   property: {
                     type: "Computed",
-                    span: {
-                      start: 345,
-                      end: 353,
-                      ctxt: 0
-                    },
+                    span: dummySpan,
                     expression: {
                       type: "StringLiteral",
-                      span: {
-                        start: 346,
-                        end: 352,
-                        ctxt: 0
-                      },
+                      span: dummySpan,
                       value: item.key.value,
                     }
                   }
@@ -108,37 +82,21 @@ export const macro = createMacro({
               handleDecl(item.argument, init
                 ? {
                   type: "ArrowFunctionExpression",
-                  span: {
-                    start: 368,
-                    end: 427,
-                    ctxt: 0
-                  },
+                  span: dummySpan,
                   params: [],
                   body: {
                     type: "BlockStatement",
-                    span: {
-                      start: 374,
-                      end: 427,
-                      ctxt: 0
-                    },
+                    span: dummySpan,
                     stmts: [
                       {
                         type: "VariableDeclaration",
-                        span: {
-                          start: 380,
-                          end: 409,
-                          ctxt: 0
-                        },
+                        span: dummySpan,
                         kind: "const",
                         declare: false,
                         declarations: [
                           {
                             type: "VariableDeclarator",
-                            span: {
-                              start: 386,
-                              end: 409,
-                              ctxt: 0
-                            },
+                            span: dummySpan,
                             id: pat,
                             init,
                             definite: false
@@ -147,11 +105,7 @@ export const macro = createMacro({
                       },
                       {
                         type: "ReturnStatement",
-                        span: {
-                          start: 414,
-                          end: 423,
-                          ctxt: 0
-                        },
+                        span: dummySpan,
                         argument: item.argument
                       }
                     ]
@@ -225,11 +179,7 @@ export const macro = createMacro({
 
       this.replace({
         type: "EmptyStatement",
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as EmptyStatement)
 
       this.addPlugin(plugins)

@@ -1,5 +1,5 @@
 import { MemberExpression, Node, VariableDeclaration } from "@swc/core"
-import { createMacro, markedNode } from "@macro-plugin/core"
+import { createMacro, dummySpan, markedNode } from "@macro-plugin/core"
 
 export const signal = createMacro({
   LabeledStatement (ast) {
@@ -36,11 +36,7 @@ export const signal = createMacro({
               type: "Identifier",
               value: k,
               optional: false,
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 1
-              }
+              span: dummySpan
             }),
             init: {
               type: "CallExpression",
@@ -48,36 +44,20 @@ export const signal = createMacro({
                 type: "Identifier",
                 value: "useSignal",
                 optional: false,
-                span: {
-                  start: 0,
-                  end: 0,
-                  ctxt: 0
-                }
+                span: dummySpan
               },
               arguments: [
                 {
                   expression: v.value
                 }
               ],
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              }
+              span: dummySpan
             },
             definite: false,
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0
-            }
+            span: dummySpan
           }
         ],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as VariableDeclaration))
     }
   },
@@ -90,17 +70,9 @@ export const signal = createMacro({
           type: "Identifier",
           value: "value",
           optional: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         },
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as MemberExpression)
       this.skip()
     }
