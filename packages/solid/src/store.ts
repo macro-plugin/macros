@@ -1,4 +1,4 @@
-import { BaseNode, createMacro, markedNode } from "@macro-plugin/core"
+import { BaseNode, createMacro, dummySpan, markedNode } from "@macro-plugin/core"
 import { BinaryExpression, CallExpression, Expression, VariableDeclaration } from "@swc/core"
 
 function getSetter (name: string) {
@@ -31,42 +31,26 @@ const plugin = createMacro({
           type: "VariableDeclaration",
           kind: "var",
           declare: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          },
+          span: dummySpan,
           declarations: [
             {
               type: "VariableDeclarator",
               id: {
                 type: "ArrayPattern",
-                span: {
-                  start: 0,
-                  end: 0,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 optional: false,
                 elements: [
                   markedNode("store", {
                     type: "Identifier",
                     value: k,
                     optional: false,
-                    span: {
-                      start: 0,
-                      end: 0,
-                      ctxt: 1
-                    }
+                    span: dummySpan
                   }),
                   markedNode("storeSetter", {
                     type: "Identifier",
                     value: v.setter,
                     optional: false,
-                    span: {
-                      start: 0,
-                      end: 0,
-                      ctxt: 1
-                    }
+                    span: dummySpan
                   })
                 ]
               },
@@ -76,28 +60,16 @@ const plugin = createMacro({
                   type: "Identifier",
                   value: "createStore",
                   optional: false,
-                  span: {
-                    start: 0,
-                    end: 0,
-                    ctxt: 0
-                  }
+                  span: dummySpan
                 },
-                span: {
-                  start: 0,
-                  end: 0,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 arguments: [
                   {
                     expression: v.value
                   }
                 ]
               },
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              }
+              span: dummySpan
             }
           ]
         } as VariableDeclaration))
@@ -113,11 +85,7 @@ const plugin = createMacro({
           type: "Identifier",
           value: getSetter(name),
           optional: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         },
         arguments: [
           {
@@ -130,35 +98,19 @@ const plugin = createMacro({
                   callee: {
                     type: "Identifier",
                     value: name,
-                    span: {
-                      start: 0,
-                      end: 0,
-                      ctxt: 0
-                    },
+                    span: dummySpan,
                     optional: false
                   },
                   arguments: [],
-                  span: {
-                    start: 0,
-                    end: 0,
-                    ctxt: 0
-                  }
+                  span: dummySpan
                 },
                 operator: ast.operator.replace("=", ""),
                 right: ast.right,
-                span: {
-                  start: 0,
-                  end: 0,
-                  ctxt: 0
-                }
+                span: dummySpan
               } as BinaryExpression
           }
         ],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as CallExpression
     }
   },
@@ -169,11 +121,7 @@ const plugin = createMacro({
         type: "CallExpression",
         callee: ast.argument,
         arguments: [],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as CallExpression
       return {
         type: "CallExpression",
@@ -181,22 +129,14 @@ const plugin = createMacro({
           type: "Identifier",
           value: getSetter(name),
           optional: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 1
-          }
+          span: dummySpan
         },
         arguments: [
           {
             expression: ast
           }
         ],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as CallExpression
     }
   }

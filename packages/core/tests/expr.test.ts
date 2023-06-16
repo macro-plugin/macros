@@ -1,5 +1,5 @@
 import { Expression, StringLiteral } from "@swc/core"
-import { createExprMacro, createTmplMacro, createTypeMacro, transform } from "../src"
+import { createExprMacro, createTmplMacro, createTypeMacro, dummySpan, transform } from "../src"
 
 test("create expr macro with arrow function", () => {
   const macro = createExprMacro("$add", ($a: number, $b: number) => {
@@ -53,18 +53,10 @@ test("create a type macro with createExprMacro", () => {
 
     return {
       type: "CallExpression",
-      span: {
-        start: 0,
-        end: 23,
-        ctxt: 0
-      },
+      span: dummySpan,
       callee: {
         type: "Identifier",
-        span: {
-          start: 0,
-          end: 11,
-          ctxt: 1
-        },
+        span: dummySpan,
         value: "defineEmits",
         optional: false
       },
@@ -72,11 +64,7 @@ test("create a type macro with createExprMacro", () => {
         {
           expression: {
             type: "ArrayExpression",
-            span: {
-              start: 12,
-              end: 22,
-              ctxt: 0
-            },
+            span: dummySpan,
             elements: emits.map(i => ({ expression: i }))
           }
         }
@@ -112,18 +100,10 @@ test("create a type macro with createTypeMacro", () => {
 
     return {
       type: "CallExpression",
-      span: {
-        start: 0,
-        end: 23,
-        ctxt: 0
-      },
+      span: dummySpan,
       callee: {
         type: "Identifier",
-        span: {
-          start: 0,
-          end: 11,
-          ctxt: 1
-        },
+        span: dummySpan,
         value: "defineEmits",
         optional: false
       },
@@ -131,11 +111,7 @@ test("create a type macro with createTypeMacro", () => {
         {
           expression: {
             type: "ArrayExpression",
-            span: {
-              start: 12,
-              end: 22,
-              ctxt: 0
-            },
+            span: dummySpan,
             elements: emits.map(i => ({ expression: i }))
           }
         }
@@ -173,11 +149,7 @@ test("create a template macro", () => {
     return {
       type: "StringLiteral",
       value: `${strings[0]}${person}${strings[1]}${age}${strings[2]}`,
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      }
+      span: dummySpan
     }
   })
 

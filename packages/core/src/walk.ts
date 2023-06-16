@@ -1,16 +1,17 @@
 import { BaseNode, Config, MacroPlugin, Node, ScopeVar, WalkContext, WalkFunc, WalkPlugin } from "./types"
 import { ExportNamedDeclaration, HasSpan, ImportDeclaration, ImportDefaultSpecifier, ImportSpecifier, ModuleItem, ParseOptions, Program, TsModuleDeclaration, TsType } from "@swc/core"
-import { createWalkPlugin, genConstType, genExportSpecifier, genImportSpecifier, hashMap, span } from "./utils"
+import { createWalkPlugin, genConstType, genExportSpecifier, genImportSpecifier, hashMap } from "./utils"
 import { parse, parseExpr, parseType } from "./parse"
 import { print, printExpr, printType } from "./print"
 
+import { dummySpan } from "./defaults"
 import externalsPlugin from "./external"
 import trackPlugin from "./track"
 
 export class Walker {
   src: string | undefined
   config: Config
-  node = { type: "Invalid", span } as Node
+  node = { type: "Invalid", span: dummySpan } as Node
   data: Record<string, unknown> = {}
   imports: ImportDeclaration[] = []
   exports: ExportNamedDeclaration[] = []
@@ -43,18 +44,10 @@ export class Walker {
         source: {
           type: "StringLiteral",
           value: source,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0,
-          }
+          span: dummySpan
         },
         typeOnly: false,
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0,
-        },
+        span: dummySpan,
       } as ImportDeclaration)
 
       this.importHashes[h] = true
@@ -87,18 +80,10 @@ export class Walker {
             : {
               type: "StringLiteral",
               value: source,
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0,
-              }
+              span: dummySpan
             },
           typeOnly: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0,
-          },
+          span: dummySpan
         } as ExportNamedDeclaration)
 
         this.exportHashes[h] = true
@@ -117,29 +102,17 @@ export class Walker {
 
   declareModule = (id: string, body: ModuleItem | ModuleItem[]) => this.moduleDts.push({
     type: "TsModuleDeclaration",
-    span: {
-      start: 312,
-      end: 341,
-      ctxt: 0
-    },
+    span: dummySpan,
     declare: true,
     global: false,
     id: {
       type: "StringLiteral",
-      span: {
-        start: 327,
-        end: 334,
-        ctxt: 0
-      },
+      span: dummySpan,
       value: id,
     },
     body: {
       type: "TsModuleBlock",
-      span: {
-        start: 335,
-        end: 341,
-        ctxt: 0
-      },
+      span: dummySpan,
       body: Array.isArray(body) ? body : [body]
     }
   })
@@ -302,30 +275,18 @@ export class Walker {
     const globalDts = this.globalDts.length > 0
       ? {
         type: "TsModuleDeclaration",
-        span: {
-          start: 144,
-          end: 164,
-          ctxt: 0
-        },
+        span: dummySpan,
         declare: true,
         global: true,
         id: {
           type: "Identifier",
-          span: {
-            start: 152,
-            end: 158,
-            ctxt: 1
-          },
+          span: dummySpan,
           value: "global",
           optional: false
         },
         body: {
           type: "TsModuleBlock",
-          span: {
-            start: 159,
-            end: 164,
-            ctxt: 0
-          },
+          span: dummySpan,
           body: this.globalDts
         }
       } as TsModuleDeclaration

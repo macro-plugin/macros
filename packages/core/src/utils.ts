@@ -1,10 +1,12 @@
 import { ArrowFunctionExpression, ExportNamespaceSpecifier, ExportSpecifier, Expression, FunctionDeclaration, FunctionExpression, Identifier, ImportDefaultSpecifier, ImportSpecifier, Invalid, Param, TsKeywordTypeKind, TsType, TsTypeReference, VariableDeclaration } from "@swc/core"
 import { BaseNode, GlobalMacroPlugin, MacroPlugin, WalkContext, WalkPlugin } from "./types"
+import { defaultGlobalExpr, dummySpan } from "./defaults"
 import { parse, parseExpr } from "./parse"
 
-import { defaultGlobalExpr } from "./defaults"
 import { printExpr } from "./print"
 import { walk } from "./walk"
+
+export { dummySpan }
 
 export function isMacroPlugin (v: unknown): boolean {
   return !!(v && (v as { __macro_plugin__?: boolean }).__macro_plugin__)
@@ -41,12 +43,6 @@ export function isNode<T> (value: T): boolean {
 
 export const noop = () => {}
 
-export const span = {
-  start: 0,
-  end: 0,
-  ctxt: 0,
-}
-
 export function markedNode<T extends object> (marker: string, node: T): T {
   // @ts-ignore
   node.marker = marker
@@ -72,11 +68,7 @@ export function createLit (this: WalkContext, value: unknown): BaseNode {
   if (value === undefined) {
     return {
       type: "Identifier",
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 2
-      },
+      span: dummySpan,
       value: "undefined",
       optional: false
     }
@@ -107,11 +99,7 @@ export function flatExpr (f: Function | FunctionDeclaration | FunctionExpression
 
   let output: Invalid | Expression = {
     type: "Invalid",
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 0
-    }
+    span: dummySpan
   }
 
   if (ast.body) {
@@ -187,37 +175,21 @@ export function createWalkPlugin (plugins: MacroPlugin | MacroPlugin[]): WalkPlu
 export function genConstType (name: string, typeAnnotation: TsType) {
   return {
     type: "VariableDeclaration",
-    span: {
-      start: 163,
-      end: 242,
-      ctxt: 0
-    },
+    span: dummySpan,
     kind: "const",
     declare: false,
     declarations: [
       {
         type: "VariableDeclarator",
-        span: {
-          start: 169,
-          end: 242,
-          ctxt: 0
-        },
+        span: dummySpan,
         id: {
           type: "Identifier",
-          span: {
-            start: 169,
-            end: 172,
-            ctxt: 3
-          },
+          span: dummySpan,
           value: name,
           optional: false,
           typeAnnotation: {
             type: "TsTypeAnnotation",
-            span: {
-              start: 172,
-              end: 242,
-              ctxt: 0
-            },
+            span: dummySpan,
             typeAnnotation
           }
         },
@@ -230,67 +202,35 @@ export function genConstType (name: string, typeAnnotation: TsType) {
 export function genTypeImport (lib: string, mod: string, kind = "const") {
   return {
     type: "VariableDeclaration",
-    span: {
-      start: 19,
-      end: 73,
-      ctxt: 0
-    },
+    span: dummySpan,
     kind,
     declare: false,
     declarations: [
       {
         type: "VariableDeclarator",
-        span: {
-          start: 23,
-          end: 73,
-          ctxt: 0
-        },
+        span: dummySpan,
         id: {
           type: "Identifier",
-          span: {
-            start: 23,
-            end: 29,
-            ctxt: 2
-          },
+          span: dummySpan,
           value: mod,
           optional: false,
           typeAnnotation: {
             type: "TsTypeAnnotation",
-            span: {
-              start: 29,
-              end: 73,
-              ctxt: 0
-            },
+            span: dummySpan,
             typeAnnotation: {
               type: "TsTypeQuery",
-              span: {
-                start: 31,
-                end: 73,
-                ctxt: 0
-              },
+              span: dummySpan,
               exprName: {
                 type: "TsImportType",
-                span: {
-                  start: 38,
-                  end: 73,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 argument: {
                   type: "StringLiteral",
-                  span: {
-                    start: 45,
-                    end: 65,
-                    ctxt: 0
-                  },
+                  span: dummySpan,
                   value: lib,
                 },
                 qualifier: {
                   type: "Identifier",
-                  span: {
-                    start: 67,
-                    end: 73,
-                    ctxt: 2
-                  },
+                  span: dummySpan,
                   value: mod,
                   optional: false
                 },
@@ -307,18 +247,10 @@ export function genTypeImport (lib: string, mod: string, kind = "const") {
 export function genTsRef (name: string): TsTypeReference {
   return {
     type: "TsTypeReference",
-    span: {
-      start: 199,
-      end: 205,
-      ctxt: 0
-    },
+    span: dummySpan,
     typeName: {
       type: "Identifier",
-      span: {
-        start: 199,
-        end: 205,
-        ctxt: 2
-      },
+      span: dummySpan,
       value: name,
       optional: false
     }
@@ -334,11 +266,7 @@ export function guessType (value: unknown): TsType {
 
   return {
     type: "TsKeywordType",
-    span: {
-      start: 199,
-      end: 205,
-      ctxt: 0
-    },
+    span: dummySpan,
     kind: t as TsKeywordTypeKind
   }
 }
@@ -347,11 +275,7 @@ export function genImportSpecifier (name: string, isDefault = false): ImportSpec
   const local = {
     type: "Identifier",
     value: name,
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 1
-    },
+    span: dummySpan,
     optional: false
   } as Identifier
 
@@ -359,21 +283,13 @@ export function genImportSpecifier (name: string, isDefault = false): ImportSpec
     return {
       type: "ImportDefaultSpecifier",
       local,
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0,
-      }
+      span: dummySpan
     }
   }
   return {
     type: "ImportSpecifier",
     local,
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 0,
-    },
+    span: dummySpan,
     isTypeOnly: false
   }
 }
@@ -382,11 +298,7 @@ export function genExportSpecifier (name: string, isNamespace = false): ExportSp
   const orig = {
     type: "Identifier",
     value: name,
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 1
-    },
+    span: dummySpan,
     optional: false
   } as Identifier
 
@@ -394,21 +306,13 @@ export function genExportSpecifier (name: string, isNamespace = false): ExportSp
     return {
       type: "ExportNamespaceSpecifier",
       name: orig,
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0,
-      }
+      span: dummySpan
     }
   }
   return {
     type: "ExportSpecifier",
     orig,
-    span: {
-      start: 0,
-      end: 0,
-      ctxt: 0,
-    },
+    span: dummySpan,
     isTypeOnly: false
   }
 }

@@ -1,5 +1,5 @@
 import { ArrowFunctionExpression, CallExpression, FunctionDeclaration, FunctionExpression, LabeledStatement, VariableDeclaration } from "@swc/core"
-import { WalkContext, createMacro } from "@macro-plugin/core"
+import { WalkContext, createMacro, dummySpan } from "@macro-plugin/core"
 
 function handleFunc (this: WalkContext, ast: FunctionDeclaration | FunctionExpression | ArrowFunctionExpression) {
   let label
@@ -17,18 +17,10 @@ function handleFunc (this: WalkContext, ast: FunctionDeclaration | FunctionExpre
 
             const init = {
               type: "CallExpression",
-              span: {
-                start: 55,
-                end: 79,
-                ctxt: 0
-              },
+              span: dummySpan,
               callee: {
                 type: "Identifier",
-                span: {
-                  start: 55,
-                  end: 65,
-                  ctxt: 2
-                },
+                span: dummySpan,
                 value: "component$",
                 optional: false
               },
@@ -37,11 +29,7 @@ function handleFunc (this: WalkContext, ast: FunctionDeclaration | FunctionExpre
                   expression: isDecl
                     ? {
                       type: "ArrowFunctionExpression",
-                      span: {
-                        start: 66,
-                        end: 78,
-                        ctxt: 0
-                      },
+                      span: dummySpan,
                       params: ast.params.map(i => i.pat),
                       body: ast.body,
                       async: false,
@@ -56,21 +44,13 @@ function handleFunc (this: WalkContext, ast: FunctionDeclaration | FunctionExpre
 
             return {
               type: "VariableDeclaration",
-              span: {
-                start: 43,
-                end: 80,
-                ctxt: 0
-              },
+              span: dummySpan,
               kind: "const",
               declare: false,
               declarations: [
                 {
                   type: "VariableDeclarator",
-                  span: {
-                    start: 49,
-                    end: 79,
-                    ctxt: 0
-                  },
+                  span: dummySpan,
                   id: ast.identifier,
                   init,
                   definite: false

@@ -1,7 +1,7 @@
 import type { Config, ExprMacro, LabeledMacro, MacroPlugin, MacroPluginWithProxy, TmplMacro, TypeMacro } from "./types"
 import { TsFunctionType, TsType } from "@swc/core"
 import { createLit, flatExpr, guessType } from "./utils"
-import { defaultGlobalExpr, defaultGlobalTmpl, defaultGlobalType } from "./defaults"
+import { defaultGlobalExpr, defaultGlobalTmpl, defaultGlobalType, dummySpan } from "./defaults"
 
 export function defineConfig (config: Config) {
   return config
@@ -148,42 +148,22 @@ export function createTmplMacro (tag: string, f: TmplMacro | {
     Module () {
       this.declareGlobalConst(tag, {
         type: "TsFunctionType",
-        span: {
-          start: 174,
-          end: 242,
-          ctxt: 0
-        },
+        span: dummySpan,
         params: [
           {
             type: "Identifier",
-            span: {
-              start: 175,
-              end: 204,
-              ctxt: 2
-            },
+            span: dummySpan,
             value: "strings",
             optional: false,
             typeAnnotation: {
               type: "TsTypeAnnotation",
-              span: {
-                start: 182,
-                end: 204,
-                ctxt: 0
-              },
+              span: dummySpan,
               typeAnnotation: {
                 type: "TsTypeReference",
-                span: {
-                  start: 184,
-                  end: 204,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 typeName: {
                   type: "Identifier",
-                  span: {
-                    start: 184,
-                    end: 204,
-                    ctxt: 2
-                  },
+                  span: dummySpan,
                   value: "TemplateStringsArray",
                   optional: false
                 },
@@ -192,47 +172,23 @@ export function createTmplMacro (tag: string, f: TmplMacro | {
           },
           {
             type: "RestElement",
-            span: {
-              start: 206,
-              end: 231,
-              ctxt: 0
-            },
-            rest: {
-              start: 207,
-              end: 210,
-              ctxt: 0
-            },
+            span: dummySpan,
+            rest: dummySpan,
             argument: {
               type: "Identifier",
-              span: {
-                start: 209,
-                end: 220,
-                ctxt: 2
-              },
+              span: dummySpan,
               value: "expressions",
               optional: false,
             },
             typeAnnotation: {
               type: "TsTypeAnnotation",
-              span: {
-                start: 220,
-                end: 231,
-                ctxt: 0
-              },
+              span: dummySpan,
               typeAnnotation: {
                 type: "TsArrayType",
-                span: {
-                  start: 222,
-                  end: 231,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 elemType: {
                   type: "TsKeywordType",
-                  span: {
-                    start: 222,
-                    end: 229,
-                    ctxt: 0
-                  },
+                  span: dummySpan,
                   kind: "unknown"
                 }
               }
@@ -241,11 +197,7 @@ export function createTmplMacro (tag: string, f: TmplMacro | {
         ],
         typeAnnotation: {
           type: "TsTypeAnnotation",
-          span: {
-            start: 233,
-            end: 242,
-            ctxt: 0
-          },
+          span: dummySpan,
           typeAnnotation: typeof returnType === "string" ? this.parseType(returnType) : returnType
         }
       })

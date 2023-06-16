@@ -1,4 +1,4 @@
-import { createMacro, transform } from "../src"
+import { createMacro, dummySpan, transform } from "../src"
 
 import type { VariableDeclaration } from "@swc/core"
 
@@ -29,11 +29,7 @@ const arrow = createMacro({
         type: "VariableDeclaration",
         kind: "const",
         declare: false,
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        },
+        span: dummySpan,
         declarations: [
           {
             type: "VariableDeclarator",
@@ -44,18 +40,10 @@ const arrow = createMacro({
               async: false,
               params: [],
               body: ast.body,
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              }
+              span: dummySpan
             },
             definite: false,
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0
-            }
+            span: dummySpan
           }
         ]
       } as VariableDeclaration

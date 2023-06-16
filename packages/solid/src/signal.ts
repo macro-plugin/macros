@@ -1,4 +1,4 @@
-import { BaseNode, createMacro, markedNode } from "@macro-plugin/core"
+import { BaseNode, createMacro, dummySpan, markedNode } from "@macro-plugin/core"
 import { BinaryExpression, CallExpression, Expression, VariableDeclaration } from "@swc/core"
 
 function getSetter (name: string) {
@@ -33,48 +33,28 @@ export default createMacro({
         type: "VariableDeclaration",
         kind: "var",
         declare: false,
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        },
+        span: dummySpan,
         declarations: [
           {
             type: "VariableDeclarator",
             definite: false,
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0
-            },
+            span: dummySpan,
             id: {
               type: "ArrayPattern",
               optional: false,
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              },
+              span: dummySpan,
               elements: [
                 markedNode("signal", {
                   type: "Identifier",
                   value: k,
                   optional: false,
-                  span: {
-                    start: 0,
-                    end: 0,
-                    ctxt: 0
-                  }
+                  span: dummySpan
                 }),
                 markedNode("signalSetter", {
                   type: "Identifier",
                   value: v.setter,
                   optional: false,
-                  span: {
-                    start: 0,
-                    end: 0,
-                    ctxt: 0
-                  }
+                  span: dummySpan
                 }),
               ]
             },
@@ -84,17 +64,9 @@ export default createMacro({
                 type: "Identifier",
                 value: "createSignal",
                 optional: false,
-                span: {
-                  start: 0,
-                  end: 0,
-                  ctxt: 1
-                }
+                span: dummySpan
               },
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              },
+              span: dummySpan,
               arguments: [
                 {
                   expression: v.value
@@ -115,11 +87,7 @@ export default createMacro({
           type: "Identifier",
           value: getSetter(name),
           optional: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         },
         arguments: [
           {
@@ -133,34 +101,18 @@ export default createMacro({
                     type: "Identifier",
                     value: name,
                     optional: false,
-                    span: {
-                      start: 0,
-                      end: 0,
-                      ctxt: 0
-                    }
+                    span: dummySpan
                   },
                   arguments: [],
-                  span: {
-                    start: 0,
-                    end: 0,
-                    ctxt: 0
-                  }
+                  span: dummySpan
                 } as CallExpression,
                 operator: ast.operator.replace("=", ""),
-                span: {
-                  start: 0,
-                  end: 0,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 right: ast.right,
               } as BinaryExpression
           }
         ],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as CallExpression
     }
   },
@@ -171,11 +123,7 @@ export default createMacro({
         type: "CallExpression",
         callee: ast.argument,
         arguments: [],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as CallExpression
       return {
         type: "CallExpression",
@@ -183,22 +131,14 @@ export default createMacro({
           type: "Identifier",
           value: getSetter(name),
           optional: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         },
         arguments: [
           {
             expression: ast,
           }
         ],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       } as CallExpression
     }
   }

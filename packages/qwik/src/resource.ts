@@ -1,6 +1,5 @@
 import { Identifier, Statement, VariableDeclaration } from "@swc/core"
-
-import { createLabeledMacro } from "@macro-plugin/core"
+import { createLabeledMacro, dummySpan } from "@macro-plugin/core"
 
 const varToReturn = (body: Statement[]) => {
   let ident: Identifier | undefined
@@ -14,11 +13,7 @@ const varToReturn = (body: Statement[]) => {
       return {
         type: "ReturnStatement",
         argument: i.declarations[0].init,
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       }
     }
     return i
@@ -38,11 +33,7 @@ export const resource = createLabeledMacro("resource", function (stmt) {
         {
           type: "VariableDeclarator",
           definite: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          },
+          span: dummySpan,
           id,
           init: {
             type: "CallExpression",
@@ -50,17 +41,9 @@ export const resource = createLabeledMacro("resource", function (stmt) {
               type: "Identifier",
               optional: false,
               value: "useResource$",
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              }
+              span: dummySpan
             },
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0
-            },
+            span: dummySpan,
             arguments: [
               {
                 expression: {
@@ -68,19 +51,11 @@ export const resource = createLabeledMacro("resource", function (stmt) {
                   generator: false,
                   async: false,
                   params: [],
-                  span: {
-                    start: 0,
-                    end: 0,
-                    ctxt: 0
-                  },
+                  span: dummySpan,
                   body: {
                     type: "BlockStatement",
                     stmts,
-                    span: {
-                      start: 0,
-                      end: 0,
-                      ctxt: 0
-                    },
+                    span: dummySpan,
                   }
                 }
               }
@@ -88,11 +63,7 @@ export const resource = createLabeledMacro("resource", function (stmt) {
           }
         }
       ],
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      },
+      span: dummySpan,
       declare: false,
       kind: "const"
     } as VariableDeclaration
@@ -112,22 +83,14 @@ export const resource = createLabeledMacro("resource", function (stmt) {
         {
           type: "VariableDeclarator",
           definite: false,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          },
+          span: dummySpan,
           id,
           init: {
             type: "CallExpression",
             callee: {
               type: "Identifier",
               value: "useResource$",
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              },
+              span: dummySpan,
               optional: false
             },
             arguments: [
@@ -135,20 +98,12 @@ export const resource = createLabeledMacro("resource", function (stmt) {
                 expression: stmt.expression
               }
             ],
-            span: {
-              start: 0,
-              end: 0,
-              ctxt: 0
-            },
+            span: dummySpan,
           }
         }
       ],
       kind: "const",
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      },
+      span: dummySpan,
       declare: false,
     } as VariableDeclaration
   } else {

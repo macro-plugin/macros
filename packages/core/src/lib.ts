@@ -1,10 +1,11 @@
 import { CallExpression, Expression, Identifier, transformFileSync } from "@swc/core"
 import { createExprMacro, createTmplMacro } from "./api"
-import { evalAst, evalExpr, hash, span } from "./utils"
+import { evalAst, evalExpr, hash } from "./utils"
 import { parse, parseExpr } from "./parse"
 import { readFileSync, writeFileSync } from "fs"
 
 import { createSwcPlugin } from "./transform"
+import { dummySpan } from "./defaults"
 import { printExpr } from "./print"
 import { walk } from "./walk"
 
@@ -46,20 +47,20 @@ export var $Env = createExprMacro("$Env", function (args, typeArgs) {
         return {
           type: "BooleanLiteral",
           value: !!value,
-          span
+          span: dummySpan
         }
       case "number":
         return {
           type: "NumericLiteral",
           value: +value,
-          span
+          span: dummySpan
         }
     }
   }
 
   return {
     type: "StringLiteral",
-    span,
+    span: dummySpan,
     value
   }
 }, "<R = string>(key: string) => R")
@@ -67,29 +68,29 @@ export var $Env = createExprMacro("$Env", function (args, typeArgs) {
 export var $Stringify = createExprMacro("$Stringify", function (args, typeArgs) {
   return {
     type: "StringLiteral",
-    span,
+    span: dummySpan,
     value: typeArgs && typeArgs.length > 0 ? this.printType(typeArgs[0]) : this.printExpr(args[0])
   }
 }, "((expr: any) => string) & (<T>() => string)")
 
 export var $Span = createExprMacro("$Span", function () {
-  const currentSpan: [number, number] = this.span()
+  const cursor: [number, number] = this.cursor()
   return {
     type: "ArrayExpression",
-    span,
+    span: dummySpan,
     elements: [
       {
         expression: {
           type: "NumericLiteral",
-          span,
-          value: currentSpan[0],
+          span: dummySpan,
+          value: cursor[0],
         }
       },
       {
         expression: {
           type: "NumericLiteral",
-          span,
-          value: currentSpan[1]
+          span: dummySpan,
+          value: cursor[1]
         }
       }
     ]
@@ -99,51 +100,51 @@ export var $Span = createExprMacro("$Span", function () {
 export var $Line = createExprMacro("$Line", function () {
   return {
     type: "NumericLiteral",
-    span,
-    value: this.src?.slice(0, this.span()[0]).split(/\r\n|\r|\n/).length || 1
+    span: this.span(),
+    value: this.src?.slice(0, this.cursor()[0]).split(/\r\n|\r|\n/).length || 1
   }
 }, "() => number")
 
 export var $Column = createExprMacro("$Column", function () {
   return {
     type: "NumericLiteral",
-    span,
-    value: (this.src?.slice(0, this.span()[0]))?.match(/\n[^\n]*$/)?.[0].length || 1
+    span: this.span(),
+    value: (this.src?.slice(0, this.cursor()[0]))?.match(/\n[^\n]*$/)?.[0].length || 1
   }
 }, "() => number")
 
 export var $ID = createExprMacro("$ID", function () {
   return {
     type: "StringLiteral",
-    span,
-    value: hash(`${this.src}${this.span()}`)
+    span: this.span(),
+    value: hash(`${this.src}${this.cursor()}`)
   }
 }, "() => string")
 
 function throwError (msg: string): CallExpression {
   return {
     type: "CallExpression",
-    span,
+    span: dummySpan,
     callee: {
       type: "ParenthesisExpression",
-      span,
+      span: dummySpan,
       expression: {
         type: "ArrowFunctionExpression",
-        span,
+        span: dummySpan,
         params: [],
         body: {
           type: "BlockStatement",
-          span,
+          span: dummySpan,
           stmts: [
             {
               type: "ThrowStatement",
-              span,
+              span: dummySpan,
               argument: {
                 type: "NewExpression",
-                span,
+                span: dummySpan,
                 callee: {
                   type: "Identifier",
-                  span,
+                  span: dummySpan,
                   value: "Error",
                   optional: false
                 },
@@ -151,7 +152,7 @@ function throwError (msg: string): CallExpression {
                   {
                     expression: {
                       type: "StringLiteral",
-                      span,
+                      span: dummySpan,
                       value: msg,
                     }
                   }
@@ -203,17 +204,17 @@ export var $Include = createExprMacro("$Include", function (args) {
 
   return {
     type: "CallExpression",
-    span,
+    span: dummySpan,
     callee: {
       type: "ParenthesisExpression",
-      span,
+      span: dummySpan,
       expression: {
         type: "ArrowFunctionExpression",
-        span,
+        span: dummySpan,
         params: [],
         body: {
           type: "BlockStatement",
-          span,
+          span: dummySpan,
           stmts: parse(transformFileSync(args[0].value, { jsc, plugin, module: { type: moduleType } }).code).body
         },
         async: false,
@@ -230,7 +231,7 @@ export var $IncludeStr = createExprMacro("$IncludeStr", function (args) {
   return {
     type: "StringLiteral",
     value: readFileSync(args[0].value).toString(),
-    span
+    span: dummySpan
   }
 }, "(path: string) => string")
 
@@ -251,7 +252,7 @@ export var $WriteFile = createExprMacro("$WriteFile", function (args) {
   if (args[1]?.type !== "StringLiteral") throw new Error("$WriteFile only accept StringLiteral as second parameter.")
 
   writeFileSync(args[0].value, args[1].value, { encoding: "utf-8" })
-  return { type: "Identifier", value: "undefined", span }
+  return { type: "Identifier", value: "undefined", span: dummySpan }
 }, "(file: string, data: string) => void")
 
 export var $Concat = createExprMacro("$Concat", function (args) {
@@ -282,7 +283,7 @@ export var $Concat = createExprMacro("$Concat", function (args) {
   return {
     type: "StringLiteral",
     value,
-    span
+    span: dummySpan
   }
 }, "(...args: (string | null | undefined | boolean | number | bigint)[]) => string")
 
@@ -328,7 +329,7 @@ export var $Expr = createTmplMacro("$Expr", function (strings, ...exprs) {
 
   walkObject(ast, (k, v, parent) => {
     if (k === "span") {
-      parent[k] = span
+      parent[k] = dummySpan
       return
     }
 
@@ -350,7 +351,7 @@ function _Quote (strings: TemplateStringsArray | string[], ...exprs: unknown[]) 
 
   walkObject(ast, (k, v, parent) => {
     if (k === "span") {
-      parent[k] = span
+      parent[k] = dummySpan
       return
     }
 

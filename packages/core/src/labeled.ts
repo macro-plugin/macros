@@ -2,7 +2,7 @@ import { Argument, ArrayExpression, ArrowFunctionExpression, AssignmentProperty,
 import { createLabeledMacro, createMacro } from "./api"
 
 import { MacroPlugin } from "./types"
-import { span } from "./utils"
+import { dummySpan } from "./defaults"
 
 export const createLabeledExpr: ((label: string, specifier: string, source: string) => MacroPlugin) = (label, specifier, source) => {
   return createMacro({
@@ -13,18 +13,10 @@ export const createLabeledExpr: ((label: string, specifier: string, source: stri
 
         ast.body.expression = {
           type: "CallExpression",
-          span: {
-            start: 109,
-            end: 119,
-            ctxt: 0
-          },
+          span: dummySpan,
           callee: {
             type: "Identifier",
-            span: {
-              start: 109,
-              end: 112,
-              ctxt: 1
-            },
+            span: dummySpan,
             value: specifier,
             optional: false
           },
@@ -61,11 +53,7 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
         callee: {
           type: "Identifier",
           value: specifier,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         },
         arguments: [
           {
@@ -75,25 +63,13 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
               async: false,
               params: [],
               body: ast,
-              span: {
-                start: 0,
-                end: 0,
-                ctxt: 0
-              }
+              span: dummySpan
             } as ArrowFunctionExpression
           }
         ],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       },
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      }
+      span: dummySpan
     }) as ExpressionStatement
   } else if (ast.type === "ExpressionStatement" && ast.expression.type === "ArrowFunctionExpression") {
     return ({
@@ -103,28 +79,16 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
         callee: {
           type: "Identifier",
           value: specifier,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         },
         arguments: [
           {
             expression: ast.expression
           }
         ],
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       },
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      }
+      span: dummySpan
     }) as ExpressionStatement
   } else if (allowParams && ast.type === "ExpressionStatement" && ast.expression.type === "ArrayExpression") {
     return ({
@@ -134,24 +98,12 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
         callee: {
           type: "Identifier",
           value: specifier,
-          span: {
-            start: 0,
-            end: 0,
-            ctxt: 0
-          }
+          span: dummySpan
         },
         arguments: ast.expression.elements,
-        span: {
-          start: 0,
-          end: 0,
-          ctxt: 0
-        }
+        span: dummySpan
       },
-      span: {
-        start: 0,
-        end: 0,
-        ctxt: 0
-      }
+      span: dummySpan
     }) as ExpressionStatement
   } else {
     throw new Error("this macro only accept a ArrowFunction or BlockStatement" + (allowParams ? " or an ArrayExpression" : ""))
@@ -160,7 +112,7 @@ export const createLabeledBlock: ((label: string, specifier: string, source: str
 
 const $Undefined = {
   type: "Identifier",
-  span,
+  span: dummySpan,
   value: "undefined",
   optional: false
 } as Identifier
@@ -183,7 +135,7 @@ const patternProperty: (prop: ObjectPatternProperty) => SpreadElement | Property
     case "RestElement":
       return {
         type: "SpreadElement",
-        spread: span,
+        spread: dummySpan,
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         arguments: patternToExpr(prop.argument).expression
       } satisfies SpreadElement
@@ -200,14 +152,14 @@ export const patternToExpr: (pat: Pattern) => Argument = (pat) => {
       expression: {
         type: "ArrayExpression",
         elements: pat.elements.map(i => i ? patternToExpr(i) : i),
-        span
+        span: dummySpan
       } satisfies ArrayExpression
     }
     case "ObjectPattern": return {
       expression: {
         type: "ObjectExpression",
         properties: pat.properties.map(i => patternProperty(i)),
-        span
+        span: dummySpan
       } satisfies ObjectExpression
     }
     case "RestElement": return {
@@ -226,7 +178,7 @@ const filterNotDecorator = (stmts: Statement[]) => stmts.filter(i => i.type !== 
 const fixCallee = (callee: Expression | undefined) => {
   if (!callee) return $Undefined
   if (["ArrayExpression", "CallExpression"].includes(callee.type)) return callee
-  if (callee.type !== "Identifier") return { type: "ParenthesisExpression", span, expression: callee } as ParenthesisExpression
+  if (callee.type !== "Identifier") return { type: "ParenthesisExpression", span: dummySpan, expression: callee } as ParenthesisExpression
   return callee
 }
 
@@ -242,10 +194,10 @@ const handleDecoratorLabel = (parent: FunctionDeclaration | FunctionExpression, 
           identifier: parent.identifier,
           params: parent.params,
           decorators: parent.decorators,
-          span,
+          span: dummySpan,
           body: {
             type: "BlockStatement",
-            span,
+            span: dummySpan,
             stmts: filterNotDecorator(parent.body.stmts)
           },
           generator: parent.generator,
@@ -270,11 +222,11 @@ const handleDecoratorLabel = (parent: FunctionDeclaration | FunctionExpression, 
           els.length > 1 && els.forEach((el, index) => {
             if (lastCallee.type === "CallExpression") {
               cacheCallee = lastCallee
-              lastCallee = { type: "CallExpression", span, callee: fixCallee(el?.expression), arguments: index === last ? [{ expression }] : [] }
+              lastCallee = { type: "CallExpression", span: dummySpan, callee: fixCallee(el?.expression), arguments: index === last ? [{ expression }] : [] }
               if (index === last) finalCallee = callee as CallExpression
               cacheCallee.arguments[0] = { expression: lastCallee }
             } else {
-              callee = { type: "CallExpression", span, callee, arguments: [{ expression: fixCallee(el?.expression), spread: el?.spread }] }
+              callee = { type: "CallExpression", span: dummySpan, callee, arguments: [{ expression: fixCallee(el?.expression), spread: el?.spread }] }
               lastCallee = callee
             }
           })
@@ -283,13 +235,13 @@ const handleDecoratorLabel = (parent: FunctionDeclaration | FunctionExpression, 
         parent.body.stmts = [
           {
             type: "ReturnStatement",
-            span,
+            span: dummySpan,
             argument: {
               type: "CallExpression",
-              span,
+              span: dummySpan,
               callee: finalCallee || {
                 type: "CallExpression",
-                span,
+                span: dummySpan,
                 callee,
                 arguments: [
                   {

@@ -1,6 +1,5 @@
 import { ArrowFunctionExpression, ExpressionStatement } from "@swc/core"
-
-import { createMacro } from "@macro-plugin/core"
+import { createMacro, dummySpan } from "@macro-plugin/core"
 
 export const events = createMacro({
   LabeledStatement: {
@@ -38,11 +37,7 @@ export const events = createMacro({
 
         expression = {
           type: "ArrowFunctionExpression",
-          span: {
-            start: 26,
-            end: 87,
-            ctxt: 0
-          },
+          span: dummySpan,
           params: [],
           body: ast.body,
           async: false,
@@ -71,25 +66,13 @@ export const events = createMacro({
 
       return {
         type: "ExpressionStatement",
-        span: {
-          start: 0,
-          end: 93,
-          ctxt: 0
-        },
+        span: dummySpan,
         expression: {
           type: "CallExpression",
-          span: {
-            start: 0,
-            end: 92,
-            ctxt: 0
-          },
+          span: dummySpan,
           callee: {
             type: "Identifier",
-            span: {
-              start: 0,
-              end: 5,
-              ctxt: 1
-            },
+            span: dummySpan,
             value: name,
             optional: false
           },
@@ -97,11 +80,7 @@ export const events = createMacro({
             {
               expression: {
                 type: "StringLiteral",
-                span: {
-                  start: 11,
-                  end: 18,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 value: ast.label.value.slice(2),
                 raw: `'${ast.label.value.slice(2)}'`
               }
@@ -109,18 +88,10 @@ export const events = createMacro({
             {
               expression: {
                 type: "CallExpression",
-                span: {
-                  start: 24,
-                  end: 88,
-                  ctxt: 0
-                },
+                span: dummySpan,
                 callee: {
                   type: "Identifier",
-                  span: {
-                    start: 24,
-                    end: 25,
-                    ctxt: 1
-                  },
+                  span: dummySpan,
                   value: "$",
                   optional: false
                 },
