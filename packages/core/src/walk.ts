@@ -124,11 +124,15 @@ export class Walker {
   declareAppend = (stmts: ModuleItem[]) => this.appendDts.push(...stmts)
 
   defaultContext = {
-    span: () => {
-      const start = (this.node as Node & HasSpan).span.start
-      const end = (this.node as Node & HasSpan).span.end
+    cursor: () => {
+      const { start, end } = (this.node as Node & HasSpan).span
 
       return [start > this.spanOffset ? start - this.spanOffset - 1 : 0, end > this.spanOffset ? end - this.spanOffset - 1 : 0] as [number, number]
+    },
+    span: (ctxt = undefined) => {
+      const { start, end, ctxt: _ctxt } = (this.node as Node & HasSpan).span
+
+      return { start: start > this.spanOffset ? start - this.spanOffset - 1 : 0, end: end > this.spanOffset ? end - this.spanOffset - 1 : 0, ctxt: ctxt ?? _ctxt }
     },
     set: this.set,
     get: this.get,
