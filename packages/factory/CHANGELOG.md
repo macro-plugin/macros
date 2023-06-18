@@ -1,5 +1,13 @@
 # @macro-plugin/factory
 
+## 1.1.1
+
+### Patch Changes
+
+- [#35](https://github.com/macro-plugin/macros/pull/35) [`750bad7`](https://github.com/macro-plugin/macros/commit/750bad763a91002e90adcf380d23736cfafd9f8f) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: add missed createImportSpecifier and createExportSpecifier api
+
+- [#35](https://github.com/macro-plugin/macros/pull/35) [`b1e38d3`](https://github.com/macro-plugin/macros/commit/b1e38d3410089f5f2fd3caf913b4358aece08eaa) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: add missed $ImportSpecifier and $ExportSpecifier macros
+
 ## 1.1.0
 
 ### Minor Changes
