@@ -542,6 +542,14 @@ export const createImportNamespaceSpecifier = (local: Identifier, span: Span = d
   span
 } satisfies ImportNamespaceSpecifier)
 
+export const createImportSpecifier = (local: Identifier, imported?: ModuleExportName, isTypeOnly = false, span: Span = dummySpan) => ({
+  type: "ImportSpecifier",
+  local,
+  imported,
+  isTypeOnly,
+  span
+} satisfies ImportSpecifier)
+
 export const createNamedImportSpecifier = (local: Identifier, imported?: ModuleExportName, isTypeOnly = false, span: Span = dummySpan) => ({
   type: "ImportSpecifier",
   local,
@@ -561,6 +569,14 @@ export const createExportDefaultSpecifier = (exported: Identifier, span: Span = 
   exported,
   span
 } satisfies ExportDefaultSpecifier)
+
+export const createExportSpecifier = (orig: ModuleExportName, exported?: ModuleExportName, isTypeOnly = false, span: Span = dummySpan) => ({
+  type: "ExportSpecifier",
+  orig,
+  span,
+  exported,
+  isTypeOnly,
+} satisfies NamedExportSpecifier)
 
 export const createNamedExportSpecifier = (orig: ModuleExportName, exported?: ModuleExportName, isTypeOnly = false, span: Span = dummySpan) => ({
   type: "ExportSpecifier",
