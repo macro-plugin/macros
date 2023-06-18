@@ -1,5 +1,17 @@
 # @macro-plugin/factory
 
+## 1.2.0
+
+### Minor Changes
+
+- [#37](https://github.com/macro-plugin/macros/pull/37) [`0351dd0`](https://github.com/macro-plugin/macros/commit/0351dd0aea40b9caa498ac4ae2e88312568c00e9) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: support overwrite span in factory macros
+
+### Patch Changes
+
+- [#37](https://github.com/macro-plugin/macros/pull/37) [`74d4a72`](https://github.com/macro-plugin/macros/commit/74d4a72f7ccc04717729990dfd3032798e92cc08) Thanks [@voorjaar](https://github.com/voorjaar)! - feat: add $Span and createSpan apis
+
+- [#37](https://github.com/macro-plugin/macros/pull/37) [`b8c191a`](https://github.com/macro-plugin/macros/commit/b8c191a215edc79c7e3297af3e8f3ed62d716d0a) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: rest and spread span
+
 ## 1.1.1
 
 ### Patch Changes
