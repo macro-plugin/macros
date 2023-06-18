@@ -81,6 +81,12 @@ export const $Void: ArrayExpression = {
   elements: []
 }
 
+export const $0: NumericLiteral = {
+  type: "NumericLiteral",
+  span: dummySpan,
+  value: 0,
+}
+
 function _JSONStringify (expression: Expression, span: Span): CallExpression {
   return {
     type: "CallExpression",
@@ -108,6 +114,20 @@ function _JSONStringify (expression: Expression, span: Span): CallExpression {
     ],
   }
 }
+
+export const $Span = createExprMacro("$Identifier", function ([start, end, ctxt]) {
+  const span = this.span()
+
+  return {
+    type: "ObjectExpression",
+    properties: [
+      createAstProp("start", start ?? $0, span),
+      createAstProp("end", end ?? $0, span),
+      createAstProp("ctxt", ctxt ?? $0, span)
+    ],
+    span
+  } as ObjectExpression
+}, "(start?: number, end?: number, ctxt?: number) => import(\"@swc/core\").Span").proxy(createSpan)
 
 export const $Identifier = createExprMacro("$Identifier", function ([value, optional = $False]) {
   return createAst("Identifier", { value, optional }, this.span())

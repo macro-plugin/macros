@@ -2,6 +2,12 @@ import type { Accessibility, Argument, ArrayExpression, ArrayPattern, ArrowFunct
 
 import { dummySpan } from "@macro-plugin/core"
 
+export const createSpan = (start = 0, end = 0, ctxt = 0) => ({
+  start,
+  end,
+  ctxt
+} satisfies Span)
+
 export const createIdentifier = (value: string, optional = false, span: Span = dummySpan) => ({
   type: "Identifier",
   value,
