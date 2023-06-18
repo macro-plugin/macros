@@ -15,8 +15,8 @@ exports[`$Argument macro transform 1`] = `
 };
 const b = {
     "spread": {
-        "start": 55,
-        "end": 91,
+        "start": 0,
+        "end": 0,
         "ctxt": 0
     },
     "expression": {
@@ -247,5 +247,74 @@ exports[`ctxt shouldn't rename variable name in multiple block 1`] = `
         }
     }
 });
+"
+`;
+
+exports[`optional should works 1`] = `
+"const a = {
+    "start": 3,
+    "end": 1,
+    "ctxt": 2
+};
+const b = {
+    "start": 0,
+    "end": 1,
+    "ctxt": 0
+};
+const d = {
+    "start": 0,
+    "end": 2,
+    "ctxt": 5
+};
+const e = {
+    "start": 0,
+    "end": 0,
+    "ctxt": 0
+};
+"
+`;
+
+exports[`overwite span should works 1`] = `
+"{
+    "type": "Import",
+    "span": {
+        "start": 3,
+        "end": 12,
+        "ctxt": 0
+    }
+};
+{
+    "type": "Import",
+    "span": {
+        "start": 15,
+        "end": 33,
+        "ctxt": 0
+    }
+};
+{
+    "type": "Import",
+    "span": {
+        "start": 36,
+        "end": 49,
+        "ctxt": 0
+    }
+};
+{
+    "type": "Import",
+    "span": {
+        "start": 0,
+        "end": 1,
+        "ctxt": 2
+    }
+};
+const s = {
+    "start": 3,
+    "end": 4,
+    "ctxt": 0
+};
+{
+    "type": "Import",
+    "span": s
+};
 "
 `;

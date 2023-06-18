@@ -2,6 +2,12 @@ import type { Accessibility, Argument, ArrayExpression, ArrayPattern, ArrowFunct
 
 import { dummySpan } from "@macro-plugin/core"
 
+export const createSpan = (start = 0, end = 0, ctxt = 0) => ({
+  start,
+  end,
+  ctxt
+} satisfies Span)
+
 export const createIdentifier = (value: string, optional = false, span: Span = dummySpan) => ({
   type: "Identifier",
   value,
@@ -48,8 +54,8 @@ export const createRegExpLiteral = (pattern: string, flags: string, span: Span =
   span
 } satisfies RegExpLiteral)
 
-export const createArgument = (expression: Expression, spread = false, span: Span = dummySpan) => ({
-  spread: spread ? span : undefined,
+export const createArgument = (expression: Expression, spread?: Span) => ({
+  spread,
   expression
 } satisfies Argument)
 
@@ -192,9 +198,9 @@ export const createVariableDeclarator = (id: Pattern, init?: Expression, definit
   span
 } satisfies VariableDeclarator)
 
-export const createOptionalChainingExpression = (base: MemberExpression | OptionalChainingCall, span: Span = dummySpan) => ({
+export const createOptionalChainingExpression = (base: MemberExpression | OptionalChainingCall, questionDotToken: Span = dummySpan, span: Span = dummySpan) => ({
   type: "OptionalChainingExpression",
-  questionDotToken: span,
+  questionDotToken,
   base,
   span
 } satisfies OptionalChainingExpression)
@@ -218,8 +224,8 @@ export const createArrayExpression = (elements: (ExprOrSpread | undefined)[] = [
   span
 } satisfies ArrayExpression)
 
-export const createExprOrSpread = (expression: Expression, spread = false, span: Span = dummySpan) => ({
-  spread: spread ? span : undefined,
+export const createExprOrSpread = (expression: Expression, spread?: Span) => ({
+  spread,
   expression,
 } satisfies ExprOrSpread)
 
@@ -229,9 +235,9 @@ export const createObjectExpression = (properties: (SpreadElement | Property)[] 
   span
 } satisfies ObjectExpression)
 
-export const createSpreadElement = (args: Expression, span: Span = dummySpan) => ({
+export const createSpreadElement = (args: Expression, spread: Span = dummySpan) => ({
   type: "SpreadElement",
-  spread: span,
+  spread,
   arguments: args,
 } satisfies SpreadElement)
 
@@ -624,7 +630,7 @@ export const createAssignmentPattern = (left: Pattern, right: Expression, typeAn
   span
 } satisfies AssignmentPattern)
 
-export const createRestElement = (argument: Pattern, rest: Span, typeAnnotation?: TsTypeAnnotation, span: Span = dummySpan) => ({
+export const createRestElement = (argument: Pattern, typeAnnotation?: TsTypeAnnotation, rest: Span = dummySpan, span: Span = dummySpan) => ({
   type: "RestElement",
   rest,
   argument,
@@ -812,7 +818,7 @@ export const createForInStatement = (left: VariableDeclaration | Pattern, right:
   span
 } satisfies ForInStatement)
 
-export const createForOfStatement = (left: VariableDeclaration | Pattern, right: Expression, body: Statement, _await?: Span, span: Span = dummySpan) => ({
+export const createForOfStatement = (left: VariableDeclaration | Pattern, right: Expression, body: Statement, _await: Span = dummySpan, span: Span = dummySpan) => ({
   type: "ForOfStatement",
   await: _await,
   left,
