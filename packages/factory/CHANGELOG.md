@@ -1,5 +1,11 @@
 # @macro-plugin/factory
 
+## 1.2.1
+
+### Patch Changes
+
+- [#39](https://github.com/macro-plugin/macros/pull/39) [`e044946`](https://github.com/macro-plugin/macros/commit/e0449464927a77640358f70c61152168c6004660) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: prop name should be 'arguments' instead of 'args'
+
 ## 1.2.0
 
 ### Minor Changes
