@@ -286,7 +286,7 @@ export const $SpreadElement = createExprMacro("$SpreadElement", function ([args,
   return {
     type: "ObjectExpression",
     span,
-    properties: [createAstProp("type", { type: "StringLiteral", value: "SpreadElement", span }, span), createAstProp("args", args, span), createAstProp("spread", isNullExpr(spread) ? createSpanAst(span) : spread, span)]
+    properties: [createAstProp("type", { type: "StringLiteral", value: "SpreadElement", span }, span), createAstProp("arguments", args, span), createAstProp("spread", isNullExpr(spread) ? createSpanAst(span) : spread, span)]
   } as ObjectExpression
 }, "(args: import(\"@swc/core\").Expression, span?: import(\"@swc/core\").Span) => import(\"@swc/core\").SpreadElement").proxy(createSpreadElement)
 
@@ -335,7 +335,7 @@ export const $Import = createExprMacro("$Import", function ([span]) {
 }, "(span?: import(\"@swc/core\").Span) => import(\"@swc/core\").Import").proxy(createImport)
 
 export const $NewExpression = createExprMacro("$NewExpression", function ([callee, args, typeArguments, span]) {
-  return createAst("NewExpression", { callee, args, typeArguments, span }, this.span())
+  return createAst("NewExpression", { callee, arguments: args, typeArguments, span }, this.span())
 }, "(callee: import(\"@swc/core\").Expression, args?: import(\"@swc/core\").Argument[], typeArguments?: import(\"@swc/core\").TsTypeParameterInstantiation, span?: import(\"@swc/core\").Span) => import(\"@swc/core\").NewExpression").proxy(createNewExpression)
 
 export const $SequenceExpression = createExprMacro("$SequenceExpression", function ([expressions, span]) {
