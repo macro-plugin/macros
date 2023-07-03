@@ -1,5 +1,11 @@
 # @macro-plugin/rollup
 
+## 1.2.3
+
+### Patch Changes
+
+- [#41](https://github.com/macro-plugin/macros/pull/41) [`486f0c9`](https://github.com/macro-plugin/macros/commit/486f0c9093c0b671a0e48c11e53d8a0973dc2f8e) Thanks [@voorjaar](https://github.com/voorjaar)! - fix: ignore ast result in rollup plugin
+
 ## 1.2.2
 
 ### Patch Changes
