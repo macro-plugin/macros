@@ -38,7 +38,8 @@ async function rollupMacroPlugin (config?: Config): Promise<Plugin> {
       }
 
       // native macro transform without swc
-      return await transformAsync(code, macroOptions)
+      const result = await transformAsync(code, macroOptions)
+      return { code: result.code, map: result.map }
     },
     options (options) {
       // ignore warning on @macro-plugin
